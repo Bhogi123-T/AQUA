@@ -1,0 +1,12 @@
+{
+    "DEMO_MODE": false,
+    "MAIL_SERVER": "smtp.gmail.com",
+    "MAIL_PORT": 587,
+    "MAIL_USE_TLS": true,
+    "MAIL_USERNAME": "",
+    "MAIL_PASSWORD": "",
+    "MAIL_DEFAULT_SENDER": "",
+    "TWILIO_ACCOUNT_SID": "",
+    "TWILIO_AUTH_TOKEN": "",
+    "TWILIO_PHONE_NUMBER": ""
+}

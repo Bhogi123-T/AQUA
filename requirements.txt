@@ -1,0 +1,11 @@
+flask
+flask-mail
+python-dotenv
+pandas
+numpy
+scikit-learn
+joblib
+faker
+gunicorn
+twilio
+requests

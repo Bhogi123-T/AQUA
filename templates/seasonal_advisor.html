@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ trans['seasonal_title'] or 'Seasonal Advisor' }} - AquaSphereAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Inter:wght@300;500&display=swap"
+        rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        .season-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .season-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+
+        .season-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--accent);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .season-emoji {
+            font-size: 5rem;
+            margin-bottom: 1.5rem;
+            display: block;
+            filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .season-card:hover .season-emoji {
+            transform: scale(1.2) rotate(5deg);
+        }
+
+        .season-title {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .season-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+        }
+
+        /* Summer Style */
+        .season-card.summer {
+            border-top: 4px solid #ff9d00;
+        }
+
+        .season-card.summer:hover {
+            background: linear-gradient(180deg, rgba(255, 157, 0, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        /* Monsoon Style */
+        .season-card.monsoon {
+            border-top: 4px solid #00d2ff;
+        }
+
+        .season-card.monsoon:hover {
+            background: linear-gradient(180deg, rgba(0, 210, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+        }
+
+        /* Winter Style */
+        .season-card.winter {
+            border-top: 4px solid #ffffff;
+        }
+
+        .season-card.winter:hover {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+            border-color: #fff;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">
+            <span class="logo-icon">🐟</span> AquaSphere<span class="highlight">AI</span>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('home', lang=lang) }}">{{ trans['back_home'] }}</a>
+            <a href="{{ url_for('farmer_hub', lang=lang) }}" class="active">👨‍🌾 {{ trans['nav_farmer'] }}</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container fade-in">
+        <div class="page-header">
+            <h1 class="page-title">🌤️ {{ trans['seasonal_title'] or 'Seasonal Advisor' }}</h1>
+            <p class="subtitle">{{ trans['seasonal_desc'] or 'Select the upcoming season to get AI-driven cultivation
+                advice.' }}</p>
+        </div>
+
+        <div class="season-grid">
+            <!-- Summer Card -->
+            <a href="{{ url_for('predict_seasonal', lang=lang, season='Summer') }}" class="season-card summer">
+                <span class="season-emoji">☀️</span>
+                <div class="season-title">{{ trans['season_summer'] or 'Summer' }}</div>
+                <div class="season-subtitle">Mar - Jun</div>
+            </a>
+
+            <!-- Monsoon Card -->
+            <a href="{{ url_for('predict_seasonal', lang=lang, season='Monsoon') }}" class="season-card monsoon">
+                <span class="season-emoji">🌧️</span>
+                <div class="season-title">{{ trans['season_monsoon'] or 'Monsoon' }}</div>
+                <div class="season-subtitle">Jul - Sep</div>
+            </a>
+
+            <!-- Winter Card -->
+            <a href="{{ url_for('predict_seasonal', lang=lang, season='Winter') }}" class="season-card winter">
+                <span class="season-emoji">❄️</span>
+                <div class="season-title">{{ trans['season_winter'] or 'Winter' }}</div>
+                <div class="season-subtitle">Oct - Feb</div>
+            </a>
+        </div>
+
+        <div style="text-align: center; margin-top: 4rem; opacity: 0.6;">
+            <p>Select a card above to see AI Recommendations</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

@@ -1,0 +1,797 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 5rem; position: relative;">
+    <div style="margin-bottom: 2.5rem; display: inline-block;">
+        <div
+            style="width: 100px; height: 100px; background: rgba(0, 210, 255, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 50px rgba(0, 210, 255, 0.3); margin: 0 auto;">
+            <span class="emo" style="font-size: 4rem;">🌊</span>
+        </div>
+    </div>
+
+    <h1 style="color: white; margin-bottom: 2rem;">{{ trans['hero_title_eco'] | safe }}</h1>
+
+    <p
+        style="font-size: 1.1rem; color: #00ff88; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 3rem; background: rgba(0, 255, 136, 0.05); padding: 12px 30px; border-radius: 5rem; display: inline-block; border: 1px solid rgba(0, 255, 136, 0.1);">
+        {{ trans['hero_subtitle'] | safe }}
+    </p>
+
+    <p
+        style="max-width: 900px; margin: 0 auto 5rem; font-size: 1.4rem; color: var(--text-muted); line-height: 1.8; opacity: 0.85;">
+        {{ trans['prob_statement'] }}
+    </p>
+
+    <!-- PREMIUM LIVE FARM INTELLIGENCE COMMAND CENTER -->
+    <div style="margin-bottom: 5rem;" data-live-only>
+        <h2
+            style="font-size: 2.2rem; font-weight: 800; color: var(--primary); margin-bottom: 2.5rem; text-transform: uppercase; letter-spacing: 3px;">
+            🛰️ {{ trans['live_farm_intel'] }}</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; width: 100%;">
+
+            <!-- LIVE LOCATION TRACKER -->
+            <div class="app-card"
+                style="margin:0; border: 2px solid #ff6b35; background: rgba(255, 107, 53, 0.03); text-align: left; padding: 1.5rem; position: relative; min-height: 350px;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 0.5rem;">
+                    <h4 style="color: #ff6b35; margin: 0; letter-spacing: 1px; line-height: 1.1; font-size: 0.95rem;"><span
+                            class="emo">📍</span> {{
+                        trans['nav_location'] }} <span class="status-badge-text">{{ trans['live_label'] }}</span></h4>
+                    <div id="location-badge" class="live-pulse-badge" style="white-space: nowrap; font-size: 0.65rem; padding: 0.3rem 0.6rem;" data-badge-type="realtime">{{ trans['real_time'] }}</div>
+                </div>
+
+                <div style="display: grid; gap: 0.8rem; max-height: 300px; overflow-y: auto;">
+                    <!-- Location Name -->
+                    <div>
+                        <p
+                            style="font-size: 0.6rem; color: var(--text-muted); margin-bottom: 0.3rem; letter-spacing: 0.5px;">
+                            📌 {{ trans['current_location'] }}
+                        </p>
+                        <div id="live-location-name" style="font-size: 1rem; font-weight: 800; margin-bottom: 0.2rem; color: #ff6b35;">
+                            Loading...
+                        </div>
+                    </div>
+
+                    <!-- Coordinates -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                        <div>
+                            <p
+                                style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; letter-spacing: 0.5px;">
+                                🌐 {{ trans['latitude'] }}
+                            </p>
+                            <div id="live-latitude" style="font-size: 0.85rem; font-weight: 800; color: #ff6b35;">--</div>
+                        </div>
+                        <div>
+                            <p
+                                style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; letter-spacing: 0.5px;">
+                                🌍 {{ trans['longitude'] }}
+                            </p>
+                            <div id="live-longitude" style="font-size: 0.85rem; font-weight: 800; color: #ff6b35;">--</div>
+                        </div>
+                    </div>
+
+                    <!-- Weather at Location -->
+                    <div style="background: rgba(255, 107, 53, 0.1); padding: 0.7rem; border-radius: 0.6rem; border: 1px solid rgba(255, 107, 53, 0.2);">
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; letter-spacing: 0.5px;">
+                            🌤️ {{ trans['live_weather'] }}
+                        </p>
+                        <div id="live-weather-loc" style="font-size: 0.8rem; font-weight: 700; color: white; margin-bottom: 0.2rem;">--</div>
+                        <div id="live-weather-data" style="font-size: 0.7rem; color: #ff6b35; font-weight: 700;">--</div>
+                    </div>
+
+                    <!-- Zone Suitability -->
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; letter-spacing: 0.5px;">
+                            🐟 {{ trans['aquaculture_zone'] }}
+                        </p>
+                        <div id="live-zone-type" style="font-size: 0.85rem; font-weight: 800; color: #00ff88;">--</div>
+                        <div id="live-zone-info" style="font-size: 0.6rem; color: var(--text-muted); margin-top: 0.2rem;">--</div>
+                    </div>
+
+                    <!-- Distance to Nearest Water Body -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0, 255, 136, 0.05); padding: 0.8rem; border-radius: 0.8rem; border: 1px solid rgba(0, 255, 136, 0.1);">
+                        <span style="font-size: 0.7rem; color: var(--text-muted); letter-spacing: 1px;">💧 {{ trans['nearest_water_body'] }}</span>
+                        <span id="live-water-distance" style="font-size: 1.1rem; font-weight: 900; color: #00ff88;">--</span>
+                    </div>
+                </div>
+
+                <button id="update-location-btn" onclick="updateLiveLocation()" 
+                    style="width: 100%; margin-top: 1rem; padding: 0.8rem; background: rgba(255, 107, 53, 0.2); color: #ff6b35; border: 1px solid #ff6b35; border-radius: 0.8rem; cursor: pointer; font-weight: 700; transition: all 0.3s;">
+                    🔄 {{ trans['refresh_location'] }}
+                </button>
+            </div>
+
+            <!-- WATER QUALITY COMMAND -->
+            <div class="app-card"
+                style="margin:0; border: 2px solid var(--primary); background: rgba(0, 210, 255, 0.03); text-align: left; padding: 1.5rem; position: relative; min-height: 350px;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 0.5rem;">
+                    <h4 style="color: var(--primary); margin: 0; letter-spacing: 1px; line-height: 1.1; font-size: 0.95rem;"><span class="emo">🌊</span> {{
+                        trans['water_quality'] }}</h4>
+                    <div id="sensors-badge" class="live-pulse-badge" style="white-space: nowrap; font-size: 0.65rem; padding: 0.3rem 0.6rem;" data-badge-type="sensors">{{ trans['sensors_active'] }}</div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.9rem; max-height: 300px; overflow-y: auto;">
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            🌡️ {{
+                            trans['temperature'] }}
+                        </p>
+                        <div id="rt-temp" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--</div>
+                        <span id="rt-temp-status" style="font-size: 0.55rem; color: #00ff88; font-weight: 700;">{{
+                            trans['optimal']
+                            }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            ⚖️ {{
+                            trans['ph_level'] }}</p>
+                        <div id="rt-ph" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--</div>
+                        <span id="rt-ph-status" style="font-size: 0.55rem; color: #00ff88; font-weight: 700;">{{
+                            trans['balanced']
+                            }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            🌬️ {{
+                            trans['oxygen_level'] }}
+                        </p>
+                        <div id="rt-do" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--</div>
+                        <span id="rt-do-status" style="font-size: 0.55rem; color: #00ff88; font-weight: 700;">{{
+                            trans['high'] }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            ☠️ {{
+                            trans['ammonia'] }}</p>
+                        <div id="rt-ammonia" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--
+                        </div>
+                        <span id="rt-ammonia-status" style="font-size: 0.55rem; color: #00ff88; font-weight: 700;">{{
+                            trans['safe']
+                            }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            👁️ {{
+                            trans['turbidity'] }}</p>
+                        <div id="rt-turbidity" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--
+                        </div>
+                        <span id="rt-turbidity-status"
+                            style="font-size: 0.55rem; color: var(--text-muted); font-weight: 700;">{{
+                            trans['normal'] }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.55rem; color: var(--text-muted); margin-bottom: 0.2rem; white-space: nowrap;">
+                            🧂 {{
+                            trans['salinity'] }}</p>
+                        <div id="rt-salinity" style="font-size: 1.1rem; font-weight: 800; margin-bottom: 0.1rem;">--
+                        </div>
+                        <span id="rt-salinity-status" style="font-size: 0.55rem; color: #00ff88; font-weight: 700;">{{
+                            trans['optimal']
+                            }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card"
+                style="margin:0; border: 2px solid var(--accent); background: rgba(0, 255, 136, 0.03); text-align: left; padding: 1.5rem; min-height: 350px;">
+                <h4 style="color: var(--accent); margin-bottom: 0.8rem; letter-spacing: 1px; line-height: 1.1; font-size: 0.95rem;"><span
+                        class="emo">🐟</span> {{
+                    trans['biological_tracker'] }}</h4>
+
+                <div style="margin-bottom: 0.8rem; max-height: 300px; overflow-y: auto;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                        <span style="font-size: 0.65rem; color: var(--text-muted);">❤️ {{ trans['stock_health_index']
+                            }}</span>
+                        <span id="rt-health" style="font-weight: 900; color: #00ff88; font-size: 0.85rem;">--</span>
+                    </div>
+                    <div style="height: 4px; background: rgba(0,255,136,0.1); border-radius: 2px; margin-bottom: 0.6rem;">
+                        <div id="rt-health-bar"
+                            style="height: 100%; width: 0%; background: #00ff88; transition: width 1s;"></div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 2rem;">
+                    <div>
+                        <p
+                            style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; white-space: nowrap;">
+                            🍽️ {{
+                            trans['live_fcr'] }}</p>
+                        <div id="rt-fcr" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.2rem;">--</div>
+                        <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 700;">{{
+                            trans['efficient'] }}</span>
+                    </div>
+                    <div>
+                        <p
+                            style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; white-space: nowrap;">
+                            📈 {{
+                            trans['growth_rate'] }}
+                        </p>
+                        <div id="rt-growth" style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.2rem;">--</div>
+                        <span style="font-size: 0.6rem; color: var(--text-muted); font-weight: 700;">g/{{
+                            trans['days'][0] }}</span>
+                    </div>
+                    <div style="grid-column: 1 / -1; margin-top: 1rem;">
+                        <p
+                            style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; white-space: nowrap;">
+                            📅 {{
+                            trans['harvest_readiness'] }}</p>
+                        <div id="rt-harvest"
+                            style="font-size: 1.6rem; font-weight: 800; color: #ffcc00; margin-bottom: 0.5rem;">--</div>
+                        <div style="height: 4px; background: rgba(255,204,0,0.1); border-radius: 2px; width: 60%;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="app-card"
+                style="margin:0; border: 2px solid #ff0055; background: rgba(255, 0, 85, 0.03); text-align: left; padding: 1.8rem;">
+                <h4 style="color: #ff0055; margin-bottom: 2rem; letter-spacing: 2px; line-height: 1.2;"><span
+                        class="emo">⚠️</span> {{
+                    trans['risk_center'] }}
+                </h4>
+
+                <div
+                    style="background: rgba(255,0,85,0.05); padding: 1.5rem; border-radius: 1rem; border-left: 4px solid #ff0055; margin-bottom: 2rem;">
+                    <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem;">🚨 {{
+                        trans['oxygen_crash_prob'] }}</p>
+                    <div id="rt-crash" style="font-size: 2rem; font-weight: 900; color: white; margin-bottom: 0.5rem;">
+                        --</div>
+                    <span id="rt-crash-status" style="font-size: 0.7rem; font-weight: 700;">{{ trans['low_risk']
+                        }}</span>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 0.8rem;">
+                        <p style="font-size: 0.6rem; color: var(--text-muted);">🦠 {{ trans['disease_risk'] }}</p>
+                        <div id="rt-disease-risk" style="font-size: 1.2rem; font-weight: 800;">--</div>
+                        <span style="font-size: 0.6rem; color: #00ff88;">{{ trans['stable'] }}</span>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 0.8rem;">
+                        <p style="font-size: 0.6rem; color: var(--text-muted);">🌧️ {{ trans['weather_risk'] }}</p>
+                        <div style="font-size: 1rem; font-weight: 800;">{{ trans['minor'] }}</div>
+                        <span style="font-size: 0.6rem; color: var(--text-muted);">pH Flux Likely</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI ADVISORY & LOGS -->
+            <div class="app-card"
+                style="margin:0; border: 1px solid var(--glass-border); background: rgba(15, 23, 42, 0.5); text-align: left; padding: 2rem; display: flex; flex-direction: column;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; gap: 2rem; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 200px;">
+                        <h4 style="color: white; letter-spacing: 2px; margin-bottom: 0.8rem; line-height: 1.3;"><span
+                                class="live-dot"></span><span class="emo">🤖</span> {{
+                            trans['ai_command_insights'] }}
+                        </h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); opacity: 0.7;">Deep Learning Core v4.2
+                        </p>
+                    </div>
+                    <div style="text-align: right; min-width: 100px;">
+                        <div
+                            style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 1px;">
+                            {{
+                            trans['next_feeding'] }}
+                        </div>
+                        <div id="rt-feed"
+                            style="font-size: 1.5rem; font-weight: 900; color: #00d2ff; white-space: nowrap;">--</div>
+                    </div>
+                </div>
+
+                <div
+                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+                    <div
+                        style="background: rgba(0,210,255,0.05); border: 1px solid rgba(0,210,255,0.1); padding: 1.2rem; border-radius: 1.5rem;">
+                        <div
+                            style="font-size: 0.7rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">
+                            {{
+                            trans['gear_recommendation'] }}</div>
+                        <div style="font-size: 1.1rem; font-weight: 900; white-space: nowrap;">⚙️ <span
+                                id="rt-aerators">--</span> {{
+                            trans['aerators_on'] }}
+                        </div>
+                    </div>
+                    <div
+                        style="background: rgba(255,204,0,0.05); border: 1px solid rgba(255,204,0,0.1); padding: 1.2rem; border-radius: 1.5rem;">
+                        <div
+                            style="font-size: 0.7rem; color: #ffcc00; margin-bottom: 0.5rem; font-weight: 800; letter-spacing: 1px;">
+                            {{
+                            trans['est_power_load'] }}</div>
+                        <div style="font-size: 1.1rem; font-weight: 900; white-space: nowrap;">🔌 <span
+                                id="rt-power">--</span> kWh</div>
+                    </div>
+                </div>
+
+                <div id="ai-console"
+                    style="background: rgba(0,0,0,0.3); border-radius: 1rem; padding: 1rem; font-family: 'Courier New', Courier, monospace; font-size: 0.75rem; color: #00ff88; height: 100px; overflow: hidden; border: 1px solid rgba(0,255,136,0.1); flex: 1;">
+                    <div id="console-logs">
+                        <div>> AquaSphere Neural Core Synchronized.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LIVE MARKET CARD -->
+            <div class="app-card"
+                style="margin:0; border: 1px solid var(--glass-border); text-align: left; padding: 1.5rem; background: linear-gradient(135deg, rgba(58, 123, 213, 0.1), rgba(0,0,0,0)); display: flex; flex-direction: column; justify-content: space-between; min-height: 350px;">
+                <div>
+                    <h4 style="color: var(--secondary); margin-bottom: 1rem; letter-spacing: 1px; font-size: 0.95rem;"><span
+                            class="emo">💰</span> {{
+                        trans['live_market_link'] }}
+                    </h4>
+                    <div id="market-product-name"
+                        style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.4rem; text-transform: uppercase;">
+                        {{ trans['local_product_price'] }}</div>
+                    <div id="market-product-price"
+                        style="font-size: 2rem; font-weight: 900; color: white; margin-bottom: 0.4rem;">--<span
+                            style="font-size: 0.8rem; color: var(--text-muted);">/kg</span></div>
+                    <div id="market-product-trend" style="color: #00ff88; font-size: 0.75rem; font-weight: 700;">--</div>
+                </div>
+                <div style="margin-top: 1.2rem;">
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 0.8rem; font-style: italic;">
+                        {{ trans['rotating_prices'] }}</div>
+                    <a href="/market"
+                        style="display: block; color: var(--secondary); font-size: 0.75rem; text-decoration: none; font-weight: 800;">{{
+                        trans['view_global_arbitrage'] }}</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 3rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/farmer?lang={{ lang }}" class="app-btn-large active-btn"
+            style="text-decoration: none; padding: 2rem 5rem; font-size: 1.8rem; border-radius: 2.5rem;">{{
+            trans['btn_start'] }}</a>
+        <a href="/market?lang={{ lang }}" class="app-btn-large active-btn-accent"
+            style="background: rgba(255,255,255,0.05); text-decoration: none; padding: 2rem 5rem; font-size: 1.8rem; border-radius: 2.5rem; border: 2px solid var(--primary);">{{
+            trans['nav_market_global'] }}</a>
+    </div>
+</div>
+
+<script>
+    // Live Location Tracker - DISABLED WHEN OFFLINE
+    async function updateLiveLocation() {
+        const locNameEl = document.getElementById('live-location-name');
+        const latEl = document.getElementById('live-latitude');
+        const lonEl = document.getElementById('live-longitude');
+        const weatherLocEl = document.getElementById('live-weather-loc');
+        const weatherDataEl = document.getElementById('live-weather-data');
+        const zoneTypeEl = document.getElementById('live-zone-type');
+        const zoneInfoEl = document.getElementById('live-zone-info');
+        const waterDistEl = document.getElementById('live-water-distance');
+        const updateBtn = document.getElementById('update-location-btn');
+        const locationBadge = document.getElementById('location-badge');
+
+        // BLOCK IF OFFLINE OR LIVE DATA DISABLED
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            locNameEl.innerText = "📡 Offline - Cached data only";
+            weatherDataEl.innerText = "No live data in offline mode";
+            weatherLocEl.innerText = "📡 OFFLINE";
+            zoneTypeEl.innerText = "Waiting for connection...";
+            zoneInfoEl.innerText = "Live updates disabled offline";
+            waterDistEl.innerText = "--";
+            updateBtn.disabled = true;
+            updateBtn.style.opacity = "0.5";
+            
+            // Update location badge
+            if (locationBadge) {
+                locationBadge.innerHTML = '📡 OFFLINE';
+                locationBadge.style.color = '#ff6b6b';
+                locationBadge.style.background = 'rgba(255, 107, 107, 0.2)';
+            }
+            return;
+        }
+
+        // Reset badge to online
+        if (locationBadge) {
+            locationBadge.innerHTML = '{{ trans["real_time"] }}';
+            locationBadge.style.color = '';
+            locationBadge.style.background = '';
+        }
+
+        locNameEl.innerText = "🔍 Detecting location...";
+        updateBtn.disabled = true;
+
+        if (!navigator.geolocation) {
+            locNameEl.innerText = "📍 GPS Not Supported";
+            updateBtn.disabled = false;
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+            try {
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                const accuracy = pos.coords.accuracy;
+
+                // Update coordinates
+                latEl.innerText = lat.toFixed(4);
+                lonEl.innerText = lon.toFixed(4);
+
+                // ONLY fetch if online and live data enabled
+                if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                    locNameEl.innerText = "📡 Connection lost";
+                    return;
+                }
+
+                // Get location name via Nominatim
+                try {
+                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&zoom=10`);
+                    const locData = await locRes.json();
+                    const city = locData.address.city || locData.address.town || locData.address.village || locData.address.county || "Your Area";
+                    const country = locData.address.country || "Unknown";
+                    locNameEl.innerText = `📍 ${city}, ${country}`;
+                    weatherLocEl.innerText = `📌 ${city}`;
+
+                    // Get weather data - ONLY IF ONLINE
+                    if (navigator.onLine && window.ALLOW_LIVE_DATA) {
+                        try {
+                            const weatherRes = await fetch(`https://wttr.in/${city}?format=j1`);
+                            if (weatherRes.ok) {
+                                const weatherJson = await weatherRes.json();
+                                const current = weatherJson.current_condition[0];
+                                const temp = current.temp_C;
+                                const desc = current.description;
+                                weatherDataEl.innerText = `${temp}°C - ${desc}`;
+                            }
+                        } catch (e) {
+                            weatherDataEl.innerText = "Weather unavailable";
+                        }
+                    } else {
+                        weatherDataEl.innerText = "📡 Offline";
+                    }
+                } catch (e) {
+                    console.log("Location API offline");
+                    locNameEl.innerText = "📡 Location API unavailable";
+                    return;
+                }
+
+                // Determine aquaculture zone suitability based on coordinates
+                const aquacultureZones = {
+                    tropical: { lat: [15, -15], lon: [-180, 180], name: "🌴 Tropical Zone", species: "Tilapia, Catfish, Shrimp" },
+                    subtropical: { lat: [15, 35], lon: [-180, 180], name: "🌊 Subtropical Zone", species: "Carp, Trout" },
+                    temperate: { lat: [35, 60], lon: [-180, 180], name: "❄️ Temperate Zone", species: "Salmon, Trout" }
+                };
+
+                let bestZone = "🌊 Coastal Zone";
+                let bestSpecies = "Multiple species suitable";
+
+                if (lat >= -15 && lat <= 15) {
+                    bestZone = "🌴 Tropical Zone";
+                    bestSpecies = "Tilapia, Shrimp, Catfish";
+                } else if (lat > 15 && lat <= 35) {
+                    bestZone = "🌊 Subtropical Zone";
+                    bestSpecies = "Carp, Barramundi";
+                } else if (lat > 35) {
+                    bestZone = "❄️ Temperate Zone";
+                    bestSpecies = "Salmon, Trout";
+                }
+
+                zoneTypeEl.innerText = bestZone;
+                zoneInfoEl.innerText = `Suitable: ${bestSpecies}`;
+
+                // Estimate distance to nearest water body (mock calculation)
+                // In real scenario, this would use a water body database
+                const mockDistance = Math.floor(Math.random() * 50) + 2;
+                waterDistEl.innerText = `${mockDistance} km`;
+
+                updateBtn.disabled = false;
+                updateBtn.style.background = "rgba(0, 255, 136, 0.2)";
+                updateBtn.style.color = "#00ff88";
+                updateBtn.style.borderColor = "#00ff88";
+
+            } catch (e) {
+                console.error("Location update error:", e);
+                locNameEl.innerText = "Error retrieving location details";
+                updateBtn.disabled = false;
+            }
+        }, (err) => {
+            locNameEl.innerText = "📍 Enable GPS for location";
+            console.error("Geolocation error:", err);
+            updateBtn.disabled = false;
+        }, { timeout: 10000, enableHighAccuracy: true });
+    }
+
+    async function updateWeather() {
+        // BLOCK IF OFFLINE
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            return;
+        }
+
+        const weatherEl = document.getElementById('live-weather');
+        const locEl = document.getElementById('weather-loc');
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (pos) => {
+                // Check again before fetching
+                if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                    locEl.innerText = "📡 Offline";
+                    return;
+                }
+
+                const lat = pos.coords.latitude;
+                const lon = pos.coords.longitude;
+                locEl.innerText = "📍 Localizing...";
+
+                try {
+                    const locRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+                    const locData = await locRes.json();
+                    const city = locData.address.city || locData.address.town || locData.address.village || "Your Area";
+                    locEl.innerText = `📍 ${city}`;
+
+                    const weatherRes = await fetch(`https://wttr.in/${city}?format=%t+%C`);
+                    const weatherText = await weatherRes.text();
+                    weatherEl.innerText = weatherText;
+                } catch (e) {
+                    locEl.innerText = "📍 Location Found";
+                }
+            }, (err) => {
+                locEl.innerHTML = "📍 Enable GPS for Live Weather";
+                locEl.style.color = "var(--primary)";
+                locEl.style.cursor = "pointer";
+                locEl.onclick = () => updateWeather();
+            }, { timeout: 10000 });
+        } else {
+            locEl.innerText = "📍 GPS Not Supported";
+        }
+    }
+
+    async function updateAIStats() {
+        // BLOCK IF OFFLINE
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            console.log("Live stats disabled: offline mode");
+            showSensorsOffline();
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/realtime');
+            const data = await res.json();
+
+            // Update badges to show ONLINE
+            const sensorsBadge = document.getElementById('sensors-badge');
+            if (sensorsBadge) {
+                sensorsBadge.innerHTML = '{{ trans["sensors_active"] }}';
+                sensorsBadge.style.color = '';
+                sensorsBadge.style.background = '';
+            }
+
+            // Water Quality
+            updateField('rt-temp', data.temp + '°C');
+            document.getElementById('rt-temp-status').innerText = data.temp > 30 ? (AQUA_TRANS['high'] || 'High') : (AQUA_TRANS['optimal'] || 'Optimal');
+
+            updateField('rt-ph', data.ph);
+            document.getElementById('rt-ph-status').innerText = (data.ph >= 7.5 && data.ph <= 8.5) ? (AQUA_TRANS['balanced'] || 'Balanced') : 'Check pH';
+
+            updateField('rt-do', data.do + ' mg/L');
+            document.getElementById('rt-do-status').innerText = data.do > 5 ? (AQUA_TRANS['high'] || 'High') : 'Critical';
+
+            updateField('rt-ammonia', data.ammonia + ' mg/L');
+            document.getElementById('rt-ammonia-status').innerText = data.ammonia < 0.2 ? (AQUA_TRANS['safe'] || 'Safe') : 'Warning';
+
+            updateField('rt-turbidity', data.turbidity + ' NTU');
+            updateField('rt-salinity', data.salinity + ' ppt');
+
+            // Biological Tracker
+            updateField('rt-health', data.health_index + '%');
+            document.getElementById('rt-health-bar').style.width = data.health_index + '%';
+
+            updateField('rt-fcr', data.fcr);
+            updateField('rt-growth', data.growth_rate);
+            updateField('rt-harvest', data.harvest_days + ' Days');
+
+            // Risk Center
+            updateField('rt-crash', data.oxygen_crash_prob + '%');
+            document.getElementById('rt-crash-status').innerText = data.oxygen_crash_prob > 8 ? (AQUA_TRANS['high_alert'] || 'HIGH ALERT') : (AQUA_TRANS['stable'] ? AQUA_TRANS['stable'].toUpperCase() : 'STABLE');
+            document.getElementById('rt-crash-status').style.color = data.oxygen_crash_prob > 8 ? '#ff0055' : '#00ff88';
+
+            updateField('rt-disease-risk', data.disease_risk + '%');
+
+            // AI Insights
+            updateField('rt-feed', data.next_feed + 'm');
+            updateField('rt-aerators', data.aerators);
+            updateField('rt-power', data.power_usage);
+
+            // Console Logs
+            const logs = document.getElementById('console-logs');
+            const messages = [
+                `> ${AQUA_TRANS['syncing'] || 'Syncing telemetry...'}`,
+                `> AI predicting growth slope at +${data.growth_rate} g/day`,
+                `> Aerator load balanced to ${data.power_usage} kWh`,
+                `> Analyzing turbidity patterns... Water clarity ${AQUA_TRANS['stable'] || 'stable'}`,
+                `> Bio-security check: No abnormal viral signatures detected`,
+                `> FCR Optimization: Current efficiency at ${data.fcr}`
+            ];
+            const msg = document.createElement('div');
+            msg.className = "data-update";
+            msg.innerText = messages[Math.floor(Math.random() * messages.length)];
+            logs.appendChild(msg);
+            if (logs.childElementCount > 5) logs.removeChild(logs.firstElementChild);
+            logs.scrollTop = logs.scrollHeight;
+
+        } catch (e) {
+            console.error("AI Stats Error:", e);
+            showSensorsOffline();
+        }
+    }
+
+    function showSensorsOffline() {
+        // Update sensors badge to show OFFLINE
+        const sensorsBadge = document.getElementById('sensors-badge');
+        if (sensorsBadge) {
+            sensorsBadge.innerHTML = '📡 OFFLINE';
+            sensorsBadge.style.color = '#ff6b6b';
+            sensorsBadge.style.background = 'rgba(255, 107, 107, 0.2)';
+        }
+
+        // Show offline indicator on all sensor values
+        updateField('rt-temp', '-- 📡');
+        updateField('rt-ph', '-- 📡');
+        updateField('rt-do', '-- 📡');
+        updateField('rt-ammonia', '-- 📡');
+        updateField('rt-turbidity', '-- 📡');
+        updateField('rt-salinity', '-- 📡');
+        
+        // Status messages
+        document.getElementById('rt-temp-status').innerText = '📡 OFFLINE';
+        document.getElementById('rt-temp-status').style.color = '#ff6b6b';
+        
+        document.getElementById('rt-ph-status').innerText = '📡 OFFLINE';
+        document.getElementById('rt-ph-status').style.color = '#ff6b6b';
+        
+        document.getElementById('rt-do-status').innerText = '📡 OFFLINE';
+        document.getElementById('rt-do-status').style.color = '#ff6b6b';
+        
+        document.getElementById('rt-ammonia-status').innerText = '📡 OFFLINE';
+        document.getElementById('rt-ammonia-status').style.color = '#ff6b6b';
+
+        // Biological tracker
+        updateField('rt-health', '-- 📡');
+        updateField('rt-fcr', '-- 📡');
+        updateField('rt-growth', '-- 📡');
+        updateField('rt-harvest', '-- 📡');
+
+        // Risk center
+        updateField('rt-crash', '-- 📡');
+        document.getElementById('rt-crash-status').innerText = '📡 OFFLINE';
+        document.getElementById('rt-crash-status').style.color = '#ff6b6b';
+
+        updateField('rt-disease-risk', '-- 📡');
+
+        // AI Insights
+        updateField('rt-feed', '-- 📡');
+        updateField('rt-aerators', '-- 📡');
+        updateField('rt-power', '-- 📡');
+    }
+
+    function updateField(id, val) {
+        const el = document.getElementById(id);
+        if (el && el.innerText !== val.toString()) {
+            el.innerText = val;
+            el.classList.remove('data-update');
+            void el.offsetWidth; // Trigger reflow
+            el.classList.add('data-update');
+        }
+    }
+
+    let currentMarketIndex = 0;
+    let marketData = [];
+
+    async function updateMarketPrices() {
+        // BLOCK IF OFFLINE - DO NOT FETCH LIVE MARKET DATA
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            console.log("📡 Market prices disabled: offline mode");
+            const priceEl = document.getElementById('market-product-price');
+            const nameEl = document.getElementById('market-product-name');
+            const trendEl = document.getElementById('market-product-trend');
+            if (priceEl && nameEl && trendEl) {
+                nameEl.innerText = '📡 OFFLINE MODE';
+                priceEl.innerHTML = 'Prices unavailable<span style="font-size: 0.8rem; color: var(--text-muted);">/kg</span>';
+                trendEl.innerText = 'Waiting for connection...';
+                trendEl.style.color = '#ff0055';
+            }
+            return;
+        }
+        try {
+            const res = await fetch('/api/market_live');
+            marketData = await res.json();
+            rotateMarketDisplay();
+        } catch (e) {
+            console.error("Market Price Sync Error:", e);
+        }
+    }
+
+    function rotateMarketDisplay() {
+        if (!marketData.length) return;
+        const item = marketData[currentMarketIndex];
+        const nameEl = document.getElementById('market-product-name');
+        const priceEl = document.getElementById('market-product-price');
+        const trendEl = document.getElementById('market-product-trend');
+
+        if (nameEl && priceEl && trendEl) {
+            const emoji = item.type === 'prawn' ? '🦐' : item.type === 'fish' ? '🐟' : '🦀';
+            const typeLabel = (item.type === 'prawn' ? (AQUA_TRANS['prawn'] || 'PRAWN') : (item.type === 'fish' ? (AQUA_TRANS['fish'] || 'FISH') : (AQUA_TRANS['crab'] || 'CRAB'))).toUpperCase();
+            nameEl.innerText = `${emoji} LOCAL ${item.species.toUpperCase()} (${typeLabel}) PRICE`;
+            // Standard conversion for simulation: USD price * 83.0
+            const inrPrice = (item.price * 83.0).toFixed(2);
+            priceEl.innerHTML = `₹${inrPrice}<span style="font-size: 1rem; color: var(--text-muted);">/kg</span>`;
+
+            const changeTag = item.change >= 0 ? `▲ ${item.change}% (High Demand)` : `▼ ${Math.abs(item.change)}% (${AQUA_TRANS['stable'] || 'Stable'})`;
+            trendEl.innerText = changeTag;
+            trendEl.style.color = item.change >= 0 ? '#00ff88' : '#ff9900';
+
+            currentMarketIndex = (currentMarketIndex + 1) % marketData.length;
+        }
+    }
+
+    // Auto-trigger on load
+    window.addEventListener('load', () => {
+        updateWeather();
+        updateLiveLocation();
+        updateAIStats();
+        updateMarketPrices();
+        setInterval(updateAIStats, 3000);
+        setInterval(updateMarketPrices, 10000); // Fetch fresh data every 10s
+        setInterval(updateLiveLocation, 60000); // Update location every 60s
+        setInterval(rotateMarketDisplay, 5000); // Rotate species every 5s
+    });
+
+    // Listen for online/offline events to update all sensors
+    window.addEventListener('online', () => {
+        console.log("Back online - updating all sensors");
+        updateWeather();
+        updateLiveLocation();
+        updateAIStats();
+        updateMarketPrices();
+    });
+
+    window.addEventListener('offline', () => {
+        console.log("Going offline - showing offline on all sensors");
+        showSensorsOffline();
+        
+        // Update location badge
+        const locationBadge = document.getElementById('location-badge');
+        if (locationBadge) {
+            locationBadge.innerHTML = '📡 OFFLINE';
+            locationBadge.style.color = '#ff6b6b';
+            locationBadge.style.background = 'rgba(255, 107, 107, 0.2)';
+        }
+    });
+</script>
+
+<div class="grid" style="margin-top: 5rem;">
+    <div class="app-card" style="padding: 3rem;">
+        <span class="app-emoji emo">🧪</span>
+        <h3 style="margin-bottom: 1rem;">{{ trans['feat_disease'] }}</h3>
+        <p style="margin-bottom: 2.5rem; color: var(--text-muted); font-size: 1.2rem;">{{ trans['feat_disease_desc'] }}
+        </p>
+        <a href="/farmer/disease?lang={{ lang }}" class="app-btn-large"
+            style="text-decoration: none; padding: 1.5rem;">{{ trans['btn_risk'] }}</a>
+    </div>
+    <div class="app-card" style="padding: 3rem;">
+        <span class="app-emoji emo">📍</span>
+        <h3 style="margin-bottom: 1rem;">{{ trans['feat_loc'] }}</h3>
+        <p style="margin-bottom: 2.5rem; color: var(--text-muted); font-size: 1.2rem;">{{ trans['feat_loc_desc'] }}</p>
+        <a href="/location?lang={{ lang }}" class="app-btn-large" style="text-decoration: none; padding: 1.5rem;">{{
+            trans['btn_analyze'] }}</a>
+    </div>
+    <div class="app-card" style="padding: 3rem;">
+        <span class="app-emoji emo">📈</span>
+        <h3 style="margin-bottom: 1rem;">{{ trans['feat_yield'] }}</h3>
+        <p style="margin-bottom: 2.5rem; color: var(--text-muted); font-size: 1.2rem;">{{ trans['feat_yield_desc'] }}
+        </p>
+        <a href="/farmer/yield?lang={{ lang }}" class="app-btn-large" style="text-decoration: none; padding: 1.5rem;">{{
+            trans['btn_yield'] }}</a>
+    </div>
+</div>
+{% endblock %}

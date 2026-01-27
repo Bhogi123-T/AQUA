@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AquaSphere | Smart Aquaculture</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0b1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="{{ url_for('static', filename='offline-manager.js') }}"></script>
+    <script id="aqua-trans-data" type="application/json">{{ trans | tojson | safe }}</script>
+    <script>
+        window.AQUA_TRANS = JSON.parse(document.getElementById('aqua-trans-data').textContent);
+    </script>
+    <style>
+        .lang-select {
+            margin-left: 1rem;
+            background: #0f172a;
+            border: 2px solid var(--glass-border);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .lang-select option {
+            background: #0f172a;
+            color: white;
+        }
+    </style>
+</head>
+
+<body class="aquarium-bg">
+    <!-- LIVING AQUARIUM BACKGROUND (Moving Creatures) -->
+    <div class="sea-life-container"
+        style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; pointer-events: none; overflow: hidden; opacity: 0.2;">
+        <div class="swimmer" style="--d: 20s; --top: 15%; --size: 4rem;">🐟</div>
+        <div class="swimmer" style="--d: 25s; --top: 45%; --size: 3.5rem; animation-delay: -5s;">🦐</div>
+        <div class="swimmer" style="--d: 30s; --top: 75%; --size: 4.5rem; animation-delay: -10s;">🦀</div>
+        <div class="swimmer" style="--d: 22s; --top: 30%; --size: 3rem; animation-delay: -15s;">🐟</div>
+        <div class="swimmer" style="--d: 28s; --top: 60%; --size: 4rem; animation-delay: -8s;">🦐</div>
+    </div>
+
+    <!-- HAMBURGER MENU (High-End Morphing Icon) -->
+    <div id="hamburger" onclick="toggleSidebar()"
+        style="position: fixed; top: 1.5rem; left: 1.5rem; width: 4.5rem; height: 4.5rem; background: var(--primary); border-radius: 1.4rem; display: flex; align-items: center; justify-content: center; z-index: 3000; cursor: pointer; box-shadow: 0 10px 40px rgba(0,210,255,0.4); transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);">
+        <div class="ham-inner">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <nav id="sidebar"
+        style="position: fixed; left: 0; top: 0; bottom: 0; width: 320px; height: 100vh; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; padding: 2rem; border-right: 1px solid var(--glass-border); border-bottom: none; background: rgba(11, 17, 32, 0.98); backdrop-filter: blur(40px); z-index: 2500; overflow-x: hidden;">
+
+        <div style="text-align: center; margin-bottom: 4rem; padding-top: 5rem;">
+            <a href="/?lang={{ lang }}" class="logo" style="text-decoration: none;">
+                <img src="/static/logo.png" alt="AquaSphere Logo"
+                    style="width: 120px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));">
+            </a>
+            <!-- Connection Status Badge -->
+            <div id="connection-badge" class="live-pulse-badge" style="display: block; width: fit-content; margin: 10px auto; transition: all 0.3s ease;">
+                <span id="connection-icon" class="emo">🌐</span> 
+                <span id="connection-text">ONLINE</span>
+            </div>
+        </div>
+
+        <div class="nav-links"
+            style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; padding-right: 5px;">
+
+            <div class="nav-category">Farmer Operations</div>
+            <a href="/farmer?lang={{ lang }}" class="nav-item">{{ trans['nav_farmer'] }}</a>
+            <a href="/buyer?lang={{ lang }}" class="nav-item">{{ trans['nav_market'] }} Panel</a>
+            <a href="/market?lang={{ lang }}" class="nav-item">{{ trans['nav_market_global'] }}</a>
+
+            <div class="nav-category" style="margin-top: 1.5rem;">AI Technical Suite</div>
+            <a href="/location?lang={{ lang }}" class="nav-item">{{ trans['nav_loc'] }}</a>
+            <a href="/logistics?lang={{ lang }}" class="nav-item">{{ trans['nav_logistics'] }}</a>
+            <a href="/districts?lang={{ lang }}" class="nav-item">{{ trans['nav_districts'] }}</a>
+            <a href="/technicians?lang={{ lang }}" class="nav-item">{{ trans['nav_tech'] }}</a>
+
+            <div class="nav-category" style="margin-top: 1.5rem;">Resources & Control</div>
+            <a href="/knowledge?lang={{ lang }}" class="nav-item">{{ trans['nav_knowledge'] or '📚 Library' }}</a>
+            <a href="/settings?lang={{ lang }}" class="nav-item">⚙️ {{ trans['nav_settings'] or 'Settings' }}</a>
+        </div>
+
+        <div
+            style="margin-top: 2rem; border-top: 1px solid var(--glass-border); padding-top: 2rem; display: flex; flex-direction: column; gap: 1.5rem; align-items: center;">
+            <div style="width: 100%;">
+                {% if session.get('user') %}
+                <a href="/logout" class="app-btn-large"
+                    style="padding: 0.8rem; font-size: 0.9rem; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; border-radius: 1.4rem; background: rgba(255, 0, 85, 0.1); color: #ff0055; border: 1px solid rgba(255, 0, 85, 0.2);">🚪
+                    {{ trans['logout'] }}</a>
+                {% else %}
+                <a href="/login?lang={{ lang }}" class="app-btn-large"
+                    style="padding: 1rem; font-size: 1rem; text-decoration: none; display: flex; align-items: center; justify-content: center; width: 100%; border-radius: 1.4rem; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);">🔑
+                    {{ trans['login'] }}</a>
+                {% endif %}
+            </div>
+
+            <div style="width: 100%;">
+                <select class="lang-select" onchange="location.href='?lang='+this.value"
+                    style="width: 100%; margin: 0; font-size: 0.85rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 1.2rem; padding: 12px;">
+                    <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+                    <option value="hi" {% if lang=='hi' %}selected{% endif %}>हिन्दी (Hindi)</option>
+                    <option value="te" {% if lang=='te' %}selected{% endif %}>తెలుగు (Telugu)</option>
+                    <option value="ta" {% if lang=='ta' %}selected{% endif %}>தமிழ் (Tamil)</option>
+                    <option value="bn" {% if lang=='bn' %}selected{% endif %}>বাংলা (Bengali)</option>
+                    <option value="es" {% if lang=='es' %}selected{% endif %}>Español (Spanish)</option>
+                    <option value="fr" {% if lang=='fr' %}selected{% endif %}>Français (French)</option>
+                    <option value="it" {% if lang=='it' %}selected{% endif %}>Italiano (Italian)</option>
+                    <option value="pt" {% if lang=='pt' %}selected{% endif %}>Português (Portuguese)</option>
+                    <option value="zh" {% if lang=='zh' %}selected{% endif %}>中文 (Chinese)</option>
+                    <option value="ja" {% if lang=='ja' %}selected{% endif %}>日本語 (Japanese)</option>
+                    <option value="vi" {% if lang=='vi' %}selected{% endif %}>Tiếng Việt (Vietnamese)</option>
+                    <option value="id" {% if lang=='id' %}selected{% endif %}>Bahasa Indonesia</option>
+                    <option value="ar" {% if lang=='ar' %}selected{% endif %}>العربية (Arabic)</option>
+                    <option value="sw" {% if lang=='sw' %}selected{% endif %}>Kiswahili (Swahili)</option>
+                    <option value="ha" {% if lang=='ha' %}selected{% endif %}>Hausa</option>
+                    <option value="mi" {% if lang=='mi' %}selected{% endif %}>Te Reo Māori</option>
+                </select>
+            </div>
+            <div style="width: 100%; margin-top: 1rem;">
+                <button onclick="installApp()" class="app-btn-large"
+                    style="padding: 1rem; font-size: 0.9rem; background: linear-gradient(135deg, #00d2ff, #00ff88); color: #000; border: none; font-weight: 900; box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);">
+                    📲 INSTALL APP
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="live-ticker">
+        <div class="ticker-content">
+            <span class="ticker-item" id="ticker-live-status"><span class="live-pulse"></span> <strong id="ticker-live-text">{{ trans['nav_live'] }}:</strong></span>
+            <span class="ticker-item" id="user-location">📍 {{ trans['ticker_loc_detecting'] }}</span>
+            <span class="ticker-item">🦐 Vannamei: $6.3/kg (+0.5%)</span>
+            <span class="ticker-item">🐟 Tilapia: $2.9/kg</span>
+            <span class="ticker-item">🦀 Mud Crab: $18.5/kg</span>
+            <span class="ticker-item">🌡️ Water: 28.6°C</span>
+            <span class="ticker-item">🚛 Logistics: TR-441 Tracking Active</span>
+            <span class="ticker-item">👨‍🔧 8 Experts Online</span>
+        </div>
+    </div>
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()"
+        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); z-index: 1400;">
+    </div>
+
+    <script>
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                const lat = position.coords.latitude.toFixed(4);
+                const lon = position.coords.longitude.toFixed(4);
+                document.getElementById('user-location').innerHTML = `📍 Location: ${lat}, ${lon} (Verified)`;
+                document.getElementById('user-location').style.color = '#00ff88';
+            }, error => {
+                document.getElementById('user-location').innerText = '📍 ' + "{{ trans['ticker_loc_standard'] }}";
+            });
+        }
+    </script>
+
+    <main class="container" style="margin-left: 280px; width: calc(100% - 280px); max-width: none;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages" style="margin-bottom: 2rem;">
+            {% for category, message in messages %}
+            <div class="app-card"
+                style="border: 2px solid var(--primary); padding: 1.5rem; margin-bottom: 1rem; background: rgba(0, 210, 255, 0.1); text-align: left;">
+                <p style="color: var(--primary); font-weight: 800; margin: 0;">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer
+        style="text-align: center; padding: 2rem 0 8rem; opacity: 0.5; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
+        {{ trans['copyright'] }}
+    </footer>
+
+
+    <!-- AI Chatbot (Feature 12) -->
+    <div id="aquabot-launcher"
+        style="position: fixed; bottom: 85px; right: 2rem; width: 4rem; height: 4rem; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4); z-index: 3000;"
+        onclick="toggleBot()">
+        🤖
+    </div>
+
+    <div id="aquabot-window"
+        style="display: none; position: fixed; bottom: 170px; right: 2rem; width: 320px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(30px); border: 1px solid var(--primary); border-radius: 2rem; padding: 2rem; z-index: 3000; box-shadow: 0 20px 80px rgba(0,0,0,0.8);">
+        <h3 style="margin-top:0; color: var(--primary); font-family: 'Outfit', sans-serif;">{{ trans['bot_title'] }}
+        </h3>
+        <div id="bot-chat"
+            style="height: 200px; overflow-y: auto; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            <p><strong>{{ trans['bot_title'] }}:</strong> {{ trans['bot_hello'] }}</p>
+        </div>
+        <input type="text" id="bot-input" class="app-input" placeholder="{{ trans['bot_placeholder'] }}"
+            style="margin-bottom: 1rem;" onkeypress="if(event.key==='Enter') sendBotMessage()">
+        <button onclick="sendBotMessage()" class="app-btn-large" style="padding: 0.5rem; font-size: 0.9rem;">{{
+            trans['bot_send'] }}</button>
+    </div>
+
+    <script>
+        function toggleBot() {
+            const win = document.getElementById('aquabot-window');
+            win.style.display = win.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function sendBotMessage() {
+            const input = document.getElementById('bot-input');
+            const chat = document.getElementById('bot-chat');
+            if (!input.value) return;
+
+            const userMsg = input.value;
+            chat.innerHTML += `<p style="color:white; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;"><strong>You:</strong> ${userMsg}</p>`;
+            input.value = '';
+
+            // Loading state
+            chat.innerHTML += `<p id="bot-loading"><strong>AquaBot:</strong> Thinking...</p>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMsg })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('bot-loading').remove();
+                    chat.innerHTML += `<p style="color:var(--primary); background: rgba(0,210,255,0.05); padding: 10px; border-radius: 10px;"><strong>AquaBot:</strong> ${data.reply}</p>`;
+                    chat.scrollTop = chat.scrollHeight;
+                });
+        }
+
+        function toggleSidebar() {
+            document.body.classList.toggle('sidebar-open');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isOpen = document.body.classList.contains('sidebar-open');
+            overlay.style.display = isOpen ? 'block' : 'none';
+        }
+
+        // 🧠 Precise Navigation Highlighting
+        window.addEventListener('load', () => {
+            const path = window.location.pathname;
+            document.querySelectorAll('.nav-item').forEach(link => {
+                const href = link.getAttribute('href').split('?')[0];
+                if (href === path || (path !== '/' && href !== '/' && path.startsWith(href))) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+
+    <!-- Mobile Connect Launcher -->
+    <div id="mobile-launcher"
+        style="position: fixed; bottom: 20px; right: 2rem; width: 4rem; height: 4rem; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4); z-index: 3000;"
+        onclick="toggleMobileModal()">
+        📱
+    </div>
+
+    <!-- Mobile Connect Modal -->
+    <div id="mobile-modal"
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--primary); border-radius: 2.5rem; padding: 2.5rem; z-index: 2000; box-shadow: 0 30px 100px rgba(0,0,0,0.8); text-align: center;">
+        <h2 style="color: var(--primary); margin-bottom: 1rem;">📱 Mobile Access</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Scan the QR code or use the link
+            below to open on your phone</p>
+
+        <div id="qrcode-container"
+            style="background: white; padding: 1rem; border-radius: 1rem; display: inline-block; margin-bottom: 2rem;">
+            <div id="qrcode"></div>
+        </div>
+
+        <div style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 2rem;">
+            <a href="{{ local_url }}" target="_blank" id="mobile-link"
+                style="color: var(--accent); font-weight: 800; text-decoration: none; word-break: break-all; font-size: 0.9rem; background: rgba(0,255,136,0.1); padding: 10px 20px; border-radius: 1rem; border: 1px solid rgba(0,255,136,0.2);">
+                🔗 <span id="share-url-text">{{ local_url }}</span>
+            </a>
+            <button onclick="copyShareLink()" id="copy-btn"
+                style="background: var(--primary); border: none; padding: 10px; border-radius: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
+                📋
+            </button>
+        </div>
+
+        <div
+            style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0, 255, 136, 0.1)); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2.5rem; text-align: left; border: 1px solid var(--primary);">
+            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; font-weight: 800;">🚀 PERMANENT GLOBAL LINK
+            </p>
+            <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">To get a
+                link like <strong>https://aquasphere.render.com</strong> that works on <u>any network</u> in the world,
+                use a free Cloud host:</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
+                <a href="https://render.com" target="_blank"
+                    style="flex: 1; background: #fff; color: #000; padding: 8px; border-radius: 0.8rem; text-align: center; text-decoration: none; font-size: 0.7rem; font-weight: 800;">Render
+                    (Free)</a>
+                <a href="https://vercel.com" target="_blank"
+                    style="flex: 1; background: #000; color: #fff; padding: 8px; border-radius: 0.8rem; text-align: center; text-decoration: none; font-size: 0.7rem; font-weight: 800; border: 1px solid #333;">Vercel
+                    (Fast)</a>
+            </div>
+            <p style="font-size: 0.7rem; color: var(--accent); font-style: italic;">I have already prepared your project
+                for these! Just upload your folder there.</p>
+        </div>
+
+        <button onclick="toggleMobileModal()" class="app-btn-large"
+            style="padding: 1rem; font-size: 1rem;">Close</button>
+    </div>
+
+    <div id="modal-overlay" onclick="toggleMobileModal()"
+        style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); z-index: 1999; backdrop-filter: blur(5px);">
+    </div>
+
+    <script>
+        let qrGenerated = false;
+        function toggleMobileModal() {
+            const modal = document.getElementById('mobile-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const isVisible = modal.style.display === 'block';
+
+            modal.style.display = isVisible ? 'none' : 'block';
+            overlay.style.display = isVisible ? 'none' : 'block';
+
+            if (!isVisible && !qrGenerated) {
+                new QRCode(document.getElementById("qrcode"), {
+                    text: "{{ local_url }}",
+                    width: 200,
+                    height: 200,
+                    colorDark: "#0f172a",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                qrGenerated = true;
+            }
+        }
+
+        function copyShareLink() {
+            const url = document.getElementById('share-url-text').innerText;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copy-btn');
+                const oldContent = btn.innerHTML;
+                btn.innerHTML = '✅';
+                btn.style.background = 'var(--accent)';
+                setTimeout(() => {
+                    btn.innerHTML = oldContent;
+                    btn.style.background = 'var(--primary)';
+                }, 2000);
+            });
+        }
+    </script>
+
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register("{{ url_for('static', filename='sw.js') }}")
+                    .then(reg => console.log('Service Worker Registered'))
+                    .catch(err => console.log('SW Registration Failed', err));
+            });
+        }
+    </script>
+</body>
+
+</html>

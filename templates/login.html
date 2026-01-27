@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="margin: 4rem auto; max-width: 500px;">
+    <span class="app-emoji">🔐</span>
+    <h2 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 1rem;">{{ trans['login'] }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2.5rem;">{{ trans['access_dash'] }}</p>
+
+    {% if error %}
+    <p style="color: #ff0055; margin-bottom: 2rem; font-weight: 700;">⚠️ {{ error }}</p>
+    {% endif %}
+
+    <form action="/login" method="POST" class="app-form">
+        <input type="hidden" name="step" value="{{ step }}">
+
+        {% if step == 1 %}
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['phone_email'] }}</span>
+            <input type="text" name="identifier" class="app-input" placeholder="8888888888 or bhogi@example.com"
+                required>
+        </div>
+        <button class="app-btn-large" style="width: 100%;">{{ trans['get_otp'] }}</button>
+        {% else %}
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['otp_sent_to'] }} {{ identifier }}</span>
+            <input type="hidden" name="identifier" value="{{ identifier }}">
+            <input type="text" name="otp" class="app-input" placeholder="Enter 6-digit code" required maxlength="6">
+        </div>
+        <button class="app-btn-large" style="width: 100%;">{{ trans['verify_signin'] }}</button>
+        <p style="margin-top: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            {{ trans['didnt_get'] }} <a href="/login?lang={{ lang }}" style="color: var(--primary);">{{
+                trans['try_again'] }}</a>
+        </p>
+        {% endif %}
+    </form>
+
+    <p style="margin-top: 2rem; color: var(--text-muted);">
+        {{ trans['no_account'] }} <a href="/signup?lang={{ lang }}"
+            style="color: var(--primary); font-weight: 700; text-decoration: none;">{{ trans['signup'] }}</a>
+    </p>
+</div>
+{% endblock %}
