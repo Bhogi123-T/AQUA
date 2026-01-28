@@ -497,7 +497,7 @@ def settings():
 @app.route("/")
 def home():
     trans, lang = get_trans()
-    
+
     # FETCH REAL LIVE DATA (Weather) - Client will handle offline state
     # This is just for initial page load when server receives request
     weather_info = "Loading..."
@@ -508,7 +508,6 @@ def home():
             weather_info = res.text
     except:
         weather_info = "28°C Clear"
-
     live_stats = {
         "weather": weather_info,
         "market_trend": "+4.2% Today",
