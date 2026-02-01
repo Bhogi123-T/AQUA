@@ -45,6 +45,7 @@ def save_json(filepath, data):
 USERS_DB = load_json(USERS_FILE, {})
 APP_CONFIG = load_json(CONFIG_FILE, {
     "DEMO_MODE": False,
+    "PRODUCTION_URL": os.getenv('PRODUCTION_URL', 'https://aqua-ttiu.onrender.com'),
     "MAIL_SERVER": os.getenv('MAIL_SERVER', 'smtp.gmail.com'),
     "MAIL_PORT": int(os.getenv('MAIL_PORT', 587)),
     "MAIL_USE_TLS": os.getenv('MAIL_USE_TLS', 'True') == 'True',
@@ -157,32 +158,32 @@ def send_otp(identifier, otp):
             return False, "err_sms_not_config"
 
 # Load Models
-disease_model = joblib.load("Models/disease.pkl")
-location_model = joblib.load("Models/location.pkl")
-feed_model = joblib.load("Models/feed.pkl")
-yield_model = joblib.load("Models/yield.pkl")
-buyer_model = joblib.load("Models/buyer.pkl")
-stocking_model = joblib.load("Models/stocking.pkl")
-seed_model = joblib.load("Models/seed.pkl")
+disease_model = joblib.load("models/disease.pkl")
+location_model = joblib.load("models/location.pkl")
+feed_model = joblib.load("models/feed.pkl")
+yield_model = joblib.load("models/yield.pkl")
+buyer_model = joblib.load("models/buyer.pkl")
+stocking_model = joblib.load("models/stocking.pkl")
+seed_model = joblib.load("models/seed.pkl")
 
 # Load Encoders
-le_country = joblib.load("Models/le_country.pkl")
-le_state = joblib.load("Models/le_state.pkl")
-le_climate = joblib.load("Models/le_climate.pkl")
-le_aqua = joblib.load("Models/le_aqua.pkl")
-le_species_loc = joblib.load("Models/le_species_location.pkl")
-le_species_feed = joblib.load("Models/le_species_feed.pkl")
-le_feed = joblib.load("Models/le_feed.pkl")
-le_species_yield = joblib.load("Models/le_species_yield.pkl")
-le_country_buyer = joblib.load("Models/le_country_buyer.pkl")
-le_species_buyer = joblib.load("Models/le_species_buyer.pkl")
-le_grade_buyer = joblib.load("Models/le_grade_buyer.pkl")
-le_species_stock = joblib.load("Models/le_species_stock.pkl")
-le_soil = joblib.load("Models/le_soil.pkl")
-le_water_source = joblib.load("Models/le_water_source.pkl")
-le_season_stock = joblib.load("Models/le_season_stock.pkl")
-le_country_seed = joblib.load("Models/le_country_seed.pkl")
-le_species_seed_chk = joblib.load("Models/le_species_seed_chk.pkl")
+le_country = joblib.load("models/le_country.pkl")
+le_state = joblib.load("models/le_state.pkl")
+le_climate = joblib.load("models/le_climate.pkl")
+le_aqua = joblib.load("models/le_aqua.pkl")
+le_species_loc = joblib.load("models/le_species_location.pkl")
+le_species_feed = joblib.load("models/le_species_feed.pkl")
+le_feed = joblib.load("models/le_feed.pkl")
+le_species_yield = joblib.load("models/le_species_yield.pkl")
+le_country_buyer = joblib.load("models/le_country_buyer.pkl")
+le_species_buyer = joblib.load("models/le_species_buyer.pkl")
+le_grade_buyer = joblib.load("models/le_grade_buyer.pkl")
+le_species_stock = joblib.load("models/le_species_stock.pkl")
+le_soil = joblib.load("models/le_soil.pkl")
+le_water_source = joblib.load("models/le_water_source.pkl")
+le_season_stock = joblib.load("models/le_season_stock.pkl")
+le_country_seed = joblib.load("models/le_country_seed.pkl")
+le_species_seed_chk = joblib.load("models/le_species_seed_chk.pkl")
 
 # Global Aquaculture Regional Database
 GLOBAL_AQUA_REGIONS = {
@@ -516,6 +517,44 @@ def home():
     }
     
     return render_template("index.html", trans=trans, lang=lang, live_stats=live_stats)
+
+@app.route("/landing")
+def landing_redirect():
+    """Direct redirect to production - pure production access"""
+    return render_template("landing_redirect.html")
+
+@app.route("/global-link")
+def global_link():
+    """Mobile global access link with QR code and scanner"""
+    trans, lang = get_trans()
+    
+    # Use production URL from config
+    production_url = APP_CONFIG.get("PRODUCTION_URL", "https://aqua-ttiu.onrender.com")
+    global_link_url = f"{production_url}/?lang={lang}"
+    
+    return render_template("global_link.html", 
+                         trans=trans, 
+                         lang=lang, 
+                         global_link=global_link_url)
+
+@app.route("/mobile-scanner")
+def mobile_scanner():
+    """Fast mobile-optimized QR scanner and link share"""
+    trans, lang = get_trans()
+    
+    # Use production URL from config
+    production_url = APP_CONFIG.get("PRODUCTION_URL", "https://aqua-ttiu.onrender.com")
+    global_link_url = f"{production_url}/?lang={lang}"
+    
+    return render_template("mobile_scanner.html", 
+                         trans=trans, 
+                         lang=lang, 
+                         global_link=global_link_url)
+
+@app.route("/direct-access")
+def direct_access():
+    """Direct mobile access to production - pure production link with QR scanner"""
+    return render_template("direct_access.html")
 
 @app.route("/farmer")
 def farmer_hub():
@@ -1274,7 +1313,7 @@ def get_dataset(dataset_name):
     """Endpoint to serve datasets for offline caching"""
     try:
         import csv
-        filepath = f"dataset/{dataset_name}.csv"
+        filepath = f"data/raw/{dataset_name}.csv"
         if not os.path.exists(filepath):
             return jsonify({"error": "Dataset not found"}), 404
         
@@ -1320,7 +1359,7 @@ def offline_status():
     # Check which datasets are available
     datasets = []
     for dataset in ["disease", "location", "feed", "yield", "buyer", "stocking", "seed"]:
-        path = f"dataset/{dataset}.csv"
+        path = f"data/raw/{dataset}.csv"
         datasets.append({
             "name": dataset,
             "available": os.path.exists(path),
@@ -1332,6 +1371,22 @@ def offline_status():
                          lang=lang,
                          datasets=datasets,
                          offline_predictions=load_json("offline_predictions.json", []))
+
+@app.route('/api/mobile-link')
+def mobile_link_api():
+    """API endpoint for mobile access - returns global link information"""
+    lang = request.args.get('lang', 'en')
+    production_url = APP_CONFIG.get("PRODUCTION_URL", "https://aqua-ttiu.onrender.com")
+    
+    return jsonify({
+        "status": "success",
+        "global_link": f"{production_url}/?lang={lang}",
+        "scanner_link": f"{production_url}/global-link?lang={lang}",
+        "platform": "AquaSphere",
+        "version": "1.0",
+        "environment": "production",
+        "timestamp": datetime.now().isoformat()
+    }), 200
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)

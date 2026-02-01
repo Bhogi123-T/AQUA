@@ -1,0 +1,406 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        background: #060b18;
+        color: white;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .mobile-direct-access {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1rem;
+        gap: 2rem;
+        background: linear-gradient(135deg, #060b18 0%, #0f1729 100%);
+    }
+
+    .header-section {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .main-title {
+        font-size: 3.2rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #00d2ff, #00ff88);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    .subtitle {
+        font-size: 1.4rem;
+        color: #cbd5e1;
+        font-weight: 600;
+    }
+
+    .production-badge {
+        display: inline-block;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 210, 255, 0.2));
+        border: 2px solid #00ff88;
+        border-radius: 2rem;
+        color: #00ff88;
+        font-weight: 700;
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+
+    .qr-display-box {
+        background: white;
+        border-radius: 3rem;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 210, 255, 0.3);
+        max-width: 400px;
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+    }
+
+    #qrcode {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+    }
+
+    #qrcode svg {
+        width: 300px;
+        height: 300px;
+    }
+
+    .url-display {
+        font-size: 1.1rem;
+        color: #000;
+        font-weight: 700;
+        text-align: center;
+        word-break: break-all;
+        padding: 1.5rem;
+        background: rgba(0, 210, 255, 0.1);
+        border-radius: 1.5rem;
+        border: 2px solid #00d2ff;
+        width: 100%;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+        max-width: 400px;
+    }
+
+    .btn-action {
+        width: 100%;
+        padding: 1.8rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        border-radius: 2rem;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        transition: all 0.4s;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+    }
+
+    .btn-visit {
+        background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+        color: white;
+        box-shadow: 0 10px 40px rgba(0, 210, 255, 0.4);
+    }
+
+    .btn-visit:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 20px rgba(0, 210, 255, 0.2);
+    }
+
+    .btn-copy {
+        background: linear-gradient(135deg, #00ff88, #00cc6a);
+        color: #000;
+        font-weight: 900;
+        box-shadow: 0 10px 40px rgba(0, 255, 136, 0.4);
+    }
+
+    .btn-copy:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 20px rgba(0, 255, 136, 0.2);
+    }
+
+    .btn-scan {
+        background: linear-gradient(135deg, #ff6b9d, #c44569);
+        color: white;
+        box-shadow: 0 10px 40px rgba(255, 107, 157, 0.4);
+    }
+
+    .btn-scan:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 20px rgba(255, 107, 157, 0.2);
+    }
+
+    .camera-section {
+        display: none;
+        width: 100%;
+        max-width: 400px;
+        gap: 1.5rem;
+        flex-direction: column;
+    }
+
+    .camera-box {
+        background: #000;
+        border-radius: 2.5rem;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        width: 100%;
+    }
+
+    #scanner-video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .info-box {
+        background: rgba(0, 210, 255, 0.1);
+        border: 2px solid #00d2ff;
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        font-size: 1.2rem;
+        color: #cbd5e1;
+        font-weight: 600;
+    }
+
+    .success-message {
+        background: rgba(0, 255, 136, 0.2);
+        border: 2px solid #00ff88;
+        color: #00ff88;
+        display: none;
+    }
+
+    .error-message {
+        background: rgba(255, 0, 85, 0.2);
+        border: 2px solid #ff0055;
+        color: #ff0055;
+        display: none;
+    }
+
+    @media (max-width: 600px) {
+        .main-title {
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+        }
+
+        .qr-display-box {
+            padding: 2rem;
+        }
+
+        #qrcode svg {
+            width: 250px;
+            height: 250px;
+        }
+
+        .btn-action {
+            padding: 1.5rem;
+            font-size: 1.2rem;
+        }
+    }
+</style>
+
+<div class="mobile-direct-access">
+    <!-- Header -->
+    <div class="header-section">
+        <div class="production-badge">🌍 LIVE PRODUCTION</div>
+        <div class="main-title">AquaSphere</div>
+        <div class="subtitle">Global Aquaculture Platform</div>
+    </div>
+
+    <!-- QR Display -->
+    <div class="qr-display-box">
+        <div id="qrcode"></div>
+        <div class="url-display" id="urlDisplay">https://aqua-ttiu.onrender.com</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="https://aqua-ttiu.onrender.com" class="btn-action btn-visit" target="_blank">
+            🌐 OPEN WEBSITE
+        </a>
+        <button class="btn-action btn-copy" onclick="copyLink()">
+            📋 COPY LINK
+        </button>
+        <button class="btn-action btn-scan" onclick="toggleScanner()">
+            🎥 SCAN QR CODE
+        </button>
+    </div>
+
+    <!-- Camera Scanner -->
+    <div class="camera-section" id="cameraSection">
+        <div class="camera-box">
+            <video id="scanner-video" autoplay playsinline></video>
+        </div>
+        <button class="btn-action btn-scan" onclick="stopScanner()">
+            ⛔ STOP SCANNER
+        </button>
+        <div class="info-box" id="messageBox"></div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-box" style="max-width: 400px; background: rgba(0, 210, 255, 0.05); border-color: #00d2ff; color: #cbd5e1;">
+        📱 Works on any network - No localhost, pure production
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+    let scannerActive = false;
+    let currentStream = null;
+
+    // Generate QR on load
+    window.addEventListener('load', () => {
+        const qrText = 'https://aqua-ttiu.onrender.com';
+        new QRCode(document.getElementById('qrcode'), {
+            text: qrText,
+            width: 300,
+            height: 300,
+            colorDark: '#000',
+            colorLight: '#fff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    });
+
+    // Copy Link
+    function copyLink() {
+        const url = 'https://aqua-ttiu.onrender.com';
+        navigator.clipboard.writeText(url).then(() => {
+            showMessage('✓ Link copied to clipboard!', 'success');
+            setTimeout(hideMessage, 2500);
+        }).catch(() => {
+            showMessage('❌ Failed to copy link', 'error');
+        });
+    }
+
+    // Toggle Scanner
+    async function toggleScanner() {
+        if (!scannerActive) {
+            await startScanner();
+        } else {
+            stopScanner();
+        }
+    }
+
+    // Start Scanner
+    async function startScanner() {
+        try {
+            showMessage('🎥 Requesting camera access...', 'info');
+            
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+
+            const video = document.getElementById('scanner-video');
+            video.srcObject = currentStream;
+            
+            document.getElementById('cameraSection').style.display = 'flex';
+            scannerActive = true;
+            
+            showMessage('✓ Camera ready - point at QR code', 'success');
+            startScanning(video);
+        } catch (err) {
+            showMessage('❌ Camera access denied or unavailable', 'error');
+            console.error('Camera error:', err);
+        }
+    }
+
+    // Scanning Loop
+    function startScanning(video) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        function scan() {
+            if (!scannerActive || !currentStream) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    scannerActive = false;
+                    stopScanner();
+                    showMessage(`✓ Scan successful! Redirecting...`, 'success');
+                    setTimeout(() => {
+                        window.location.href = code.data;
+                    }, 1500);
+                    return;
+                }
+            }
+
+            if (scannerActive) {
+                requestAnimationFrame(scan);
+            }
+        }
+        
+        scan();
+    }
+
+    // Stop Scanner
+    function stopScanner() {
+        scannerActive = false;
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        document.getElementById('cameraSection').style.display = 'none';
+        hideMessage();
+    }
+
+    // Message Display
+    function showMessage(msg, type) {
+        const box = document.getElementById('messageBox');
+        box.textContent = msg;
+        box.className = 'info-box';
+        if (type === 'success') box.classList.add('success-message');
+        if (type === 'error') box.classList.add('error-message');
+        box.style.display = 'block';
+    }
+
+    function hideMessage() {
+        const box = document.getElementById('messageBox');
+        box.style.display = 'none';
+    }
+
+    // Cleanup
+    window.addEventListener('beforeunload', () => {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+    });
+</script>
+{% endblock %}

@@ -1,5 +1,6 @@
 {
     "DEMO_MODE": false,
+    "PRODUCTION_URL": "https://aqua-ttiu.onrender.com",
     "MAIL_SERVER": "smtp.gmail.com",
     "MAIL_PORT": 587,
     "MAIL_USE_TLS": true,

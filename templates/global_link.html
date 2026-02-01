@@ -1,0 +1,359 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .global-link-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        gap: 3rem;
+    }
+
+    .qr-section {
+        background: rgba(15, 23, 42, 0.9);
+        border: 2px solid var(--glass-border);
+        border-radius: 3rem;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 210, 255, 0.2);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    #qrcode {
+        background: white;
+        padding: 2rem;
+        border-radius: 2rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 2rem 0;
+    }
+
+    #qrcode svg {
+        width: 250px;
+        height: 250px;
+    }
+
+    .qr-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #fff, var(--primary));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .qr-description {
+        font-size: 1.3rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+
+    .qr-link {
+        font-size: 1.2rem;
+        color: var(--primary);
+        word-break: break-all;
+        padding: 1rem;
+        background: rgba(0, 210, 255, 0.1);
+        border-radius: 1.5rem;
+        margin: 2rem 0;
+        border: 1px solid var(--glass-border);
+        font-weight: 600;
+    }
+
+    .scanner-section {
+        background: rgba(15, 23, 42, 0.9);
+        border: 2px solid var(--glass-border);
+        border-radius: 3rem;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 255, 136, 0.2);
+        text-align: center;
+        max-width: 500px;
+        width: 100%;
+    }
+
+    .scanner-title {
+        font-size: 2.5rem;
+        font-weight: 900;
+        background: linear-gradient(to right, #fff, var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+    }
+
+    .scanner-description {
+        font-size: 1.3rem;
+        color: var(--text-muted);
+        margin-bottom: 2rem;
+        line-height: 1.7;
+    }
+
+    .btn-scan {
+        width: 100%;
+        padding: 1.5rem;
+        font-size: 1.4rem;
+        font-weight: 800;
+        border-radius: 2rem;
+        background: linear-gradient(135deg, var(--accent), #00cc6a);
+        color: #000;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        transition: all 0.4s;
+        margin-bottom: 1rem;
+    }
+
+    .btn-scan:hover {
+        transform: scale(1.05);
+        box-shadow: 0 15px 40px rgba(0, 255, 136, 0.6);
+    }
+
+    .btn-copy {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1.2rem;
+        font-weight: 700;
+        border-radius: 1.5rem;
+        background: rgba(0, 210, 255, 0.2);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.4s;
+    }
+
+    .btn-copy:hover {
+        background: rgba(0, 210, 255, 0.3);
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);
+    }
+
+    .video-container {
+        display: none;
+        width: 100%;
+        max-width: 400px;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        margin: 2rem 0;
+    }
+
+    #video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .result-message {
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        margin-top: 1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+        display: none;
+    }
+
+    .result-message.success {
+        background: rgba(0, 255, 136, 0.2);
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        display: block;
+    }
+
+    .result-message.error {
+        background: rgba(255, 0, 85, 0.2);
+        border: 2px solid #ff0055;
+        color: #ff0055;
+        display: block;
+    }
+
+    .copy-feedback {
+        margin-top: 1rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        background: rgba(0, 255, 136, 0.2);
+        color: var(--accent);
+        font-weight: 600;
+        display: none;
+    }
+
+    @media (max-width: 900px) {
+        .global-link-container {
+            padding: 1rem;
+            gap: 2rem;
+        }
+
+        .qr-section, .scanner-section {
+            padding: 2rem;
+        }
+
+        #qrcode svg {
+            width: 200px;
+            height: 200px;
+        }
+    }
+</style>
+
+<div class="global-link-container">
+    <!-- ENVIRONMENT INFO -->
+    <div style="text-align: center; margin-bottom: 2rem; max-width: 600px;">
+        <div style="font-size: 1.4rem; font-weight: 700; color: var(--accent); margin-bottom: 0.5rem;">🌍 PRODUCTION ENVIRONMENT</div>
+        <div style="font-size: 1.2rem; color: var(--text-muted);">Render Deployment - https://aqua-ttiu.onrender.com</div>
+    </div>
+
+    <!-- QR CODE SECTION -->
+    <div class="qr-section">
+        <div class="qr-title">📱 AquaSphere Global Link</div>
+        <div class="qr-description">
+            Scan this QR code to access AquaSphere from anywhere
+        </div>
+        <div id="qrcode"></div>
+        <div class="qr-link" id="globalLink">{{ global_link }}</div>
+        <button class="btn-copy" onclick="copyToClipboard()">📋 Copy Link</button>
+        <div class="copy-feedback" id="copyFeedback">✓ Link copied to clipboard!</div>
+    </div>
+
+    <!-- SCANNER SECTION -->
+    <div class="scanner-section">
+        <div class="scanner-title">🔍 Scan QR Code</div>
+        <div class="scanner-description">
+            Use this scanner to scan any AquaSphere QR code
+        </div>
+        <button class="btn-scan" onclick="startScanner()">🎥 Start Camera</button>
+        <div class="video-container" id="videoContainer">
+            <video id="video" autoplay></video>
+        </div>
+        <button class="btn-copy" style="display: none; background: rgba(255, 0, 85, 0.2); border-color: #ff0055; color: #ff0055;" id="stopBtn" onclick="stopScanner()">⛔ Stop Camera</button>
+        <div class="result-message" id="scanResult"></div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+    // Generate QR Code
+    window.addEventListener('load', () => {
+        const globalLink = document.getElementById('globalLink').textContent;
+        new QRCode(document.getElementById('qrcode'), {
+            text: globalLink,
+            width: 250,
+            height: 250,
+            colorDark: '#000',
+            colorLight: '#fff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    });
+
+    // Copy to clipboard
+    function copyToClipboard() {
+        const link = document.getElementById('globalLink').textContent;
+        navigator.clipboard.writeText(link).then(() => {
+            const feedback = document.getElementById('copyFeedback');
+            feedback.style.display = 'block';
+            setTimeout(() => {
+                feedback.style.display = 'none';
+            }, 3000);
+        }).catch(err => console.error('Copy failed:', err));
+    }
+
+    // QR Scanner
+    let stream = null;
+
+    async function startScanner() {
+        try {
+            const container = document.getElementById('videoContainer');
+            const video = document.getElementById('video');
+            const stopBtn = document.getElementById('stopBtn');
+            const resultDiv = document.getElementById('scanResult');
+
+            // Reset result
+            resultDiv.className = 'result-message';
+            resultDiv.textContent = '';
+
+            // Request camera access
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+
+            video.srcObject = stream;
+            container.style.display = 'block';
+            stopBtn.style.display = 'block';
+
+            // Start scanning
+            scanQRCode(video, resultDiv);
+        } catch (err) {
+            console.error('Camera access error:', err);
+            showError('Unable to access camera. Please check permissions.');
+        }
+    }
+
+    function stopScanner() {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+        document.getElementById('videoContainer').style.display = 'none';
+        document.getElementById('stopBtn').style.display = 'none';
+        document.getElementById('scanResult').className = 'result-message';
+    }
+
+    function scanQRCode(video, resultDiv) {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        let scanning = true;
+
+        const scan = () => {
+            if (!scanning || !stream) return;
+
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                if (code) {
+                    scanning = false;
+                    const decodedText = code.data;
+                    
+                    resultDiv.className = 'result-message success';
+                    resultDiv.textContent = `✓ Scan successful! Redirecting to: ${decodedText}`;
+                    
+                    // Redirect after 2 seconds
+                    setTimeout(() => {
+                        window.location.href = decodedText;
+                    }, 2000);
+                    return;
+                }
+            }
+
+            requestAnimationFrame(scan);
+        };
+
+        scan();
+    }
+
+    function showError(message) {
+        const resultDiv = document.getElementById('scanResult');
+        resultDiv.className = 'result-message error';
+        resultDiv.textContent = `❌ ${message}`;
+    }
+
+    // Network status indicator
+    window.addEventListener('online', () => {
+        console.log('Online');
+    });
+
+    window.addEventListener('offline', () => {
+        console.log('Offline');
+    });
+</script>
+{% endblock %}

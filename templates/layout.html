@@ -69,8 +69,9 @@
                     style="width: 120px; height: auto; display: block; margin: 0 auto; filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));">
             </a>
             <!-- Connection Status Badge -->
-            <div id="connection-badge" class="live-pulse-badge" style="display: block; width: fit-content; margin: 10px auto; transition: all 0.3s ease;">
-                <span id="connection-icon" class="emo">🌐</span> 
+            <div id="connection-badge" class="live-pulse-badge"
+                style="display: block; width: fit-content; margin: 10px auto; transition: all 0.3s ease;">
+                <span id="connection-icon" class="emo">🌐</span>
                 <span id="connection-text">ONLINE</span>
             </div>
         </div>
@@ -79,19 +80,34 @@
             style="display: flex; flex-direction: column; gap: 0.5rem; flex: 1; overflow-y: auto; padding-right: 5px;">
 
             <div class="nav-category">Farmer Operations</div>
-            <a href="/farmer?lang={{ lang }}" class="nav-item">{{ trans['nav_farmer'] }}</a>
-            <a href="/buyer?lang={{ lang }}" class="nav-item">{{ trans['nav_market'] }} Panel</a>
-            <a href="/market?lang={{ lang }}" class="nav-item">{{ trans['nav_market_global'] }}</a>
+            <a href="/farmer?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_farmer'] }}</a>
+            <a href="/buyer?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_market'] }} Panel</a>
+            <a href="/market?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_market_global'] }}</a>
 
-            <div class="nav-category" style="margin-top: 1.5rem;">AI Technical Suite</div>
-            <a href="/location?lang={{ lang }}" class="nav-item">{{ trans['nav_loc'] }}</a>
-            <a href="/logistics?lang={{ lang }}" class="nav-item">{{ trans['nav_logistics'] }}</a>
-            <a href="/districts?lang={{ lang }}" class="nav-item">{{ trans['nav_districts'] }}</a>
-            <a href="/technicians?lang={{ lang }}" class="nav-item">{{ trans['nav_tech'] }}</a>
+            <div class="nav-category" style="margin-top: 1.5rem; font-size: 0.9rem;">AI Technical Suite</div>
+            <a href="/location?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_loc'] }}</a>
+            <a href="/logistics?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_logistics'] }}</a>
+            <a href="/districts?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_districts'] }}</a>
+            <a href="/technicians?lang={{ lang }}" class="nav-item"
+                style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{ trans['nav_tech'] }}</a>
 
-            <div class="nav-category" style="margin-top: 1.5rem;">Resources & Control</div>
-            <a href="/knowledge?lang={{ lang }}" class="nav-item">{{ trans['nav_knowledge'] or '📚 Library' }}</a>
-            <a href="/settings?lang={{ lang }}" class="nav-item">⚙️ {{ trans['nav_settings'] or 'Settings' }}</a>
+            <div class="nav-category" style="margin-top: 1.5rem; font-size: 0.9rem;">Resources & Control</div>
+            <a href="/knowledge?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">{{
+                trans['nav_knowledge'] or '📚 Library' }}</a>
+            <a href="/global-link?lang={{ lang }}" class="nav-item"
+                style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">📱 Global Link & Scanner</a>
+            <a href="/direct-access" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">🚀 Direct
+                Mobile Access</a>
+            <a href="/landing" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">🌍 Production
+                Redirect</a>
+            <a href="/settings?lang={{ lang }}" class="nav-item" style="font-size: 1.1rem; padding: 1.2rem 1.5rem;">⚙️
+                {{ trans['nav_settings'] or 'Settings' }}</a>
         </div>
 
         <div
@@ -141,7 +157,8 @@
 
     <div class="live-ticker">
         <div class="ticker-content">
-            <span class="ticker-item" id="ticker-live-status"><span class="live-pulse"></span> <strong id="ticker-live-text">{{ trans['nav_live'] }}:</strong></span>
+            <span class="ticker-item" id="ticker-live-status"><span class="live-pulse"></span> <strong
+                    id="ticker-live-text">{{ trans['nav_live'] }}:</strong></span>
             <span class="ticker-item" id="user-location">📍 {{ trans['ticker_loc_detecting'] }}</span>
             <span class="ticker-item">🦐 Vannamei: $6.3/kg (+0.5%)</span>
             <span class="ticker-item">🐟 Tilapia: $2.9/kg</span>
@@ -272,48 +289,32 @@
 
     <!-- Mobile Connect Modal -->
     <div id="mobile-modal"
-        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--primary); border-radius: 2.5rem; padding: 2.5rem; z-index: 2000; box-shadow: 0 30px 100px rgba(0,0,0,0.8); text-align: center;">
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 350px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 2px solid var(--primary); border-radius: 2.5rem; padding: 2.5rem; z-index: 2000; box-shadow: 0 30px 100px rgba(0,0,0,0.8); text-align: center;">
         <h2 style="color: var(--primary); margin-bottom: 1rem;">📱 Mobile Access</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">Scan the QR code or use the link
-            below to open on your phone</p>
+        <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 2rem;">Scan the QR code to open the
+            website directly on your smartphone</p>
 
         <div id="qrcode-container"
-            style="background: white; padding: 1rem; border-radius: 1rem; display: inline-block; margin-bottom: 2rem;">
+            style="background: white; padding: 1.5rem; border-radius: 2rem; display: inline-block; margin-bottom: 2rem; box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);">
             <div id="qrcode"></div>
         </div>
 
-        <div style="display: flex; gap: 10px; align-items: center; justify-content: center; margin-bottom: 2rem;">
-            <a href="{{ local_url }}" target="_blank" id="mobile-link"
-                style="color: var(--accent); font-weight: 800; text-decoration: none; word-break: break-all; font-size: 0.9rem; background: rgba(0,255,136,0.1); padding: 10px 20px; border-radius: 1rem; border: 1px solid rgba(0,255,136,0.2);">
-                🔗 <span id="share-url-text">{{ local_url }}</span>
-            </a>
-            <button onclick="copyShareLink()" id="copy-btn"
-                style="background: var(--primary); border: none; padding: 10px; border-radius: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s;">
-                📋
-            </button>
-        </div>
-
         <div
-            style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0, 255, 136, 0.1)); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2.5rem; text-align: left; border: 1px solid var(--primary);">
-            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 1rem; font-weight: 800;">🚀 PERMANENT GLOBAL LINK
-            </p>
-            <p style="font-size: 0.75rem; color: var(--text-muted); line-height: 1.6; margin-bottom: 1rem;">To get a
-                link like <strong>https://aquasphere.render.com</strong> that works on <u>any network</u> in the world,
-                use a free Cloud host:</p>
-            <div style="display: flex; gap: 10px; margin-bottom: 1rem;">
-                <a href="https://render.com" target="_blank"
-                    style="flex: 1; background: #fff; color: #000; padding: 8px; border-radius: 0.8rem; text-align: center; text-decoration: none; font-size: 0.7rem; font-weight: 800;">Render
-                    (Free)</a>
-                <a href="https://vercel.com" target="_blank"
-                    style="flex: 1; background: #000; color: #fff; padding: 8px; border-radius: 0.8rem; text-align: center; text-decoration: none; font-size: 0.7rem; font-weight: 800; border: 1px solid #333;">Vercel
-                    (Fast)</a>
+            style="display: flex; flex-direction: column; gap: 15px; align-items: center; justify-content: center; margin-bottom: 2.5rem;">
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <a href="https://aqua-ttiu.onrender.com" target="_blank" id="mobile-link"
+                    style="flex: 1; color: var(--accent); font-weight: 800; text-decoration: none; word-break: break-all; font-size: 0.9rem; background: rgba(0,255,136,0.1); padding: 12px 20px; border-radius: 1.2rem; border: 1px solid rgba(0,255,136,0.2);">
+                    🔗 <span id="share-url-text">aqua-ttiu.onrender.com</span>
+                </a>
+                <button onclick="copyShareLink()" id="copy-btn"
+                    style="background: var(--primary); border: none; padding: 12px; border-radius: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.3s; width: 50px;">
+                    📋
+                </button>
             </div>
-            <p style="font-size: 0.7rem; color: var(--accent); font-style: italic;">I have already prepared your project
-                for these! Just upload your folder there.</p>
         </div>
 
         <button onclick="toggleMobileModal()" class="app-btn-large"
-            style="padding: 1rem; font-size: 1rem;">Close</button>
+            style="padding: 1rem; font-size: 1.1rem; border-radius: 1.5rem;">CLOSE</button>
     </div>
 
     <div id="modal-overlay" onclick="toggleMobileModal()"
@@ -332,7 +333,7 @@
 
             if (!isVisible && !qrGenerated) {
                 new QRCode(document.getElementById("qrcode"), {
-                    text: "{{ local_url }}",
+                    text: "https://aqua-ttiu.onrender.com",
                     width: 200,
                     height: 200,
                     colorDark: "#0f172a",

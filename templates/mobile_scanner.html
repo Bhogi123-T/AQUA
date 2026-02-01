@@ -1,0 +1,340 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .mobile-quick-scanner {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 1.5rem;
+        gap: 2rem;
+    }
+
+    .quick-header {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .quick-title {
+        font-size: 2.8rem;
+        font-weight: 900;
+        background: linear-gradient(to right, var(--primary), var(--accent));
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .quick-subtitle {
+        font-size: 1.3rem;
+        color: var(--text-muted);
+    }
+
+    .qr-display {
+        background: white;
+        border-radius: 2.5rem;
+        padding: 2rem;
+        box-shadow: 0 20px 60px rgba(0, 210, 255, 0.2);
+        max-width: 350px;
+        width: 100%;
+    }
+
+    #qrcode {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #qrcode svg {
+        width: 280px;
+        height: 280px;
+    }
+
+    .quick-url {
+        font-size: 1rem;
+        color: #000;
+        font-weight: 600;
+        text-align: center;
+        word-break: break-all;
+        margin-top: 1rem;
+        padding: 1rem;
+        background: rgba(0, 210, 255, 0.1);
+        border-radius: 1rem;
+    }
+
+    .quick-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .btn-primary {
+        width: 100%;
+        padding: 1.5rem;
+        font-size: 1.3rem;
+        font-weight: 800;
+        border-radius: 1.8rem;
+        background: linear-gradient(135deg, var(--accent), #00cc6a);
+        color: #000;
+        border: none;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        transition: all 0.4s;
+    }
+
+    .btn-primary:active {
+        transform: scale(0.95);
+        box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-secondary {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 1.5rem;
+        background: rgba(0, 210, 255, 0.2);
+        color: var(--primary);
+        border: 2px solid var(--primary);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        transition: all 0.4s;
+    }
+
+    .btn-secondary:active {
+        background: rgba(0, 210, 255, 0.3);
+    }
+
+    .video-section {
+        display: none;
+        width: 100%;
+        max-width: 350px;
+    }
+
+    .video-box {
+        width: 100%;
+        border-radius: 2rem;
+        overflow: hidden;
+        box-shadow: 0 10px 40px rgba(0, 255, 136, 0.3);
+        background: #000;
+    }
+
+    #video {
+        width: 100%;
+        height: auto;
+        display: block;
+    }
+
+    .feedback-msg {
+        padding: 1rem;
+        border-radius: 1.2rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        text-align: center;
+        display: none;
+    }
+
+    .feedback-msg.success {
+        background: rgba(0, 255, 136, 0.2);
+        border: 2px solid var(--accent);
+        color: var(--accent);
+        display: block;
+    }
+
+    .feedback-msg.error {
+        background: rgba(255, 0, 85, 0.2);
+        border: 2px solid #ff0055;
+        color: #ff0055;
+        display: block;
+    }
+
+    .env-badge {
+        display: inline-block;
+        padding: 0.7rem 1.5rem;
+        background: rgba(0, 255, 136, 0.2);
+        border: 2px solid var(--accent);
+        border-radius: 2rem;
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+        .mobile-quick-scanner {
+            padding: 1rem;
+            gap: 1.5rem;
+        }
+
+        .quick-title {
+            font-size: 2.2rem;
+        }
+
+        #qrcode svg {
+            width: 220px;
+            height: 220px;
+        }
+
+        .qr-display {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="mobile-quick-scanner">
+    <!-- Environment Badge -->
+    <div class="env-badge">🌍 PRODUCTION: aqua-ttiu.onrender.com</div>
+
+    <!-- Header -->
+    <div class="quick-header">
+        <div class="quick-title">AquaSphere</div>
+        <div class="quick-subtitle">Global Mobile Access</div>
+    </div>
+
+    <!-- QR Code Display -->
+    <div class="qr-display">
+        <div id="qrcode"></div>
+        <div class="quick-url" id="quickUrl">{{ global_link }}</div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="quick-buttons">
+        <button class="btn-primary" onclick="copyLink()">📋 COPY LINK</button>
+        <button class="btn-secondary" onclick="toggleCamera()">🎥 SCAN QR CODE</button>
+    </div>
+
+    <!-- Video Container -->
+    <div class="video-section" id="videoSection">
+        <div class="video-box">
+            <video id="mobileVideo" autoplay playsinline></video>
+        </div>
+        <button class="btn-secondary" style="margin-top: 1rem;" onclick="stopCamera()">⛔ STOP CAMERA</button>
+    </div>
+
+    <!-- Feedback Message -->
+    <div class="feedback-msg" id="feedbackMsg"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script>
+    let currentStream = null;
+
+    // Generate QR Code on load
+    window.addEventListener('load', () => {
+        const url = document.getElementById('quickUrl').textContent;
+        new QRCode(document.getElementById('qrcode'), {
+            text: url,
+            width: 280,
+            height: 280,
+            colorDark: '#000',
+            colorLight: '#fff',
+            correctLevel: QRCode.CorrectLevel.H
+        });
+    });
+
+    // Copy Link Function
+    function copyLink() {
+        const url = document.getElementById('quickUrl').textContent;
+        navigator.clipboard.writeText(url).then(() => {
+            showFeedback('✓ Link copied to clipboard!', 'success');
+            setTimeout(() => hideFeedback(), 2500);
+        }).catch(err => {
+            showFeedback('❌ Failed to copy', 'error');
+        });
+    }
+
+    // Toggle Camera
+    async function toggleCamera() {
+        if (!currentStream) {
+            await startCamera();
+        } else {
+            stopCamera();
+        }
+    }
+
+    // Start Camera
+    async function startCamera() {
+        try {
+            showFeedback('🎥 Requesting camera access...', 'success');
+            
+            currentStream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: 'environment' }
+            });
+
+            const video = document.getElementById('mobileVideo');
+            video.srcObject = currentStream;
+            
+            document.getElementById('videoSection').style.display = 'block';
+            showFeedback('✓ Camera ready - point at QR code', 'success');
+            
+            setTimeout(() => scanLoop(video), 500);
+        } catch (err) {
+            showFeedback('❌ Camera access denied', 'error');
+            console.error('Camera error:', err);
+        }
+    }
+
+    // Scan Loop
+    function scanLoop(video) {
+        if (!currentStream) return;
+
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+            if (code) {
+                stopCamera();
+                showFeedback(`✓ Scan successful! Redirecting...`, 'success');
+                setTimeout(() => {
+                    window.location.href = code.data;
+                }, 1500);
+                return;
+            }
+        }
+
+        requestAnimationFrame(() => scanLoop(video));
+    }
+
+    // Stop Camera
+    function stopCamera() {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+            currentStream = null;
+        }
+        document.getElementById('videoSection').style.display = 'none';
+        hideFeedback();
+    }
+
+    // Feedback Functions
+    function showFeedback(message, type) {
+        const fb = document.getElementById('feedbackMsg');
+        fb.textContent = message;
+        fb.className = `feedback-msg ${type}`;
+    }
+
+    function hideFeedback() {
+        document.getElementById('feedbackMsg').className = 'feedback-msg';
+    }
+
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', () => {
+        if (currentStream) {
+            currentStream.getTracks().forEach(track => track.stop());
+        }
+    });
+</script>
+{% endblock %}
