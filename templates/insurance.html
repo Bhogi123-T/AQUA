@@ -1,0 +1,75 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🛡️</span>
+    <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['insurance_center_title'] or
+        'INSURANCE CENTER' }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['insurance_center_desc'] or 'One-Click
+        Auto-Generated Verification Reports for Global Insurance Claims' }}</p>
+</div>
+
+<div class="grid" style="margin-bottom: 5rem;">
+    <!-- Active Policy Card -->
+    <div class="app-card"
+        style="text-align: left; align-items: flex-start; padding: 2.5rem; border-color: var(--primary);">
+        <h4 style="color: var(--primary); margin-bottom: 1.5rem;"><span class="emo">📜</span> ACTIVE POLICY: #AQ-INS-449
+        </h4>
+        <div
+            style="width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 1rem; margin-bottom: 1.5rem;">
+            <p style="font-size: 0.9rem; margin-bottom: 0.5rem; color: var(--text-muted);">COVERAGE AMOUNT</p>
+            <div style="font-size: 2rem; font-weight: 900; color: white;">₹1,200,000</div>
+            <p style="font-size: 0.7rem; color: #00ff88; margin-top: 10px;">✅ PREMIUM PAID (Current Batch)</p>
+        </div>
+        <p style="font-size: 0.85rem; line-height: 1.6;">Your policy covers mass mortality (disease), oxygen failure,
+            and natural disasters. AquaSphere automatically tracks the data required for claims validation.</p>
+    </div>
+
+    <!-- Claim Generator (The Feature) -->
+    <div class="app-card"
+        style="text-align: left; align-items: flex-start; padding: 2.5rem; border: 2px solid #ff0055; background: rgba(255,0,85,0.02);">
+        <h4 style="color: #ff0055; margin-bottom: 1.5rem;"><span class="emo">🚨</span> INITIATE ONE-CLICK CLAIM</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">In the event of a stock loss,
+            AquaSphere will build a comprehensive evidence package for you.</p>
+
+        <div style="width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">
+            <p style="font-size: 0.8rem; margin-bottom: 1rem;"><strong>THE SYSTEM WILL EXPORT:</strong></p>
+            <ul style="list-style: none; padding: 0; font-size: 0.8rem; line-height: 2;">
+                <li>📊 Verified 24/7 Water Quality Logs</li>
+                <li>📉 Real-time Mortality Timeline</li>
+                <li>🧪 Disease Analysis Evidence</li>
+                <li>⚙️ Hardware Activity (Aerator Proof)</li>
+            </ul>
+        </div>
+
+        <button onclick="generateClaim()" id="claim-btn" class="app-btn-large"
+            style="margin-top: 2rem; background: #ff0055;">GENERATE LOSS REPORT (PDF)</button>
+    </div>
+</div>
+
+<script>
+    function generateClaim() {
+        const btn = document.getElementById('claim-btn');
+        btn.innerText = "🔄 GATHERING EVIDENCE...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            btn.innerText = "📄 REPORT GENERATED";
+            btn.style.background = "#00ff88";
+            btn.style.color = "#000";
+            alert("AquaSphere Claim Evidence #INS-99028 generated successfully. It includes your satellite GPS history and water telemetry logs.");
+            setTimeout(() => {
+                btn.innerText = "GENERATE LOSS REPORT (PDF)";
+                btn.style.background = "#ff0055";
+                btn.style.color = "#fff";
+                btn.disabled = false;
+            }, 3000);
+        }, 3000);
+    }
+</script>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer" style="color: var(--text-muted); font-weight: 800; text-decoration: none;">🔙 {{
+        trans['back_to_hub'] or 'BACK TO COMMAND HUB' }}</a>
+</div>
+{% endblock %}

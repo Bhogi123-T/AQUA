@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: #ff9900; margin-bottom: 2rem;"><span class="emo">🦠</span> {{
+        trans['disease_solutions_title'] }}</h1>
+
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        {{ trans['disease_solutions_desc'] }}
+    </p>
+
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <div class="app-card"
+            style="padding: 2.5rem; margin: 0; background: linear-gradient(135deg, rgba(255,0,0,0.1), rgba(0,0,0,0)); border: 1px solid rgba(255,0,0,0.2);">
+            <h3 style="color: #ff5555; margin-bottom: 1.5rem;">{{ trans['wssv_title'] }}</h3>
+            <p style="font-size: 1rem; margin-bottom: 1.5rem;"><strong>{{ trans['symptoms'] }}</strong> {{
+                trans['wssv_symptoms_desc'] }}</p>
+            <p><strong>{{ trans['solution'] }}</strong> {{ trans['wssv_solution_desc'] }}</p>
+        </div>
+
+        <div class="app-card"
+            style="padding: 2.5rem; margin: 0; background: linear-gradient(135deg, rgba(255,153,0,0.1), rgba(0,0,0,0)); border: 1px solid rgba(255,153,0,0.2);">
+            <h3 style="color: #ff9900; margin-bottom: 1.5rem;">{{ trans['rms_title'] }}</h3>
+            <p style="font-size: 1rem; margin-bottom: 1.5rem;"><strong>{{ trans['symptoms'] }}</strong> {{
+                trans['rms_symptoms_desc'] }}</p>
+            <p><strong>{{ trans['solution'] }}</strong> {{ trans['rms_solution_desc'] }}</p>
+        </div>
+
+        <div class="app-card"
+            style="padding: 2.5rem; margin: 0; background: linear-gradient(135deg, rgba(0,210,255,0.1), rgba(0,0,0,0)); border: 1px solid rgba(0,210,255,0.2);">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">{{ trans['gills_title'] }}</h3>
+            <p style="font-size: 1rem; margin-bottom: 1.5rem;"><strong>{{ trans['symptoms'] }}</strong> {{
+                trans['gills_symptoms_desc'] }}</p>
+            <p><strong>{{ trans['solution'] }}</strong> {{ trans['gills_solution_desc'] }}</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

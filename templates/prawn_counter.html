@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 2rem;">
+    <span class="app-emoji">⚖️</span>
+    <h1
+        style="font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; background: linear-gradient(to right, #00d2ff, #00ff88); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        Prawn Sample Check
+    </h1>
+    <p style="color: var(--text-muted);">Enter Sample Weight & Number to get Official Count & Price.</p>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto;">
+
+    <div class="app-card"
+        style="padding: 2rem; border: 2px solid #00d2ff; background: linear-gradient(145deg, rgba(20,20,30,0.9), rgba(0,0,0,0.8));">
+
+        <!-- INPUTS GRID -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+
+            <!-- INPUT 1: SAMPLE WEIGHT -->
+            <div>
+                <label
+                    style="display: block; color: var(--text-muted); margin-bottom: 0.8rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Sample
+                    Weight</label>
+                <div style="position: relative;">
+                    <input type="number" id="input-weight" placeholder="0" class="app-input"
+                        style="font-size: 2rem; font-weight: 900; padding: 1rem; color: white; border-color: #00d2ff;"
+                        oninput="calculateSample()">
+                    <span
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #00d2ff; font-weight: 700;">KG</span>
+                </div>
+            </div>
+
+            <!-- INPUT 2: NUMBER OF PRAWNS -->
+            <div>
+                <label
+                    style="display: block; color: var(--text-muted); margin-bottom: 0.8rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">No.
+                    of Prawns</label>
+                <div style="position: relative;">
+                    <input type="number" id="input-number" placeholder="0" class="app-input"
+                        style="font-size: 2rem; font-weight: 900; padding: 1rem; color: white; border-color: #00ff88;"
+                        oninput="calculateSample()">
+                    <span
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #00ff88; font-weight: 700;">PCS</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- SPECIES SELECTOR (New Feature) -->
+        <div style="margin-bottom: 2rem;">
+            <label
+                style="display: block; color: var(--text-muted); margin-bottom: 0.8rem; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Select
+                Prawn Species</label>
+            <select id="input-species" class="app-input"
+                style="width: 100%; padding: 1rem; font-size: 1.1rem; background: rgba(0, 210, 255, 0.05); color: white;"
+                onchange="calculateSample()">
+                <option value="vannamei">🦐 L. Vannamei (Whiteleg)</option>
+                <option value="tiger">🐯 P. Monodon (Black Tiger)</option>
+                <option value="scampi">🦞 M. Rosenbergii (Scampi)</option>
+            </select>
+        </div>
+
+        <!-- RESULTS SECTION -->
+        <div id="result-section" style="text-align: center; opacity: 0.3; transition: opacity 0.3s; filter: blur(2px);">
+
+            <div style="margin-bottom: 2rem;">
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase;">
+                    OFFICIAL COUNT SIZE</p>
+                <div id="result-count" style="font-size: 3.5rem; font-weight: 900; color: white; line-height: 1;">--
+                </div>
+                <div style="font-size: 0.9rem; color: #00d2ff; font-weight: 700;">Count / Kg</div>
+            </div>
+
+            <div
+                style="background: rgba(255, 204, 0, 0.1); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(255, 204, 0, 0.3);">
+                <p style="font-size: 0.8rem; color: #ffcc00; margin-bottom: 5px; text-transform: uppercase;">Estimated
+                    Market Price (Local)</p>
+                <div id="result-price" style="font-size: 2.2rem; font-weight: 900; color: white;">--</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px;">📍 Based on your location &
+                    species
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+    function calculateSample() {
+        const weight = parseFloat(document.getElementById('input-weight').value);
+        const number = parseInt(document.getElementById('input-number').value);
+        const species = document.getElementById('input-species').value;
+        const section = document.getElementById('result-section');
+
+        if (weight && weight > 0 && number && number > 0) {
+            section.style.opacity = "1";
+            section.style.filter = "none";
+
+            // 1. Calculate Count per Kg
+            // Formula: Number / Weight
+            const count = Math.round(number / weight);
+            document.getElementById('result-count').innerText = count;
+
+            // 2. Get Price
+            const price = getPriceForCount(count, species);
+            document.getElementById('result-price').innerText = "₹" + price + " / kg";
+
+        } else {
+            section.style.opacity = "0.3";
+            section.style.filter = "blur(2px)";
+            document.getElementById('result-count').innerText = "--";
+            document.getElementById('result-price').innerText = "--";
+        }
+    }
+
+    function getPriceForCount(count, species) {
+        // Mock Pricing Logic with Species Multipliers
+        let base = 350;
+
+        // Base structure for Vannamei
+        if (count <= 20) base = 850;
+        else if (count <= 30) base = 750;
+        else if (count <= 40) base = 620;
+        else if (count <= 50) base = 540;
+        else if (count <= 60) base = 480;
+        else if (count <= 80) base = 390;
+        else if (count <= 100) base = 300;
+        else base = 250;
+
+        // Apply Modifiers
+        if (species === 'tiger') {
+            // Tiger prawns usually fetch ~25% premium for larger sizes
+            base = Math.round(base * 1.25);
+        } else if (species === 'scampi') {
+            // Scampi pricing is volatile, usually slightly higher than Vannamei for big sizes
+            if (count > 40) base = Math.round(base * 0.9); // Smaller scampi is cheaper
+            else base = Math.round(base * 1.15); // Big scampi is premium
+        }
+
+        return base;
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,54 @@
+{
+    "en": {
+        "seasonal_title": "🌤️ Seasonal Advisor",
+        "seasonal_desc": "Get AI recommendations on what to cultivate this season.",
+        "select_season": "Select Season",
+        "season_summer": "Summer",
+        "season_monsoon": "Monsoon",
+        "season_winter": "Winter",
+        "btn_check_season": "Get Advice",
+        "seasonal_res_title": "Seasonal Advice",
+        "seasonal_reason": "Reason",
+        "cultivate": "Recommended to Cultivate",
+        "avoid": "Avoid"
+    },
+    "pt": {
+        "seasonal_title": "🌤️ Conselheiro Sazonal",
+        "seasonal_desc": "Receba recomendações de IA sobre o que cultivar nesta estação.",
+        "select_season": "Selecionar Estação",
+        "season_summer": "Verão",
+        "season_monsoon": "Monção",
+        "season_winter": "Inverno",
+        "btn_check_season": "Obter Conselho",
+        "seasonal_res_title": "Conselho Sazonal",
+        "seasonal_reason": "Razão",
+        "cultivate": "Recomendado Cultivar",
+        "avoid": "Evitar"
+    },
+    "vi": {
+        "seasonal_title": "🌤️ Cố Vấn Theo Mùa",
+        "seasonal_desc": "Nhận đề xuất AI về những gì nên nuôi trồng trong mùa này.",
+        "select_season": "Chọn Mùa",
+        "season_summer": "Mùa Hè",
+        "season_monsoon": "Gió Mùa",
+        "season_winter": "Mùa Đông",
+        "btn_check_season": "Nhận Lời Khuyên",
+        "seasonal_res_title": "Lời Khuyên Theo Mùa",
+        "seasonal_reason": "Lý do",
+        "cultivate": "Khuyên Nuôi Trồng",
+        "avoid": "Tránh"
+    },
+    "hi": {
+        "seasonal_title": "🌤️ मौसमी सलाहकार",
+        "seasonal_desc": "इस मौसम में क्या खेती करनी है, इस पर AI सिफारिशें प्राप्त करें।",
+        "select_season": "मौसम चुनें",
+        "season_summer": "गर्मी",
+        "season_monsoon": "मानसून",
+        "season_winter": "सर्दी",
+        "btn_check_season": "सलाह प्राप्त करें",
+        "seasonal_res_title": "मौसमी सलाह",
+        "seasonal_reason": "कारण",
+        "cultivate": "खेती के लिए अनुशंसित",
+        "avoid": "बचें"
+    }
+}

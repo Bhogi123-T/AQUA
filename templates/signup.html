@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="app-card"
+        style="margin: 0; max-width: 450px; width: 100%; padding: 3rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div
+                style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border-radius: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid rgba(0, 255, 136, 0.2);">
+                <span style="font-size: 2.5rem;">🚀</span>
+            </div>
+            <h2
+                style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #00ff88 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ trans['join_aqua'] }}</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">{{ trans['create_account'] }}</p>
+        </div>
+
+        {% if error %}
+        <div
+            style="background: rgba(255, 0, 85, 0.1); border: 1px solid rgba(255, 0, 85, 0.2); color: #ff0055; padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; font-size: 0.9rem; font-weight: 600; text-align: center;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <form action="/signup" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+            <div class="app-input-group">
+                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">{{
+                    trans['full_name'] }}</span>
+                <input type="text" name="name" class="app-input" placeholder="e.g., Bhogi Rao"
+                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+                    required autofocus>
+            </div>
+
+            <div class="app-input-group">
+                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">{{
+                    trans['phone_email'] }}</span>
+                <input type="email" name="email" class="app-input" placeholder="Email Address"
+                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+                    required>
+            </div>
+
+            <div class="app-input-group">
+                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">Password</span>
+                <input type="password" name="password" class="app-input" placeholder="Create a strong password"
+                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+                    required>
+            </div>
+
+            <button class="app-btn-large active-btn-signup"
+                style="width: 100%; padding: 1.2rem; border-radius: 1rem; font-weight: 800; font-size: 1rem; letter-spacing: 1px;">
+                {{ trans['create_account'] }}
+            </button>
+        </form>
+
+        <div
+            style="margin-top: 3rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">
+                {{ trans['already_account'] }} <a href="/login?lang={{ lang }}"
+                    style="color: #00ff88; font-weight: 800; text-decoration: none; margin-left: 0.5rem;">{{
+                    trans['login'] }} →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .active-btn-signup {
+        background: #00ff88;
+        color: black;
+        box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .active-btn-signup:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0, 255, 136, 0.4);
+        filter: brightness(1.1);
+    }
+</style>
+{% endblock %}

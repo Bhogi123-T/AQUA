@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">📚</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['knowledge_title'] or 'AquaLearn Hub'
+        }}</h1>
+    <p style="color: var(--text-muted); font-size: 1.3rem;">{{ trans['knowledge_desc'] or 'Expert guides and resources
+        for modern aquaculture.' }}</p>
+</div>
+
+<div class="grid">
+    <!-- Start Farm Guide -->
+    <a href="{{ url_for('guide_start_farm', lang=lang) }}" class="app-card market-item fish">
+        <span class="app-emoji">🚀</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['guide_start_title'] or 'Start a Farm'
+            }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['guide_start_desc'] or
+            'Step-by-step guide to starting your shrimp farm.' }}</p>
+    </a>
+
+    <!-- Vannamei Farming -->
+    <a href="{{ url_for('guide_vannamei', lang=lang) }}" class="app-card market-item shrimp">
+        <span class="app-emoji">🦐</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['guide_vannamei_title'] or 'Vannamei
+            Guide' }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['guide_vannamei_desc'] or
+            'Master the art of Vannamei culture.' }}</p>
+    </a>
+
+    <!-- Feed Charts -->
+    <a href="{{ url_for('guide_feed', lang=lang) }}" class="app-card market-item crab">
+        <span class="app-emoji">🍽️</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['guide_feed_title'] or 'Feed Charts'
+            }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['guide_feed_desc'] or
+            'Standard feed ratios by days of culture.' }}</p>
+    </a>
+
+    <!-- Disease Solutions -->
+    <a href="{{ url_for('guide_disease', lang=lang) }}" class="app-card market-item fish">
+        <span class="app-emoji">💊</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['guide_disease_title'] or 'Disease
+            Solutions' }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['guide_disease_desc'] or
+            'Identify symptoms and find treatments.' }}</p>
+    </a>
+</div>
+
+<div style="text-align: center; margin-top: 4rem;">
+    <a href="{{ url_for('farmer_hub', lang=lang) }}" class="app-btn-large"
+        style="display: inline-block; width: auto; padding: 1rem 3rem; text-decoration: none;">
+        🔙 {{ trans['back'] }}
+    </a>
+</div>
+{% endblock %}

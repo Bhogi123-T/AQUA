@@ -1,0 +1,130 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">📊</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 0.5rem;">{{ trans['community_insights_title'] or
+        'Community Insights' }}</h1>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">Real-time data from the AquaSphere network.</p>
+</div>
+
+<!-- TOP STATS ROW -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+    <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid var(--primary);">
+        <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.total_farmers }}</div>
+        <div style="color: var(--primary); font-weight: 700; letter-spacing: 1px;">TOTAL FARMERS</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Registered on Platform</p>
+    </div>
+
+    <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid var(--accent);">
+        <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.pond_density }}</div>
+        <div style="color: var(--accent); font-weight: 700; letter-spacing: 1px;">ACTIVE PONDS</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Currently Stocked</p>
+    </div>
+
+    <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid #ff0055;">
+        <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.active_farmers | length }}</div>
+        <div style="color: #ff0055; font-weight: 700; letter-spacing: 1px;">ACTIVE REGIONS</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Reporting Live Data</p>
+    </div>
+</div>
+
+<div class="split-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: start;">
+
+    <!-- REGIONAL BREAKDOWN -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 1rem;"><span
+                class="emo">🗺️</span> Regional Pond
+            Density</h3>
+        <div class="app-card" style="padding: 0; overflow: hidden;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead style="background: rgba(255,255,255,0.05);">
+                    <tr>
+                        <th style="padding: 1rem; text-align: left;">Region</th>
+                        <th style="padding: 1rem; text-align: right;">Farmers</th>
+                        <th style="padding: 1rem; text-align: right;">Ponds</th>
+                        <th style="padding: 1rem; text-align: center;">Risk Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for region in regional_data %}
+                    <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        <td style="padding: 1rem; font-weight: 700;">{{ region.region }}</td>
+                        <td style="padding: 1rem; text-align: right;">{{ region.farmers }}</td>
+                        <td style="padding: 1rem; text-align: right;">{{ region.ponds }}</td>
+                        <td style="padding: 1rem; text-align: center;">
+                            {% if 'High' in region.risk %}
+                            <span
+                                style="background: rgba(255,0,85,0.2); color: #ff0055; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{
+                                region.risk }}</span>
+                            {% elif 'Medium' in region.risk %}
+                            <span
+                                style="background: rgba(255,204,0,0.2); color: #ffcc00; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{
+                                region.risk }}</span>
+                            {% else %}
+                            <span
+                                style="background: rgba(0,255,136,0.2); color: #00ff88; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 700;">{{
+                                region.risk }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- TRENDS & ALERTS -->
+    <div>
+        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--accent); padding-left: 1rem;"><span
+                class="emo">📈</span> Disease & Crop
+            Trends</h3>
+
+        <div class="app-card" style="padding: 2rem;">
+            <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Aggregated from community
+                reports and AI predictions over the last 30 days.</p>
+
+            {% for item in data.disease_trends %}
+            <div style="margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                    <span style="font-weight: 700;">{{ item.name }}</span>
+                    <span
+                        style="font-size: 0.8rem; color: {% if item.trend == 'up' %}#ff0055{% elif item.trend == 'down' %}#00ff88{% else %}#aaa{% endif %};">
+                        {% if item.trend == 'up' %}↗ Rising{% elif item.trend == 'down' %}↘ Falling{% else %}→ Stable{%
+                        endif %}
+                    </span>
+                </div>
+                <!-- Simple CSS Bar -->
+                <div
+                    style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                    <div
+                        style="height: 100%; width: {{ item.count * 5 }}%; background: {% if item.trend == 'up' %}#ff0055{% elif item.trend == 'down' %}#00ff88{% else %}var(--primary){% endif %};">
+                    </div>
+                </div>
+                <div style="text-align: right; font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;">{{
+                    item.count }} reports this week</div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="app-card"
+            style="padding: 1.5rem; margin-top: 2rem; display: flex; align-items: center; gap: 1rem; background: linear-gradient(90deg, rgba(0, 210, 255, 0.1), rgba(0,0,0,0));">
+            <div style="font-size: 2rem;">💡</div>
+            <div>
+                <h4 style="margin-bottom: 0.25rem;">Did you know?</h4>
+                <p style="font-size: 0.9rem; color: #ddd;">Based on pond density, <strong>Andhra Pradesh</strong> is
+                    currently the most active aquaculture region, followed by the Mekong Delta.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 900px) {
+        .split-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}

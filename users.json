@@ -1,0 +1,13 @@
+{
+    "local-tester@aqua-ecosystem.io": {
+        "name": "Local Test User (Demo)",
+        "role": "farmer",
+        "joined_at": "2026-02-09T13:32:38.754179",
+        "auth_method": "dev_mock"
+    },
+    "bhogeswararaothirumalasetti@gmail.com": {
+        "name": "bhogi",
+        "role": "farmer",
+        "joined_at": "2026-02-09T13:45:48.454475"
+    }
+}

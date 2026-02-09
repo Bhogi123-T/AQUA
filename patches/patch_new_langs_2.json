@@ -1,0 +1,50 @@
+{
+    "bn": {
+        "nav_farmer": "কৃষক হাব",
+        "login": "লগইন",
+        "logout": "লগআউট",
+        "btn_start": "শুরু করুন"
+    },
+    "vi": {
+        "nav_farmer": "Trung tâm Nông dân",
+        "login": "Đăng nhập",
+        "logout": "Đăng xuất",
+        "btn_start": "Bắt đầu"
+    },
+    "id": {
+        "nav_farmer": "Hub Petani",
+        "login": "Masuk",
+        "logout": "Keluar",
+        "btn_start": "Mulai"
+    },
+    "sw": {
+        "nav_farmer": "Kitovu cha Wakulima",
+        "login": "Ingia",
+        "logout": "Toka",
+        "btn_start": "Anza"
+    },
+    "ha": {
+        "nav_farmer": "Cibiyar Manoma",
+        "login": "Shiga",
+        "logout": "Fita",
+        "btn_start": "Fara"
+    },
+    "it": {
+        "nav_farmer": "Hub Agricoltori",
+        "login": "Accedi",
+        "logout": "Esci",
+        "btn_start": "Inizia"
+    },
+    "pt": {
+        "nav_farmer": "Hub do Agricultor",
+        "login": "Entrar",
+        "logout": "Sair",
+        "btn_start": "Começar"
+    },
+    "mi": {
+        "nav_farmer": "Punyenga Kaipāmu",
+        "login": "Takiuru",
+        "logout": "Takiputa",
+        "btn_start": "Tīmata"
+    }
+}

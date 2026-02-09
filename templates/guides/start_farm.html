@@ -1,0 +1,50 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: var(--primary); margin-bottom: 2rem;"><span
+            class="emo">🚀</span> How to Start Your
+        Farm</h1>
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        Welcome to the future of aquaculture. Starting a farm today requires a blend of traditional wisdom and
+        cutting-edge AI. This guide will walk you through the essential steps to launch your successful aquaculture
+        venture.
+    </p>
+
+    <div style="display: grid; gap: 3rem;">
+        <div
+            style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; border-left: 5px solid var(--accent);">
+            <h3 style="color: var(--accent); font-size: 1.8rem; margin-bottom: 1rem;">1. Site Selection & Water Source
+            </h3>
+            <p>Choosing the right location is 70% of the success. Use our <a href="/location"
+                    style="color: var(--primary);">Location Advisor</a> to check if your soil and climate are suitable
+                for your target species.</p>
+        </div>
+
+        <div
+            style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; border-left: 5px solid var(--primary);">
+            <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1rem;">2. Pond Construction</h3>
+            <p>Ensure your pond is designed for optimal drainage and aeration. For shrimp farming, HDPE liners are
+                highly recommended to maintain water quality and prevent soil-borne diseases.</p>
+        </div>
+
+        <div
+            style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; border-left: 5px solid var(--secondary);">
+            <h3 style="color: var(--secondary); font-size: 1.8rem; margin-bottom: 1rem;">3. Seed Selection</h3>
+            <p>Always source seeds from SPF (Specific Pathogen Free) hatcheries. Use our <a href="/farmer/seed"
+                    style="color: var(--primary);">Seed Checker</a> to verify quality markers before stocking.</p>
+        </div>
+
+        <div
+            style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; border-left: 5px solid #ffcc00;">
+            <h3 style="color: #ffcc00; font-size: 1.8rem; margin-bottom: 1rem;">4. Real-time Monitoring</h3>
+            <p>Install IoT sensors for pH, DO, and Temperature. Link them to your AquaSphere dashboard for 24/7
+                AI-driven monitoring and early warning alerts.</p>
+        </div>
+    </div>
+
+    <div style="margin-top: 4rem; text-align: center;">
+        <a href="/farmer?lang={{ lang }}" class="app-btn-large">Go to Farmer Dashboard</a>
+    </div>
+</div>
+{% endblock %}

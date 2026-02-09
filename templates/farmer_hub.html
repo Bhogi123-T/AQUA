@@ -1,0 +1,524 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">👨‍🌾</span>
+    <h1 style="font-size: 4.5rem; font-weight: 900; margin-bottom: 1rem; letter-spacing: -1px;">{{ trans['farmer_title']
+        | safe }}</h1>
+    <p style="color: var(--text-muted); font-size: 1.4rem;">{{ trans['farmer_desc'] }}</p>
+</div>
+
+<!-- REAL-TIME INTEGRATED FARM COMMAND -->
+<div class="app-card"
+    style="margin-bottom: 4rem; border: 2px solid var(--primary); background: linear-gradient(135deg, rgba(0, 210, 255, 0.05), rgba(0,0,0,0)); text-align: left; padding: 2rem; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 1rem; right: 1rem; display: flex; gap: 10px; align-items: center;">
+        <div id="telemetry-badge" class="live-pulse-badge">{{ trans['live_telemetry'] }}</div>
+        <div id="connection-status" style="font-size: 0.6rem; color: #00ff88;">● {{ trans['connected'] }}</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; width: 100%;">
+        <!-- Biological Health -->
+        <div id="health-card"
+            style="background: rgba(0,255,136,0.05); padding: 2rem; border-radius: 2rem; border: 2px solid rgba(0,255,136,0.2); display: flex; flex-direction: column; justify-content: center;">
+            <p
+                style="font-size: 0.8rem; color: var(--accent); margin-bottom: 1rem; font-weight: 900; letter-spacing: 2px;">
+                {{ trans['stock_health'] }}</p>
+            <div id="live-health" style="font-size: 3.5rem; font-weight: 900; color: white; line-height: 1;">--</div>
+            <div id="health-status"
+                style="font-size: 0.7rem; color: var(--accent); margin-top: 1rem; font-weight: 700; letter-spacing: 1px;">
+                ● ONLINE</div>
+            <div style="height: 6px; background: rgba(0,255,136,0.1); border-radius: 3px; margin-top: 15px;">
+                <div id="live-health-bar" style="width: 0%; height: 100%; background: #00ff88; transition: width 1s;">
+                </div>
+            </div>
+        </div>
+
+        <!-- Water Quality Summary -->
+        <div
+            style="background: rgba(0,210,255,0.05); padding: 2rem; border-radius: 2rem; border: 2px solid rgba(0, 210, 255, 0.2); display: flex; flex-direction: column; justify-content: center;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 2rem; align-items: baseline;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">
+                        D.O.</div>
+                    <div id="live-do" style="font-size: 1.8rem; font-weight: 900; color: white;">--</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">
+                        AMMONIA</div>
+                    <div id="live-ammonia" style="font-size: 1.8rem; font-weight: 900; color: #ffcc00;">--</div>
+                </div>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                <div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">
+                        TEMP</div>
+                    <div id="live-temp" style="font-size: 1.6rem; font-weight: 900; color: white;">--</div>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 800; margin-bottom: 5px;">pH
+                    </div>
+                    <div id="live-ph" style="font-size: 1.6rem; font-weight: 900; color: white;">--</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Risk Level -->
+        <div id="risk-panel"
+            style="background: rgba(255,0,85,0.05); padding: 2rem; border-radius: 2rem; border: 2px solid rgba(255,0,85,0.2); display: flex; flex-direction: column; justify-content: center;">
+            <p style="font-size: 0.8rem; color: #ff0055; margin-bottom: 1rem; font-weight: 900; letter-spacing: 2px;">{{
+                trans['risk_panel'] }}</p>
+            <div id="live-risk" style="font-size: 2.5rem; font-weight: 900; color: white; line-height: 1;">SECURE</div>
+            <p id="live-risk-desc"
+                style="font-size: 0.8rem; color: var(--text-muted); margin-top: 8px; font-weight: 600;">Optimal
+                Environment</p>
+        </div>
+
+        <div id="knowledge-card"
+            style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 2rem; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center;">
+            <p
+                style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 900; letter-spacing: 1px;">
+                🌍 {{ trans['knowledge_graph'] }}</p>
+            <div id="knowledge-status"
+                style="font-size: 1.8rem; font-weight: 900; color: var(--primary); line-height: 1;">{{ trans['active']
+                }}</div>
+            <p id="knowledge-desc" style="font-size: 0.7rem; color: var(--text-muted); margin-top: 8px;">{{
+                trans['synced_data'] }}</p>
+        </div>
+
+        <!-- PRAWNS COUNTER - New Feature -->
+        <a href="/farmer/prawn-count" id="prawns-counter-card"
+            style="text-decoration: none; background: linear-gradient(135deg, rgba(255, 107, 53, 0.08), rgba(0,0,0,0)); padding: 2rem; border-radius: 2rem; border: 2px solid rgba(255, 107, 53, 0.3); display: flex; flex-direction: column; justify-content: center; transition: transform 0.2s;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <p style="font-size: 0.8rem; color: #ff6b35; font-weight: 900; letter-spacing: 2px; margin: 0;">
+                    🦐 PRAWNS COUNTER</p>
+                <div id="prawns-live-badge"
+                    style="font-size: 0.55rem; background: rgba(255, 107, 53, 0.2); color: #ff6b35; padding: 4px 8px; border-radius: 20px; font-weight: 700;">
+                    LIVE</div>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">Stock Count</div>
+                    <div id="prawns-stock-count"
+                        style="font-size: 2.2rem; font-weight: 900; color: #ff6b35; line-height: 1;">--</div>
+                    <div style="font-size: 0.55rem; color: var(--text-muted);">prawns</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 4px;">Est. Weight</div>
+                    <div id="prawns-total-weight"
+                        style="font-size: 2.2rem; font-weight: 900; color: #00ff88; line-height: 1;">--</div>
+                    <div style="font-size: 0.55rem; color: var(--text-muted);">kg</div>
+                </div>
+            </div>
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,107,53,0.2);">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 0.6rem; color: var(--text-muted);">Avg. Body Weight</span>
+                    <span id="prawns-abw" style="font-size: 0.85rem; font-weight: 800; color: white;">-- g</span>
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                    <span
+                        style="background: rgba(255, 255, 255, 0.1); padding: 4px 10px; border-radius: 4px; font-size: 0.6rem; color: white;">👉
+                        Tap for forecast</span>
+                    <span style="font-size: 0.6rem; color: var(--text-muted);">Growth Status</span>
+                    <span id="prawns-growth-status"
+                        style="font-size: 0.7rem; font-weight: 700; color: #00ff88;">--</span>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div
+        style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05);">
+        <p style="font-size: 0.75rem; color: var(--primary); font-family: 'Courier New', monospace; margin: 0;">
+            <span style="color: #00ff88;">{{ trans['ai_advisor_title'] }}:</span> <span id="live-advice">{{
+                trans['analyzing_streams'] }}</span>
+        </p>
+    </div>
+</div>
+
+<script>
+    // Cache for offline mode
+    let cachedFarmerData = null;
+
+    function updateConnectionStatus() {
+        const statusEl = document.getElementById('connection-status');
+        const badgeEl = document.getElementById('telemetry-badge');
+        const healthStatusEl = document.getElementById('health-status');
+        const knowledgeStatusEl = document.getElementById('knowledge-status');
+        const knowledgeCardEl = document.getElementById('knowledge-card');
+        const healthCardEl = document.getElementById('health-card');
+
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            // OFFLINE STATE
+            statusEl.innerHTML = '📡 OFFLINE';
+            statusEl.style.color = '#ff6b6b';
+            badgeEl.innerHTML = '📡 OFFLINE DATA';
+            badgeEl.style.background = 'rgba(255, 107, 107, 0.2)';
+            badgeEl.style.color = '#ff6b6b';
+            badgeEl.style.borderColor = '#ff6b6b';
+
+            // Update Stock Health status
+            healthStatusEl.innerHTML = '📡 OFFLINE';
+            healthStatusEl.style.color = '#ff6b6b';
+            healthCardEl.style.opacity = '0.7';
+
+            // Update Knowledge Graph status
+            knowledgeStatusEl.innerHTML = '📡 OFFLINE';
+            knowledgeStatusEl.style.color = '#ff6b6b';
+            knowledgeCardEl.style.opacity = '0.7';
+
+        } else {
+            // ONLINE STATE
+            statusEl.innerHTML = '● {{ trans["connected"] }}';
+            statusEl.style.color = '#00ff88';
+            badgeEl.innerHTML = '{{ trans["live_telemetry"] }}';
+            badgeEl.style.background = '';
+            badgeEl.style.color = '';
+            badgeEl.style.borderColor = '';
+
+            // Update Stock Health status
+            healthStatusEl.innerHTML = '● ONLINE';
+            healthStatusEl.style.color = 'var(--accent)';
+            healthCardEl.style.opacity = '1';
+
+            // Update Knowledge Graph status
+            knowledgeStatusEl.innerHTML = '● ACTIVE';
+            knowledgeStatusEl.style.color = 'var(--primary)';
+            knowledgeCardEl.style.opacity = '1';
+        }
+    }
+
+    async function updateFarmerDashboard() {
+        try {
+            // Check if online and ALLOW_LIVE_DATA is true
+            if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                showOfflineDashboard();
+                return;
+            }
+
+            const res = await fetch('/api/realtime');
+            const data = await res.json();
+
+            // Cache the data for offline use
+            cachedFarmerData = data;
+            localStorage.setItem('cachedFarmerData', JSON.stringify(data));
+
+            document.getElementById('live-health').innerText = data.health_index + '%';
+            document.getElementById('live-health-bar').style.width = data.health_index + '%';
+
+            document.getElementById('live-do').innerText = data.do + ' mg/L';
+            document.getElementById('live-ammonia').innerText = data.ammonia + ' mg/L';
+            document.getElementById('live-temp').innerText = data.temp + '°C';
+            document.getElementById('live-ph').innerText = data.ph;
+
+            // Risk Logic
+            const riskPanel = document.getElementById('risk-panel');
+            const riskText = document.getElementById('live-risk');
+            const riskDesc = document.getElementById('live-risk-desc');
+            const advisor = document.getElementById('live-advice');
+
+            if (data.oxygen_crash_prob > 10 || data.do < 4.5) {
+                riskPanel.style.borderColor = "#ff0055";
+                riskText.innerText = "CRITICAL";
+                riskText.style.color = "#ff0055";
+                riskDesc.innerText = "Oxygen level dropping - CRASH RISK!";
+                advisor.innerText = "URGENT: Deploy all " + data.aerators + " aerators immediately and check power usage (" + data.power_usage + " kWh)";
+            } else if (data.ammonia > 0.18) {
+                riskPanel.style.borderColor = "#ffcc00";
+                riskText.innerText = "WARNING";
+                riskText.style.color = "#ffcc00";
+                riskDesc.innerText = "High Ammonia levels detected";
+                advisor.innerText = "Recommendation: Reduce feed by 20% and increase bottom aeration.";
+            } else {
+                riskPanel.style.borderColor = "rgba(0,255,136,0.2)";
+                riskText.innerText = "SECURE";
+                riskText.style.color = "#00ff88";
+                riskDesc.innerText = "Conditions are optimal for growth";
+                advisor.innerText = "Next feeding window in " + data.next_feed + " minutes. Harvest readiness: " + data.harvest_days + " days.";
+            }
+
+            // Update Prawns Counter
+            if (data.prawn_stock_count) {
+                document.getElementById('prawns-stock-count').innerText = data.prawn_stock_count.toLocaleString();
+                document.getElementById('prawns-total-weight').innerText = data.prawn_total_weight;
+                document.getElementById('prawns-abw').innerText = data.prawn_abw + ' g';
+
+                const statusEl = document.getElementById('prawns-growth-status');
+                statusEl.innerText = data.prawn_growth_status;
+                statusEl.style.color = data.prawn_growth_status === 'Excellent' ? '#00ff88' : (data.prawn_growth_status === 'Good' ? '#00d2ff' : '#ffcc00');
+            }
+
+            // Feature 2: Explainable AI
+            fetch('/api/explainable_ai')
+                .then(r => r.json())
+                .then(xai => {
+                    document.getElementById('xai-reason').innerText = "AI REASON: " + xai.reason;
+                });
+
+            // Feature 4: Feed Fraud
+            fetch('/api/feed_fraud')
+                .then(r => r.json())
+                .then(f => {
+                    const el = document.getElementById('fraud-status');
+                    el.innerText = f.status === "Normal" ? "VERIFIED: QUALITY PASS" : "⚠️ FEED ANOMALY DETECTED";
+                    el.style.background = f.status === "Normal" ? "rgba(0,255,136,0.1)" : "rgba(255,0,85,0.1)";
+                    el.style.color = f.status === "Normal" ? "#00ff88" : "#ff0055";
+                });
+
+            // Update connection status
+            updateConnectionStatus();
+
+        } catch (e) {
+            console.error("Farmer Dashboard Sync Error:", e);
+            showOfflineDashboard();
+        }
+    }
+
+    function showOfflineDashboard() {
+        // Update status badge to show offline
+        updateConnectionStatus();
+
+        // Try to load cached data
+        const cached = localStorage.getItem('cachedFarmerData');
+        if (cached) {
+            const data = JSON.parse(cached);
+
+            // Display cached data with offline indicator
+            document.getElementById('live-health').innerText = data.health_index + '% 📡';
+            document.getElementById('live-health-bar').style.width = data.health_index + '%';
+            document.getElementById('live-health-bar').style.opacity = '0.6';
+
+            document.getElementById('live-do').innerText = data.do + ' 📡';
+            document.getElementById('live-ammonia').innerText = data.ammonia + ' 📡';
+            document.getElementById('live-temp').innerText = data.temp + ' 📡';
+            document.getElementById('live-ph').innerText = data.ph + ' 📡';
+
+            // Show risk from cached data
+            const riskPanel = document.getElementById('risk-panel');
+            const riskText = document.getElementById('live-risk');
+            const riskDesc = document.getElementById('live-risk-desc');
+
+            riskPanel.style.borderColor = "rgba(255,107,107,0.4)";
+            riskText.innerText = "OFFLINE";
+            riskText.style.color = "#ff6b6b";
+            riskDesc.innerText = "Last update: Cached data";
+
+            // Update health and knowledge status
+            document.getElementById('health-status').innerText = '📡 OFFLINE';
+            document.getElementById('knowledge-status').innerText = '📡 OFFLINE';
+
+            // Show cached prawn data if available
+            if (data.prawn_stock_count) {
+                document.getElementById('prawns-stock-count').innerText = data.prawn_stock_count.toLocaleString() + ' 📡';
+                document.getElementById('prawns-total-weight').innerText = data.prawn_total_weight;
+                document.getElementById('prawns-abw').innerText = data.prawn_abw + ' g';
+                document.getElementById('prawns-growth-status').innerText = data.prawn_growth_status;
+                const pBadge = document.getElementById('prawns-live-badge');
+                if (pBadge) {
+                    pBadge.innerText = 'OFFLINE';
+                    pBadge.style.background = 'rgba(255,107,107,0.2)';
+                    pBadge.style.color = '#ff6b6b';
+                }
+            }
+
+        } else {
+            // No cached data - show placeholder
+            document.getElementById('live-health').innerText = '-- 📡';
+            document.getElementById('live-do').innerText = '-- 📡';
+            document.getElementById('live-ammonia').innerText = '-- 📡';
+            document.getElementById('live-temp').innerText = '-- 📡';
+            document.getElementById('live-ph').innerText = '-- 📡';
+
+            const riskPanel = document.getElementById('risk-panel');
+            const riskText = document.getElementById('live-risk');
+            const riskDesc = document.getElementById('live-risk-desc');
+
+            riskPanel.style.borderColor = "rgba(255,107,107,0.4)";
+            riskText.innerText = "NO DATA";
+            riskText.style.color = "#ff6b6b";
+            riskDesc.innerText = "No cached data available";
+
+            // Update health and knowledge status
+            document.getElementById('health-status').innerText = '📡 OFFLINE';
+            document.getElementById('knowledge-status').innerText = '📡 OFFLINE';
+
+            // Prawn counter placeholders
+            document.getElementById('prawns-stock-count').innerText = '-- 📡';
+            document.getElementById('prawns-total-weight').innerText = '--';
+            document.getElementById('prawns-abw').innerText = '-- g';
+            document.getElementById('prawns-growth-status').innerText = '--';
+            const pBadge = document.getElementById('prawns-live-badge');
+            if (pBadge) {
+                pBadge.innerText = 'NO DATA';
+                pBadge.style.background = 'rgba(255,107,107,0.2)';
+                pBadge.style.color = '#ff6b6b';
+            }
+        }
+    }
+
+    // Initialize dashboard
+    updateFarmerDashboard();
+    updateConnectionStatus();
+
+    // Update every 3 seconds only if online and ALLOW_LIVE_DATA is true
+    setInterval(() => {
+        if (navigator.onLine && window.ALLOW_LIVE_DATA) {
+            updateFarmerDashboard();
+        }
+    }, 3000);
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateFarmerDashboard);
+    window.addEventListener('offline', showOfflineDashboard);
+
+    // Also check connection status periodically
+    setInterval(updateConnectionStatus, 1000);
+</script>
+
+<div class="grid">
+    <!-- Community Hub (New Feature) -->
+    <a href="/community?lang={{ lang }}" class="app-card market-item shrimp"
+        style="border: 3px solid rgba(255, 204, 0, 0.4); box-shadow: 0 0 30px rgba(255, 204, 0, 0.1);">
+        <span class="app-emoji">🤝</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: #ffcc00;">{{ trans['community_title']
+            or 'Community' }}</h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['community_desc'] or 'Connect, Share, and Discuss' }}
+        </p>
+    </a>
+
+    <!-- Regional Analytics (New Feature) -->
+    <a href="/community/insights?lang={{ lang }}" class="app-card market-item crab"
+        style="border: 3px solid rgba(0, 210, 255, 0.4); box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);">
+        <span class="app-emoji">📊</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: var(--primary);">{{
+            trans['community_insights_title'] or 'Analytics' }}</h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['community_insights_desc'] or 'Regional Trends &
+            Density' }}</p>
+    </a>
+    <!-- Disease Early Warning System (Feature 1) -->
+    <a href="/early-warning?lang={{ lang }}" class="app-card market-item fish"
+        style="border: 3px solid rgba(0, 210, 255, 0.4); box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);">
+        <span class="app-emoji">📡</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: var(--primary);">{{
+            trans['early_warning_title'] }}</h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['early_warning_desc'] }}</p>
+    </a>
+
+    <!-- Feed Fraud Detector (Feature 4) -->
+    <a href="/farmer/feed?lang={{ lang }}" class="app-card market-item shrimp" id="feed-card"
+        style="border: 3px solid rgba(0, 255, 136, 0.4); box-shadow: 0 0 30px rgba(0, 255, 136, 0.1);">
+        <span class="app-emoji">🧁</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: var(--accent);">{{
+            trans['feed_verifier_title'] }}</h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['feed_verifier_desc'] }}</p>
+        <div id="fraud-status"
+            style="margin-top: 1.5rem; font-size: 0.9rem; background: rgba(0,255,136,0.1); color: #00ff88; padding: 10px 20px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">
+            {{ trans['verified_pass'] }}</div>
+    </a>
+
+    <!-- Sustainability & Carbon (Feature 8) -->
+    <a href="/sustainability-tracker?lang={{ lang }}" class="app-card market-item crab"
+        style="border: 3px solid rgba(255, 0, 85, 0.4); box-shadow: 0 0 30px rgba(255, 0, 85, 0.1);">
+        <span class="app-emoji">🌍</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: #ff0055;">{{ trans['eco_hub_title'] }}
+        </h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['eco_hub_desc'] }}</p>
+    </a>
+
+    <!-- Insurance Claim Engine (Feature 6) -->
+    <a href="/insurance-claims?lang={{ lang }}" class="app-card market-item fish"
+        style="border: 3px solid rgba(0, 210, 255, 0.4);">
+        <span class="app-emoji">🛡️</span>
+        <h3 style="font-size: 2.5rem; font-weight: 900; margin-top: 1rem; color: var(--primary);">{{
+            trans['insurance_center_title'] }}</h3>
+        <p style="margin-top: 1rem; font-weight: 500;">{{ trans['insurance_center_desc'] }}</p>
+    </a>
+
+    <!-- Disease Analysis (Added Explainable AI - Feature 2) -->
+    <a href="/farmer/disease?lang={{ lang }}" class="app-card market-item fish">
+        <span class="app-emoji">🧪</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['disease_title'] | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['feat_disease_desc'] }}</p>
+        <div id="xai-reason"
+            style="margin-top: 1rem; font-size: 0.65rem; color: var(--primary); font-style: italic; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px;">
+            AI REASON: Initializing neural logic...</div>
+    </a>
+
+    <!-- Feed Manager -->
+    <a href="/farmer/feed?lang={{ lang }}" class="app-card market-item shrimp">
+        <span class="app-emoji">🍽️</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['feed_title'] | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['feed_desc'] }}</p>
+    </a>
+
+    <!-- Stocking Advisor -->
+    <a href="/farmer/stocking?lang={{ lang }}" class="app-card market-item crab">
+        <span class="app-emoji">🏠</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['stock_title'] | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['stock_desc'] }}</p>
+    </a>
+
+    <!-- Seed Checker -->
+    <a href="/farmer/seed?lang={{ lang }}" class="app-card market-item fish">
+        <span class="app-emoji">💎</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['seed_title'] | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['seed_desc'] }}</p>
+    </a>
+
+    <!-- Yield Forecaster -->
+    <a href="/farmer/yield?lang={{ lang }}" class="app-card market-item shrimp">
+        <span class="app-emoji">📈</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['yield_title'] | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['feat_yield_desc'] }}</p>
+    </a>
+
+    <!-- Seasonal Advisor -->
+    <a href="/farmer/seasonal?lang={{ lang }}" class="app-card market-item crab">
+        <span class="app-emoji">🌤️</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ (trans['seasonal_title'] or 'Seasonal
+            Advisor') | safe }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['seasonal_desc'] or 'AI
+            Season Recommendations' }}</p>
+    </a>
+
+    <!-- Harvest Predictor -->
+    <a href="/harvest?lang={{ lang }}" class="app-card market-item fish">
+        <span class="app-emoji">⚖️</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['harvest_title'] }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['harvest_desc'] }}</p>
+    </a>
+
+    <!-- AI Vision Scan -->
+    <a href="/farmer/vision?lang={{ lang }}" class="app-card market-item shrimp">
+        <span class="app-emoji">📸</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['vision_title'] }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['vision_desc'] }}</p>
+    </a>
+
+    <!-- Sustainability Tracker -->
+    <a href="/farmer/sustainability?lang={{ lang }}" class="app-card market-item crab">
+        <span class="app-emoji">🌱</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['eco_tracker_title'] }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['eco_tracker_desc'] }}</p>
+    </a>
+
+    <!-- Live Logistics -->
+    <a href="/logistics?lang={{ lang }}" class="app-card market-item fish">
+        <span class="app-emoji">🚛</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-top: 1rem;">{{ trans['nav_logistics'] }}</h3>
+        <p style="margin-top: 1rem; color: var(--text-muted); font-size: 1.1rem;">{{ trans['logistics_desc'] }}</p>
+    </a>
+    <div class="app-card" style="border-top: 5px solid #ffcc00;">
+        <span class="app-emoji">🛡️</span>
+        <h3 style="font-size: 2rem; font-weight: 800; margin-bottom: 1rem;">{{ trans['aquacare_title'] }}</h3>
+        <p style="margin-bottom: 2.5rem; color: var(--text-muted);">{{ trans['aquacare_desc'] }}</p>
+        <div style="display: flex; gap: 1rem;">
+            <a href="/precautions?lang={{ lang }}" class="app-btn-large"
+                style="text-decoration: none; padding: 1rem; font-size: 1rem; background: #ffcc00; color: #000; flex: 1;">📖
+                {{ trans['advisor'] }}</a>
+            <a href="/farmer/logbook?lang={{ lang }}" class="app-btn-large"
+                style="text-decoration: none; padding: 1rem; font-size: 1rem; background: rgba(255,255,255,0.1); color: #fff; flex: 1;">🧾
+                {{ trans['logbook'] }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

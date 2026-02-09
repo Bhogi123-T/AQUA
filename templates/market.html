@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<header style="margin-bottom: 3rem; text-align: center; position: relative;">
+    <div id="market-badge" class="live-pulse-badge"
+        style="display: inline-block; white-space: nowrap; font-size: 0.65rem; padding: 0.3rem 0.6rem; margin-bottom: 1rem;"
+        data-badge-type="market">🔴 LIVE TELEMETRY</div>
+    <h1
+        style="font-size: 4rem; font-weight: 900; background: linear-gradient(to right, #00d2ff, #3a7bd5); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ trans['market_global_title'] | safe }}
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.4rem;">{{ trans['market_global_desc'] }}</p>
+</header>
+
+<div class="app-card" style="margin-bottom: 5rem; max-width: 900px;">
+    <span class="app-emoji">🌍</span>
+    <div style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+        <div class="app-input-group" style="flex: 1; min-width: 250px;">
+            <span class="app-label">🏳️ {{ trans['filter_country'] }}</span>
+            <select id="country-filter" class="app-input" onchange="filterMarket()">
+                <option value="all">{{ trans['all_countries'] }}</option>
+                <option value="India">{{ trans['country_india'] }}</option>
+                <option value="Vietnam">{{ trans['country_vietnam'] }}</option>
+                <option value="Norway">Norway</option>
+                <option value="USA">{{ trans['country_usa'] }}</option>
+                <option value="Brazil">Brazil</option>
+                <option value="China">{{ trans['country_china'] }}</option>
+            </select>
+        </div>
+        <div class="app-input-group" style="flex: 1; min-width: 250px;">
+            <span class="app-label">🐟 {{ trans['filter_species'] }}</span>
+            <select id="species-filter" class="app-input" onchange="filterMarket()">
+                <option value="all">{{ trans['all_species'] }}</option>
+                <option value="Salmon">Salmon</option>
+                <option value="Vannamei">{{ trans['species_vannamei'] }}</option>
+                <option value="Tiger Prawn">Tiger Prawn</option>
+                <option value="Catfish">{{ trans['species_catfish'] }}</option>
+                <option value="Tilapia">{{ trans['species_tilapia'] }}</option>
+            </select>
+        </div>
+    </div>
+</div>
+
+<div class="market-grid" id="market-items"
+    style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.5rem; width: 100%;">
+    {% for s in stocks %}
+    <div class="card market-card" data-country="{{ s.country }}" data-species="{{ s.species }}"
+        style="padding: 2.5rem; margin: 0; position: relative;">
+        <span style="font-size: 4rem; margin-bottom: 1.5rem; display: block;">{{ s.flag }}</span>
+        <h3 style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--primary); font-weight: 800;">
+            {{ s.species_display }}
+        </h3>
+        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem;">{{ s.country_display }} • {{
+            s.state_display }}</p>
+
+        <div style="font-size: 2.5rem; font-weight: 900; color: var(--accent); margin-bottom: 0.5rem;">
+            ${{ s.price }}<span style="font-size: 1.2rem; color: var(--text-muted); font-weight: 500;">/ kg</span>
+        </div>
+        <div style="font-size: 1.8rem; font-weight: 700; color: #ff9500; margin-bottom: 0.5rem;">
+            ₹{{ s.price_inr }}<span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ kg</span>
+        </div>
+        <div
+            style="color: #00ff88; font-weight: 800; font-size: 0.8rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; justify-content: center;">
+            🚀 {{ trans['trending_up'] }}
+            <span style="background: rgba(0, 255, 136, 0.1); padding: 4px 8px; border-radius: 8px; font-size: 0.7rem;">
+                🔥 {{ trans['best_sell'] }}
+            </span>
+        </div>
+        <p style="font-size: 0.65rem; color: var(--text-muted); margin-bottom: 1.5rem; opacity: 0.8;">⏱️ Live Update: {{
+            s.last_update }}</p>
+
+        <form action="/place_order" method="POST" style="width: 100%;">
+            <input type="hidden" name="species" value="{{ s.species }}">
+            <input type="hidden" name="country" value="{{ s.country }}">
+            <div class="app-input-group" style="margin-bottom: 1.5rem;">
+                <input type="number" name="qty" value="1" min="1" max="{{ s.qty }}" class="app-input">
+            </div>
+            <button class="app-btn-large" style="padding: 1rem; font-size: 1.1rem;">📦 {{ trans['btn_order'] }}</button>
+        </form>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    function filterMarket() {
+        const country = document.getElementById('country-filter').value;
+        const species = document.getElementById('species-filter').value;
+        const items = document.querySelectorAll('.market-card');
+
+        items.forEach(item => {
+            const countryMatch = country === 'all' || item.getAttribute('data-country') === country;
+            const speciesMatch = species === 'all' || item.getAttribute('data-species') === species;
+            item.style.display = (countryMatch && speciesMatch) ? 'flex' : 'none';
+        });
+    }
+
+    // Update market badge status based on connection
+    function updateMarketBadge() {
+        const badge = document.getElementById('market-badge');
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            badge.innerHTML = '📡 OFFLINE';
+            badge.style.backgroundColor = '#ff6b6b';
+            badge.style.color = 'white';
+        } else {
+            badge.innerHTML = '🔴 LIVE TELEMETRY';
+            badge.style.backgroundColor = '';
+            badge.style.color = '';
+        }
+    }
+
+    function updatePrices() {
+        // BLOCK IF OFFLINE OR LOCATION DISABLED - DO NOT FETCH LIVE MARKET DATA
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            console.log("Live market data disabled: offline/location required");
+            return;
+        }
+
+        fetch('/api/market_live')
+            .then(res => res.json())
+            .then(response => {
+                // Handle new API response format
+                const data = response.data || response;
+
+                const items = document.querySelectorAll('.market-card');
+                items.forEach(item => {
+                    const species = item.getAttribute('data-species');
+                    const liveData = data.find(d => d.species === (species === 'Tiger Prawn' ? 'Tiger Prawn' : species));
+                    if (liveData) {
+                        const priceEl = item.querySelector('[style*="color: var(--accent)"]');
+                        const inrEl = item.querySelector('[style*="color: #ff9500"]');
+                        const timeEl = item.querySelector('[style*="opacity: 0.8"]');
+
+                        if (priceEl) priceEl.innerHTML = `$${liveData.price}<span style="font-size: 1.2rem; color: var(--text-muted); font-weight: 500;">/ kg</span>`;
+                        if (inrEl) inrEl.innerHTML = `₹${(liveData.price * 83.0).toFixed(2)}<span style="font-size: 1rem; color: var(--text-muted); font-weight: 500;">/ kg</span>`;
+                        if (timeEl) timeEl.innerHTML = `⏱️ Live Update: ${response.summary?.last_update || new Date().toLocaleTimeString()}`;
+                    }
+                });
+            })
+            .catch(err => console.log("Market update failed:", err));
+    }
+
+    // Only update prices if online
+    const priceUpdateInterval = setInterval(() => {
+        updateMarketBadge();
+        if (navigator.onLine && window.ALLOW_LIVE_DATA) {
+            updatePrices();
+        }
+    }, 5000);
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateMarketBadge);
+    window.addEventListener('offline', updateMarketBadge);
+
+    // Initial check
+    updateMarketBadge();
+</script>
+{% endblock %}

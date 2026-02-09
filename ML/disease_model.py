@@ -1,0 +1,20 @@
+# ml/disease_model.py
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+import joblib
+
+# Load dataset
+df = pd.read_csv("dataset/disease.csv")
+
+# Features to match generate_disease.py and app.py requirements
+X = df[["Water_Temp", "pH", "DO", "Salinity", "Turbidity"]]
+y = df["Disease_Risk"]
+
+# Train model
+model = RandomForestClassifier(n_estimators=20, random_state=42)
+model.fit(X, y)
+
+# Save model
+joblib.dump(model, "models/disease.pkl")
+
+print("Disease model trained and saved successfully!")

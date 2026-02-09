@@ -1,0 +1,260 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🚛</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['live_transport'] }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['logistics_meta_desc'] }}</p>
+
+    <!-- NEW ORDER TRACKING SEARCH (Bus Tracking Style) -->
+    <div class="app-card"
+        style="margin: 2rem auto 4rem; max-width: 600px; border-style: dashed; padding: 2rem; background: rgba(0,210,255,0.05);">
+        <h4 style="color: var(--primary); margin-bottom: 1rem; font-size: 1rem;"><span class="emo">🔍</span> {{
+            trans['quick_tracker'] or 'QUICK
+            ORDER TRACKER' }}</h4>
+        <div style="display: flex; gap: 10px;">
+            <input type="text" id="order-id-input" class="app-input"
+                placeholder="{{ trans['phone_email'] or 'Enter Order ID' }}"
+                style="flex: 1; padding: 1rem; font-size: 1rem;">
+            <button
+                onclick="window.location.href='/track_order?order_id=' + document.getElementById('order-id-input').value"
+                class="app-btn-large"
+                style="width: auto; padding: 0 2rem; font-size: 1rem; height: 3.8rem; display: flex; align-items: center;">{{
+                trans['track_btn'] or 'TRACK' }}</button>
+        </div>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: 1fr; max-width: 1000px; width: 100%;">
+    <!-- Map Visualization -->
+    <div class="app-card"
+        style="max-width: 100%; height: 450px; background: #0a1128; border: 2px solid var(--primary); padding: 0; position: relative; overflow: hidden;">
+        <div
+            style="position: absolute; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; opacity: 0.05;">
+            <span style="font-size: 20rem;">🗺️</span>
+        </div>
+
+        <div id="ship-1" style="position: absolute; top: 30%; left: 15%; transition: all 1s linear; z-index: 10;">
+            <div
+                style="background: var(--primary); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; box-shadow: 0 0 15px rgba(0,210,255,0.4);">
+                🚢 AQ-8892 (King Crab)
+            </div>
+            <div
+                style="width: 12px; height: 12px; background: white; border-radius: 50%; margin: 6px auto; box-shadow: 0 0 10px white; animation: pulse 2s infinite;">
+            </div>
+        </div>
+
+        <div id="ship-2" style="position: absolute; top: 60%; left: 55%; transition: all 1s linear; z-index: 10;">
+            <div
+                style="background: var(--accent); padding: 6px 14px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; color: #000; white-space: nowrap; box-shadow: 0 0 15px rgba(0,255,136,0.4);">
+                🚚 TR-441 (Vannamei)
+            </div>
+            <div
+                style="width: 12px; height: 12px; background: white; border-radius: 50%; margin: 6px auto; box-shadow: 0 0 10px white; animation: pulse 2s infinite;">
+            </div>
+        </div>
+
+        <div
+            style="position: absolute; bottom: 2rem; left: 2rem; background: rgba(15, 23, 42, 0.9); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid var(--glass-border); font-size: 0.9rem; z-index: 20;">
+            <p
+                style="color: var(--primary); font-weight: 800; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">
+                📡 {{ trans['live_gps'] }}</p>
+            <div style="color: white; font-family: monospace;">
+                AQ-8892: <span id="pos-1" style="color: var(--accent);">16.42° N, 82.15° E</span><br>
+                TR-441: <span id="pos-2" style="color: var(--accent);">10.76° N, 106.66° E</span>
+            </div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; width: 100%;">
+        <!-- Real-Time User Tracking Card -->
+        <div class="app-card"
+            style="max-width: 100%; border: 2px solid var(--accent); background: rgba(0, 255, 136, 0.05); align-items: flex-start; text-align: left; padding: 2.5rem; position: relative;">
+            <div
+                style="position: absolute; top: 1.5rem; right: 1.5rem; width: 12px; height: 12px; background: #00ff88; border-radius: 50%; box-shadow: 0 0 15px #00ff88; animation: pulse 1.5s infinite;">
+            </div>
+            <h3 style="font-size: 1.8rem; color: var(--accent); margin-bottom: 1rem;"><span class="emo">📦</span> LIVE
+                ORDER #AQ102</h3>
+            <p style="font-size: 1.1rem; color: var(--text-primary); margin-bottom: 1.5rem;"><strong>Current
+                    Status:</strong> <span style="color: #00ff88;">En Route to You</span></p>
+
+            <div style="margin-bottom: 2rem; width: 100%;">
+                <div
+                    style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                    <span>📍 Origin: Central Warehouse</span>
+                    <span>📍 You: <span id="my-city">Detecting...</span></span>
+                </div>
+                <div
+                    style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; position: relative;">
+                    <div id="prog-bar"
+                        style="width: 65%; height: 100%; background: linear-gradient(to right, var(--primary), var(--accent)); transition: width 2s ease-in-out;">
+                    </div>
+                </div>
+            </div>
+
+            <p style="font-size: 1.4rem; font-weight: 800; color: white; margin-bottom: 0.5rem;">⏱️ Distance: <span
+                    id="live-dist">Calculating...</span> km</p>
+            <p style="font-size: 1.1rem; color: var(--text-muted);">Status: <strong>Real-time Satellite
+                    Tracking</strong></p>
+        </div>
+
+        <!-- Global Logistics Card 1 -->
+        <div class="app-card"
+            style="max-width: 100%; border-left: 6px solid var(--primary); align-items: flex-start; text-align: left; padding: 2.5rem;">
+            <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.4rem;">EX-8892</h3>
+                <span
+                    style="background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 6px 15px; border-radius: 10px; font-size: 0.85rem; font-weight: 800;">🌍
+                    INTERNATIONAL</span>
+            </div>
+            <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong>📍 From:</strong> Chittagong, BD</p>
+            <p style="font-size: 1.1rem; margin-bottom: 1.5rem;"><strong>🏁 To:</strong> Tokyo, JP</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 700;">⏱️ ETA: 2 {{ trans['days'] }}</p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        50% {
+            transform: scale(2);
+            opacity: 0;
+        }
+
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+</style>
+
+<script>
+    const ship1 = document.getElementById('ship-1');
+    const ship2 = document.getElementById('ship-2');
+    const pos1 = document.getElementById('pos-1');
+    const pos2 = document.getElementById('pos-2');
+
+    // Cache for offline mode
+    let cachedLogisticsData = null;
+
+    // Geolocation-based Live Tracking
+    if (navigator.geolocation) {
+        navigator.geolocation.watchPosition(async (pos) => {
+            // Skip if offline
+            if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                return;
+            }
+
+            const userLat = pos.coords.latitude;
+            const userLon = pos.coords.longitude;
+
+            // Static Warehouse (Chennai example)
+            const warehouseLat = 13.0827;
+            const warehouseLon = 80.2707;
+
+            // Haversine Distance Formula
+            const R = 6371; // km
+            const dLat = (userLat - warehouseLat) * Math.PI / 180;
+            const dLon = (userLon - warehouseLon) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(warehouseLat * Math.PI / 180) * Math.cos(userLat * Math.PI / 180) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            const distance = (R * c).toFixed(1);
+
+            document.getElementById('live-dist').innerText = distance;
+
+            // Get City Name
+            try {
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${userLat}&lon=${userLon}&format=json`);
+                const data = await res.json();
+                document.getElementById('my-city').innerText = data.address.city || data.address.town || "Your Location";
+            } catch (e) { }
+        });
+    }
+
+    async function updateLogisticsMap() {
+        try {
+            // Check if online and ALLOW_LIVE_DATA is true
+            if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                showOfflineLogistics();
+                return;
+            }
+
+            const res = await fetch('/api/realtime');
+            const data = await res.json();
+
+            // Cache the data for offline use
+            cachedLogisticsData = data;
+            localStorage.setItem('cachedLogisticsData', JSON.stringify(data));
+
+            // Move Domestic Truck (based on order progress)
+            const truck = document.getElementById('ship-2');
+            truck.style.left = (15 + (data.order_progress * 0.7)) + '%';
+            document.getElementById('pos-2').innerText = `${(10.76 + data.order_progress * 0.05).toFixed(2)}° N, ${(106.66 + data.order_progress * 0.1).toFixed(2)}° E`;
+
+            // Move International Ship (direct backend GPS)
+            const ship = document.getElementById('ship-1');
+            ship.style.left = (30 + (data.ship_1.lat % 1) * 20) + '%';
+            document.getElementById('pos-1').innerText = `${data.ship_1.lat}° N, ${data.ship_1.lon}° E`;
+
+            // Update Progress Bar
+            const prog = document.getElementById('prog-bar');
+            if (prog) prog.style.width = data.order_progress + '%';
+
+        } catch (e) {
+            console.error("Logistics Map Error:", e);
+            showOfflineLogistics();
+        }
+    }
+
+    function showOfflineLogistics() {
+        // Try to load cached data
+        const cached = localStorage.getItem('cachedLogisticsData');
+        if (cached) {
+            const data = JSON.parse(cached);
+
+            // Update positions with cached data
+            document.getElementById('pos-1').innerText = `${data.ship_1.lat}° N, ${data.ship_1.lon}° E 📡 (Offline)`;
+            document.getElementById('pos-2').innerText = `${(10.76 + data.order_progress * 0.05).toFixed(2)}° N, ${(106.66 + data.order_progress * 0.1).toFixed(2)}° E 📡 (Offline)`;
+
+            // Update progress bar
+            const prog = document.getElementById('prog-bar');
+            if (prog) prog.style.width = data.order_progress + '%';
+
+            // Show offline indicator
+            document.getElementById('live-dist').innerText = document.getElementById('live-dist').innerText + " 📡";
+        } else {
+            // No cached data available
+            document.getElementById('pos-1').innerText = "📡 Location unavailable - Offline";
+            document.getElementById('pos-2').innerText = "📡 Location unavailable - Offline";
+            document.getElementById('live-dist').innerText = "-- 📡 Offline";
+        }
+    }
+
+    // Initialize logistics map
+    updateLogisticsMap();
+
+    // Update every 2 seconds only if online and ALLOW_LIVE_DATA is true
+    setInterval(() => {
+        if (navigator.onLine && window.ALLOW_LIVE_DATA) {
+            updateLogisticsMap();
+        }
+    }, 2000);
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateLogisticsMap);
+    window.addEventListener('offline', showOfflineLogistics);
+</script>
+
+<div style="text-align: center; margin-top: 4rem; margin-bottom: 4rem;">
+    <a href="/farmer?lang={{ lang }}" class="app-btn-large"
+        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1.2rem 3rem;">🔙
+        {{ trans['back'] }}</a>
+</div>
+{% endblock %}

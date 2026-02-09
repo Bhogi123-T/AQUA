@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🌱</span>
+    <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['sustainability_tracker_title'] or
+        'SUSTAINABILITY TRACKER' }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['sustainability_tracker_desc'] or 'Carbon & Water
+        Footprint Analysis for ESG Compliance' }}</p>
+</div>
+
+<div class="grid" style="margin-bottom: 5rem;">
+    <!-- Main Sustainability Card -->
+    <div class="app-card"
+        style="text-align: left; align-items: flex-start; padding: 3rem; border: 2px solid var(--accent); background: linear-gradient(135deg, rgba(0,255,136,0.05), rgba(0,0,0,0));">
+        <h4 style="color: var(--accent); margin-bottom: 2rem; letter-spacing: 2px;"><span class="emo">🌍</span> ESTATE
+            SCORECARD</h4>
+
+        <div style="margin-bottom: 3rem; text-align: center; width: 100%;">
+            <div style="font-size: 5rem; font-weight: 900; color: #00ff88; line-height: 1;">82%</div>
+            <div
+                style="font-size: 1rem; color: var(--text-muted); font-weight: 800; letter-spacing: 3px; margin-top: 1rem;">
+                SUSTAINABILITY INDEX</div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; width: 100%;">
+            <div
+                style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1.5rem; border-left: 4px solid var(--primary);">
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem;">WATER CONSERVATION</p>
+                <div style="font-size: 1.5rem; font-weight: 800; color: white;">+18% Saved</div>
+                <p style="font-size: 0.6rem; color: #00ff88; margin-top: 5px;">vs Traditional Methods</p>
+            </div>
+            <div
+                style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1.5rem; border-left: 4px solid #ff9900;">
+                <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem;">CARBON FOOTPRINT</p>
+                <div style="font-size: 1.5rem; font-weight: 800; color: white;">2.4 <small>ton CO2e/ha</small></div>
+                <p style="font-size: 0.6rem; color: #ff9900; margin-top: 5px;">Low Emission Tier</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Traceability Passport Card (Feature 7) -->
+    <div class="app-card"
+        style="text-align: left; align-items: flex-start; padding: 3rem; background: rgba(58, 123, 213, 0.05); border: 1px solid var(--secondary);">
+        <h4 style="color: var(--secondary); margin-bottom: 2rem; letter-spacing: 2px;"><span class="emo">🛡️</span>
+            EXPORT PASSPORT</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">Ready for US/EU export
+            certification with full traceability.</p>
+
+        <div
+            style="display: flex; gap: 2rem; align-items: center; background: white; padding: 1rem; border-radius: 1.5rem; margin-bottom: 2rem; width: 100%;">
+            <div id="qrcode-trace" style="width: 100px; height: 100px;"></div>
+            <div style="color: #000;">
+                <div style="font-weight: 900; font-size: 0.8rem; margin-bottom: 5px;">BATCH ID: AQ-2026-X8</div>
+                <div style="font-size: 0.7rem; opacity: 0.7;">Click to download QR Passport</div>
+            </div>
+        </div>
+
+        <ul style="list-style: none; padding: 0; font-size: 0.85rem; line-height: 2;">
+            <li>✅ Antibiotic-Free Verified (Batch 2026-01)</li>
+            <li>✅ Water Quality History Synchronized</li>
+            <li>✅ Feed Source Authenticity Verified</li>
+            <li>✅ 100% Traceable to Pond 4 (GPS Validated)</li>
+        </ul>
+
+        <button class="app-btn-large" style="margin-top: 2rem; padding: 1rem; font-size: 0.85rem;">EXPORT BATCH PASSPORT
+            (PDF)</button>
+    </div>
+</div>
+
+<script>
+    window.addEventListener('load', () => {
+        new QRCode(document.getElementById("qrcode-trace"), {
+            text: "https://aquasphere-trace.io/batch/AQ-2026-X8",
+            width: 100,
+            height: 100,
+            colorDark: "#0f172a",
+            colorLight: "#ffffff"
+        });
+    });
+</script>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer" style="color: var(--text-muted); font-weight: 800; text-decoration: none;">🔙 {{
+        trans['back_to_hub'] or 'BACK TO COMMAND HUB' }}</a>
+</div>
+{% endblock %}

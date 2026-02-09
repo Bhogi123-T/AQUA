@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .sensor-normal {
+        border-left: 5px solid #00ff88 !important;
+    }
+
+    .sensor-optimal {
+        border-left: 5px solid #00d2ff !important;
+    }
+
+    .sensor-alert {
+        border-left: 5px solid #ff0055 !important;
+    }
+</style>
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">🛰️</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['iot_title'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['iot_desc'] }}</p>
+    <div id="iot-connection-status" style="font-size: 0.8rem; margin-top: 1rem; font-weight: 700; color: #00ff88;">● SENSORS ONLINE</div>
+</div>
+
+<div class="grid" style="margin-bottom: 5rem;" id="sensor-grid">
+    <!-- Water Quality Group -->
+    <div class="app-card sensor-optimal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">🌡️
+            TEMPERATURE</p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-temp">--</h2>
+        <span id="status-temp" style="font-size: 0.85rem; color: #00ff88;">Stable</span>
+    </div>
+    <div class="app-card sensor-optimal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">⚖️ WATER pH
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-ph">--</h2>
+        <span id="status-ph" style="font-size: 0.85rem; color: #00ff88;">Balanced</span>
+    </div>
+    <div class="app-card sensor-optimal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">🌬️ DISSOLVED
+            OXYGEN</p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-do">--</h2>
+        <span id="status-do" style="font-size: 0.85rem; color: #00ff88;">Optimal</span>
+    </div>
+    <div class="app-card sensor-normal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">☠️ AMMONIA
+            (NH3)</p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-ammonia">--</h2>
+        <span id="status-ammonia" style="font-size: 0.85rem; color: #00ff88;">Safe Range</span>
+    </div>
+    <div class="app-card sensor-optimal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">🧂 SALINITY
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-salinity">--</h2>
+        <span id="status-salinity" style="font-size: 0.85rem; color: #00ff88;">Optimal</span>
+    </div>
+    <div class="app-card sensor-normal" style="text-align: left; padding: 2rem;">
+        <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">👁️ TURBIDITY
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-turbidity">--</h2>
+        <span id="status-turbidity" style="font-size: 0.85rem; color: var(--text-muted);">Normal</span>
+    </div>
+
+    <!-- Biological Group -->
+    <div class="app-card sensor-optimal" style="text-align: left; padding: 2rem; border-color: var(--accent);">
+        <p style="color: var(--accent); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">❤️ HEALTH INDEX
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-health">--</h2>
+        <span style="font-size: 0.85rem; color: #00ff88;">Strong Growth</span>
+    </div>
+    <div class="app-card sensor-normal" style="text-align: left; padding: 2rem; border-color: var(--secondary);">
+        <p style="color: var(--secondary); font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">🍽️ LIVE FCR
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-fcr">--</h2>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Efficient</span>
+    </div>
+    <div class="app-card sensor-alert" style="text-align: left; padding: 2rem;">
+        <p style="color: #ff0055; font-size: 0.75rem; margin-bottom: 1rem; letter-spacing: 1px;">🚨 OXYGEN CRASH PROB.
+        </p>
+        <h2 style="font-size: 2.5rem; font-weight: 900;" id="val-crash">--</h2>
+        <span id="status-crash" style="font-size: 0.85rem; color: #00ff88;">No Threat</span>
+    </div>
+</div>
+
+<script>
+    let cachedIOTData = null;
+
+    function updateConnectionStatus() {
+        const statusEl = document.getElementById('iot-connection-status');
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            statusEl.innerHTML = '📡 SENSORS OFFLINE';
+            statusEl.style.color = '#ff6b6b';
+        } else {
+            statusEl.innerHTML = '● SENSORS ONLINE';
+            statusEl.style.color = '#00ff88';
+        }
+    }
+
+    function showOfflineIOT() {
+        const sensorIds = ['val-temp', 'val-ph', 'val-do', 'val-ammonia', 'val-salinity', 'val-turbidity', 'val-health', 'val-fcr', 'val-crash'];
+        sensorIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = '-- 📡';
+        });
+
+        const statusIds = ['status-temp', 'status-ph', 'status-do', 'status-ammonia', 'status-crash'];
+        statusIds.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.innerText = '📡 OFFLINE';
+                el.style.color = '#ff6b6b';
+            }
+        });
+    }
+
+    function updateRealtime() {
+        // Check if offline
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            showOfflineIOT();
+            updateConnectionStatus();
+            return;
+        }
+
+        updateConnectionStatus();
+
+        fetch('/api/realtime')
+            .then(res => res.json())
+            .then(data => {
+                // Cache the data
+                cachedIOTData = data;
+                localStorage.setItem('cachedIOTData', JSON.stringify(data));
+
+                document.getElementById('val-temp').innerText = data.temp + '°C';
+                document.getElementById('status-temp').innerText = data.temp < 32 ? 'Optimal' : 'High Alert';
+
+                document.getElementById('val-ph').innerText = data.ph;
+                document.getElementById('status-ph').innerText = (data.ph >= 7.5 && data.ph <= 8.5) ? 'Balanced' : 'Check pH';
+
+                document.getElementById('val-do').innerText = data.do + ' mg/L';
+                document.getElementById('status-do').innerText = data.do > 5 ? 'Optimal' : 'Low; Aerate Now';
+
+                document.getElementById('val-ammonia').innerText = data.ammonia + ' mg/L';
+                document.getElementById('status-ammonia').innerText = data.ammonia < 0.2 ? 'Safe Range' : 'Toxic Warning';
+
+                document.getElementById('val-salinity').innerText = data.salinity + ' ppt';
+                document.getElementById('val-turbidity').innerText = data.turbidity + ' NTU';
+
+                document.getElementById('val-health').innerText = data.health_index + '%';
+                document.getElementById('val-fcr').innerText = data.fcr;
+
+                document.getElementById('val-crash').innerText = data.oxygen_crash_prob + '%';
+                document.getElementById('status-crash').innerText = data.oxygen_crash_prob < 8 ? 'No Threat' : 'CRITICAL ALERT';
+                document.getElementById('status-crash').style.color = data.oxygen_crash_prob < 8 ? '#00ff88' : '#ff0055';
+            })
+            .catch(err => {
+                console.log("IOT update failed:", err);
+                if (cachedIOTData) {
+                    // Fallback to cached data
+                    document.getElementById('val-temp').innerText = cachedIOTData.temp + '°C (cached)';
+                }
+            });
+    }
+
+    // Load cached data on page load
+    const savedIOTData = localStorage.getItem('cachedIOTData');
+    if (savedIOTData) {
+        cachedIOTData = JSON.parse(savedIOTData);
+    }
+
+    setInterval(() => {
+        updateConnectionStatus();
+        updateRealtime();
+    }, 3000);
+
+    // Initial updates
+    updateConnectionStatus();
+    updateRealtime();
+
+    // Listen for online/offline events
+    window.addEventListener('online', updateRealtime);
+    window.addEventListener('offline', updateRealtime);
+</script>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back_farmer'] }}</a>
+</div>
+{% endblock %}

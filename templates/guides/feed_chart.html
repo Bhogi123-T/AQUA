@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: #00ff88; margin-bottom: 2rem;"><span class="emo">🍽️</span>
+        Feed Management Chart</h1>
+
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        Efficient feeding reduces costs by up to 40% and maintains water quality. Use this chart as a baseline, but
+        always rely on our <a href="/farmer/feed" style="color: var(--primary);">AI Feed Optimizer</a> for precise daily
+        calculations.
+    </p>
+
+    <div style="overflow-x: auto;">
+        <table
+            style="width: 100%; border-collapse: collapse; text-align: left; background: rgba(0,0,0,0.2); border-radius: 1.5rem; overflow: hidden;">
+            <thead style="background: var(--primary);">
+                <tr>
+                    <th style="padding: 1.5rem;">Shrimp Size (g)</th>
+                    <th style="padding: 1.5rem;">Feeding Rate (% Biomass)</th>
+                    <th style="padding: 1.5rem;">Frequency (times/day)</th>
+                    <th style="padding: 1.5rem;">Feed Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1.5rem;">0.02 - 1.0</td>
+                    <td style="padding: 1.5rem;">15% - 8%</td>
+                    <td style="padding: 1.5rem;">4 - 5</td>
+                    <td style="padding: 1.5rem;">Crumble / Starter</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1.5rem;">1.0 - 5.0</td>
+                    <td style="padding: 1.5rem;">8% - 5%</td>
+                    <td style="padding: 1.5rem;">4</td>
+                    <td style="padding: 1.5rem;">Pellet (Small)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1.5rem;">5.0 - 15.0</td>
+                    <td style="padding: 1.5rem;">5% - 3%</td>
+                    <td style="padding: 1.5rem;">3 - 4</td>
+                    <td style="padding: 1.5rem;">Pellet (Medium)</td>
+                </tr>
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1.5rem;">> 15.0</td>
+                    <td style="padding: 1.5rem;">3% - 1.5%</td>
+                    <td style="padding: 1.5rem;">3</td>
+                    <td style="padding: 1.5rem;">Pellet (Large)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div
+        style="margin-top: 3rem; padding: 2rem; background: rgba(255, 204, 0, 0.05); border: 1px solid #ffcc00; border-radius: 1.5rem;">
+        <h4 style="color: #ffcc00; margin-bottom: 1rem;"><span class="emo">💡</span> Pro Tip: Check-Tray Observation
+        </h4>
+        <p style="font-size: 0.9rem; margin: 0;">Always place 1-2% of the feed in check-trays. If feed remains after 2
+            hours, reduce the next meal to prevent ammonia spikes.</p>
+    </div>
+</div>
+{% endblock %}

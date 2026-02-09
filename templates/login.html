@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="app-card"
+        style="margin: 0; max-width: 450px; width: 100%; padding: 3rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div
+                style="width: 80px; height: 80px; background: rgba(0, 210, 255, 0.1); border-radius: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid rgba(0, 210, 255, 0.2);">
+                <span style="font-size: 2.5rem;">🔐</span>
+            </div>
+            <h2
+                style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #00d2ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                {{ trans['login'] }}</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">{{ trans['access_dash'] }}</p>
+        </div>
+
+        {% if error %}
+        <div
+            style="background: rgba(255, 0, 85, 0.1); border: 1px solid rgba(255, 0, 85, 0.2); color: #ff0055; padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; font-size: 0.9rem; font-weight: 600; text-align: center;">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- DEMO/DEV MODE OTP DISPLAY -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if "OTP" in message or "Dev Mode" in message %}
+        <div
+            style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: #00ff88; padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; font-size: 0.9rem; font-weight: 700; text-align: center; animation: pulse 2s infinite;">
+            🚀 {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <form action="/login" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+
+            <div class="app-input-group">
+                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary);">{{
+                    trans['phone_email'] }}</span>
+                <input type="email" name="email" class="app-input" placeholder="Email Address"
+                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+                    required autofocus>
+            </div>
+
+            <div class="app-input-group">
+                <span class="app-label"
+                    style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary);">Password</span>
+                <input type="password" name="password" class="app-input" placeholder="••••••••"
+                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+                    required>
+            </div>
+
+            <button class="app-btn-large active-btn"
+                style="width: 100%; padding: 1.2rem; border-radius: 1rem; font-weight: 800; font-size: 1rem; letter-spacing: 1px;">
+                {{ trans['login'] }}
+            </button>
+
+            <!-- OR DIVIDER -->
+            <div style="display: flex; align-items: center; gap: 1rem; margin: 0.5rem 0;">
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+                <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: 700;">OR</span>
+                <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+            </div>
+
+            <!-- GOOGLE LOGIN -->
+            <a href="/login/google"
+                style="width: 100%; padding: 1rem; border-radius: 1rem; background: white; color: #1f2937; border: none; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.3s ease; text-decoration: none;">
+                <img src="https://www.gstatic.com/images/branding/product/1x/gsa_512dp.png" style="width: 20px;"
+                    alt="Google">
+                Continue with Google
+            </a>
+        </form>
+
+        <div
+            style="margin-top: 3rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
+
+            {% if not service_status.env_file or not (service_status.google and service_status.email) %}
+            <div
+                style="background: rgba(255, 230, 0, 0.05); border: 1px dashed rgba(255, 230, 0, 0.3); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; text-align: left;">
+                <h4 style="color: #ffe600; margin: 0 0 0.5rem; font-size: 0.9rem;"><span class="emo">🛠️</span> How to
+                    Enable Real OTP & Google
+                    Login:</h4>
+                <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; margin: 0;">
+                    1. Create a file named <strong>.env</strong> in your project folder.<br>
+                    2. Copy contents from <strong>.env.example</strong> into it.<br>
+                    3. Fill in your <strong>Google Client ID</strong> and <strong>Email credentials</strong>.<br>
+                    <span style="color: #00ff88; font-weight: 700;">Until then, the system will use "Dev Mode" with
+                        on-screen codes.</span>
+                </p>
+            </div>
+            {% endif %}
+
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">
+                {{ trans['no_account'] }}
+            </p>
+            <a href="/signup?lang={{ lang }}" class="app-btn-large"
+                style="display: block; width: 100%; padding: 1.2rem; border-radius: 1rem; text-decoration: none; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; font-weight: 800; font-size: 1rem;">
+                ✨ {{ trans['create_account'] or 'Create New Account' }}
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+        }
+    }
+
+    .active-btn {
+        background: var(--primary);
+        color: black;
+        box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .active-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
+        filter: brightness(1.1);
+    }
+</style>
+{% endblock %}

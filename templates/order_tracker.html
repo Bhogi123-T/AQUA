@@ -1,0 +1,173 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🚀</span>
+    <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['order_tracker_title'] or 'ORDER
+        TRACKER' }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['order_tracker_desc'] or 'Live Satellite Tracking
+        for Your Aqua Shipments' }}</p>
+</div>
+
+<div class="app-card"
+    style="max-width: 800px; margin: 0 auto 5rem; text-align: left; padding: 3rem; border: 2px solid var(--primary); background: rgba(0, 210, 255, 0.03);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem;">
+        <div>
+            <h4 style="color: var(--primary); letter-spacing: 2px; margin-bottom: 0.5rem;">ORDER ID: #{{ order_id }}
+            </h4>
+            <div id="track-status" style="font-size: 1.5rem; font-weight: 800; color: #00ff88;">LOADING...</div>
+        </div>
+        <div style="text-align: right;">
+            <div id="satellite-badge" class="live-pulse-badge">LIVE SATELLITE</div>
+        </div>
+    </div>
+
+    <!-- Bus-style Tracking Timeline -->
+    <div style="position: relative; margin: 4rem 0;">
+        <!-- The Track Line -->
+        <div
+            style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; width: 100%; position: relative; overflow: hidden;">
+            <div id="track-progress-bar"
+                style="height: 100%; width: 0%; background: linear-gradient(to right, var(--primary), var(--accent)); transition: width 2s ease-in-out;">
+            </div>
+        </div>
+
+        <!-- Icons on the line -->
+        <div style="position: absolute; top: -15px; left: 0;">📍 Starting Point</div>
+        <div id="ship-icon" style="position: absolute; top: -45px; left: 0%; transition: left 2s ease-in-out;">
+            <div style="font-size: 2.5rem;">🚚</div>
+            <div style="width: 2px; height: 10px; background: var(--primary); margin: 0 auto;"></div>
+        </div>
+        <div style="position: absolute; top: -15px; right: 0;">🏁 Your Farm</div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1.5rem;">
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem;">{{ trans['current_loc'] or
+                'CURRENT LOCATION' }}</p>
+            <div id="track-loc" style="font-size: 1rem; font-weight: 700;">Scanning GPS...</div>
+        </div>
+        <div style="background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 1.5rem;">
+            <p style="font-size: 0.7rem; color: var(--text-muted); margin-bottom: 0.5rem;">{{ trans['estimated_arrival']
+                or 'ESTIMATED ARRIVAL' }}</p>
+            <div id="track-eta" style="font-size: 1rem; font-weight: 700;">Calculating...</div>
+        </div>
+    </div>
+
+    <div
+        style="margin-top: 3rem; background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 1rem; border-left: 4px solid var(--primary);">
+        <p style="font-size: 0.8rem; margin: 0;"><strong>📡 SATELLITE PING:</strong> Validated at <span
+                id="ping-time">--</span>. Carrier: AquaStream Global Logistics.</p>
+    </div>
+</div>
+
+<script>
+    // Cache for offline mode
+    let cachedTrackerData = null;
+
+    async function updateOrderTracker() {
+        try {
+            // Check if online first
+            if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+                showOfflineTracker();
+                return;
+            }
+
+            const res = await fetch('/api/realtime');
+            const data = await res.json();
+            
+            // Cache the data for offline use
+            cachedTrackerData = data;
+            localStorage.setItem('cachedTrackerData', JSON.stringify(data));
+
+            const progress = data.order_progress;
+            document.getElementById('track-progress-bar').style.width = progress + '%';
+            document.getElementById('ship-icon').style.left = progress + '%';
+
+            if (progress < 10) {
+                document.getElementById('track-status').innerText = "PREPARING FOR DISPATCH";
+                document.getElementById('track-status').style.color = "#94a3b8";
+            } else if (progress < 95) {
+                document.getElementById('track-status').innerText = "EN ROUTE (LIVE)";
+                document.getElementById('track-status').style.color = "#00ff88";
+            } else {
+                document.getElementById('track-status').innerText = "ARRIVING AT DESTINATION";
+                document.getElementById('track-status').style.color = "#ffcc00";
+            }
+
+            document.getElementById('track-loc').innerText = `${data.ship_1.lat}° N, ${data.ship_1.lon}° E`;
+            document.getElementById('ping-time').innerText = data.timestamp;
+
+            // Simple ETA simulation
+            const minsLeft = Math.max(5, Math.floor((100 - progress) * 0.8));
+            document.getElementById('track-eta').innerText = minsLeft + " mins from current point";
+
+        } catch (e) {
+            console.error("Tracker API Error:", e);
+            showOfflineTracker();
+        }
+    }
+
+    function showOfflineTracker() {
+        // Try to load cached data
+        const cached = localStorage.getItem('cachedTrackerData');
+        if (cached) {
+            const data = JSON.parse(cached);
+            document.getElementById('track-status').innerText = "📡 OFFLINE - Last Known Location";
+            document.getElementById('track-status').style.color = "#ff6b6b";
+            document.getElementById('track-loc').innerText = `${data.ship_1.lat}° N, ${data.ship_1.lon}° E (Cached)`;
+            document.getElementById('ping-time').innerText = data.timestamp + " (Offline)";
+            document.getElementById('track-eta').innerText = "Not Available - Offline";
+        } else {
+            document.getElementById('track-status').innerText = "📡 OFFLINE - No Data Available";
+            document.getElementById('track-status').style.color = "#ff6b6b";
+            document.getElementById('track-loc').innerText = "Location data unavailable";
+            document.getElementById('ping-time').innerText = "No connection";
+            document.getElementById('track-eta').innerText = "Offline";
+        }
+    }
+
+    // Initialize tracker
+    updateOrderTracker();
+
+    // Update satellite badge based on connection
+    function updateSatelliteBadge() {
+        const badge = document.getElementById('satellite-badge');
+        if (!navigator.onLine || !window.ALLOW_LIVE_DATA) {
+            badge.innerHTML = '📡 OFFLINE';
+            badge.style.backgroundColor = '#ff6b6b';
+            badge.style.color = 'white';
+        } else {
+            badge.innerHTML = 'LIVE SATELLITE';
+            badge.style.backgroundColor = '';
+            badge.style.color = '';
+        }
+    }
+
+    // Update every 3 seconds only if online and ALLOW_LIVE_DATA is true
+    setInterval(() => {
+        updateSatelliteBadge();
+        if (navigator.onLine && window.ALLOW_LIVE_DATA) {
+            updateOrderTracker();
+        }
+    }, 3000);
+
+    // Listen for online/offline events
+    window.addEventListener('online', () => {
+        updateSatelliteBadge();
+        updateOrderTracker();
+    });
+    window.addEventListener('offline', () => {
+        updateSatelliteBadge();
+        showOfflineTracker();
+    });
+
+    // Initial badge update
+    updateSatelliteBadge();
+</script>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/logistics" style="color: var(--text-muted); font-weight: 800; text-decoration: none;">🔙 BACK TO
+        LOGISTICS</a>
+</div>
+{% endblock %}

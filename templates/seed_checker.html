@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card">
+    <span class="app-emoji">💎</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['seed_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 3.5rem; font-size: 1.2rem;">{{ trans['seed_desc'] }}</p>
+
+    <form action="/predict_seed" method="POST" class="app-form">
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['supplier_country'] }}</span>
+            <select name="country" class="app-input">
+                <option value="India">{{ trans['country_india'] }}</option>
+                <option value="Vietnam">{{ trans['country_vietnam'] }}</option>
+                <option value="Thailand">{{ trans['country_thailand'] }}</option>
+                <option value="Indonesia">{{ trans['country_indonesia'] }}</option>
+                <option value="Bangladesh">{{ trans['country_bangladesh'] }}</option>
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['species'] }}</span>
+            <select name="species" class="app-input">
+                {% for spec in species_list %}
+                <option value="{{ spec.id }}">{{ spec.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['dist'] }} (KM)</span>
+            <input type="number" name="distance" class="app-input" placeholder="e.g. 50" required>
+        </div>
+
+        <button class="app-btn-large">💎 {{ trans['btn_seed'] }}</button>
+    </form>
+
+    <div style="margin-top: 4rem;">
+        <a href="/farmer?lang={{ lang }}"
+            style="color: var(--text-muted); text-decoration: none; font-weight: 800; font-size: 1.4rem; transition: color 0.3s;">
+            🔙 {{ trans['back'] }}
+        </a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">🛡️</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['nav_farmer'] }} {{ trans['advisor']
+        }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['aquacare_title'] }}</p>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem;">
+    <!-- Disease Prevention Card -->
+    <div class="app-card"
+        style="max-width: 100%; border-left: 8px solid var(--primary); align-items: flex-start; text-align: left; padding: 3rem;">
+        <h3 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--primary);"><span class="emo">🧪</span> {{
+            trans['cat_disease'] }} {{
+            trans['subcat_prevention'] }}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">{{ trans['feat_disease_desc'] }}</p>
+        <ul style="color: var(--text-muted); line-height: 2;">
+            {% for item in precautions_db['Disease']['Prevention'] %}
+            <li>✅ {{ item }}</li>
+            {% endfor %}
+            <li>✅ <strong>{{ trans['special_tip_biosecurity'] }}</strong></li>
+        </ul>
+    </div>
+
+    <!-- Growth Optimization Card -->
+    <div class="app-card"
+        style="max-width: 100%; border-left: 8px solid var(--accent); align-items: flex-start; text-align: left; padding: 3rem;">
+        <h3 style="font-size: 2rem; margin-bottom: 1.5rem; color: var(--accent);"><span class="emo">📈</span> {{
+            trans['cat_growth'] }} {{
+            trans['subcat_optimize'] }}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">{{ trans['aquacare_desc'] }}</p>
+        <ul style="color: var(--text-muted); line-height: 2;">
+            {% for item in precautions_db['Growth']['Optimize'] %}
+            <li>🚀 {{ item }}</li>
+            {% endfor %}
+            <li>🚀 <strong>{{ trans['special_tip_sampling'] }}</strong></li>
+        </ul>
+    </div>
+
+    <!-- Risk Mitigation Card -->
+    <div class="app-card"
+        style="max-width: 100%; border-left: 8px solid #ff0055; align-items: flex-start; text-align: left; padding: 3rem;">
+        <h3 style="font-size: 2rem; margin-bottom: 1.5rem; color: #ff0055;"><span class="emo">⚠️</span> {{
+            trans['cat_growth'] }} {{
+            trans['subcat_risk'] }}</h3>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">{{ trans['stock_desc'] }}</p>
+        <ul style="color: var(--text-muted); line-height: 2;">
+            {% for item in precautions_db['Growth']['Risk'] %}
+            <li>⚠️ {{ item }}</li>
+            {% endfor %}
+            <li>⚠️ <strong>{{ trans['special_tip_aeration'] }}</strong></li>
+        </ul>
+    </div>
+</div>
+
+<div style="text-align: center; margin-top: 5rem;">
+    <a href="/farmer?lang={{ lang }}" class="app-btn-large" style="text-decoration: none; padding: 1.5rem 4rem;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

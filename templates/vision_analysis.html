@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">📸</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['visual_scan'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['diagnose_visually'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 600px; text-align: left; align-items: flex-start;">
+    <form action="/predict_vision?lang={{ lang }}" method="POST" enctype="multipart/form-data" class="app-form"
+        style="width: 100%;">
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['upload_photo'] }}</span>
+            <input type="file" name="file" class="app-input" accept="image/*" required>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 2rem;">{{ trans['vision_engine'] }}</p>
+        <button type="submit" class="app-btn-large" style="width: 100%;">{{ trans['start_scan'] }}</button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🤝</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 0.5rem; letter-spacing: -1px;">{{
+        trans['community_title'] or 'Aqua Community' }}</h1>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['community_desc'] or 'Connect with farmers, share
+        experiences, and grow together.' }}</p>
+
+    <div style="margin-top: 1.5rem;">
+        <a href="/community/insights" class="app-btn-large"
+            style="text-decoration: none; padding: 0.8rem 1.5rem; background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px solid var(--primary); font-size: 0.9rem;">
+            📊 View Community Insights
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 2fr 1fr; gap: 2rem; align-items: start;">
+
+    <!-- LEFT SIDEBAR: User & Groups -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- User Profile Card -->
+        <div class="app-card" style="padding: 1.5rem; text-align: center;">
+            <div
+                style="width: 80px; height: 80px; background: var(--gradient); border-radius: 50%; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-size: 2rem;">
+                👨‍🌾</div>
+            <h3 style="margin-bottom: 0.5rem;">My Farm Profile</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">{{ session.get('user') or
+                'Guest Farmer' }}</p>
+
+            <div
+                style="display: flex; justify-content: space-around; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem;">
+                <div>
+                    <div style="font-weight: 900; font-size: 1.2rem;">{{ 12 + (following|length if following else 0) }}
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">Following</div>
+                </div>
+                <div>
+                    <div style="font-weight: 900; font-size: 1.2rem;">45</div>
+                    <div style="font-size: 0.7rem; color: var(--text-muted);">Followers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Discussion Groups -->
+        <div class="app-card" style="padding: 1.5rem;">
+            <h4 style="margin-bottom: 1rem; color: var(--accent);"><span class="emo">📌</span> Discussion Groups</h4>
+            <ul style="list-style: none; padding: 0;">
+                {% for group in groups %}
+                <li style="margin-bottom: 0.8rem;">
+                    <a href="#"
+                        style="color: var(--text-main); text-decoration: none; display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; transition: background 0.2s;">
+                        <span style="opacity: 0.7;">#</span> {{ group }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- CENTER FEED -->
+    <div>
+        <!-- Create Post -->
+        <div class="app-card" style="padding: 1.5rem; margin-bottom: 2rem; border-color: var(--primary);">
+            <form action="/community/post" method="POST">
+                <textarea name="content" placeholder="Share your experience, ask a question, or post a yield update..."
+                    required
+                    style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 1rem; border-radius: 10px; min-height: 80px; margin-bottom: 1rem; font-family: inherit; font-size: 1rem;"></textarea>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <select name="type"
+                        style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 0.5rem; border-radius: 8px;">
+                        <option value="general">General</option>
+                        <option value="yield">🌾 Yield Update</option>
+                        <option value="disease">🚑 Disease Help</option>
+                        <option value="market">💰 Market Price</option>
+                    </select>
+                    <button type="submit" class="app-btn-large"
+                        style="padding: 0.6rem 1.5rem; font-size: 0.9rem;">Publish Post</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Posts Feed -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+            {% for post in posts %}
+            <div class="app-card" style="padding: 1.5rem; position: relative; animation: fadeIn 0.5s ease-up;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                    <div style="display: flex; gap: 10px; align-items: center;">
+                        <div
+                            style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                            👤</div>
+                        <div>
+                            <div style="font-weight: 700;">{{ post.author }}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">{{ post.timestamp }}</div>
+                        </div>
+                    </div>
+                    {% if post.type == 'yield' %}
+                    <span
+                        style="background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">🌾
+                        YIELD</span>
+                    {% elif post.type == 'disease' %}
+                    <span
+                        style="background: rgba(255, 107, 107, 0.1); color: #ff6b6b; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">🚑
+                        HELP</span>
+                    {% elif post.type == 'market' %}
+                    <span
+                        style="background: rgba(255, 204, 0, 0.1); color: #ffcc00; padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 700;">💰
+                        MARKET</span>
+                    {% endif %}
+                </div>
+
+                <p style="font-size: 1.1rem; line-height: 1.5; color: #eee; margin-bottom: 1.5rem;">{{ post.content }}
+                </p>
+
+                <div
+                    style="display: flex; gap: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem;">
+                    <button
+                        style="background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; gap: 6px; align-items: center;">
+                        <span>👍</span> {{ post.likes }} Likes
+                    </button>
+                    <button
+                        style="background: none; border: none; color: var(--text-muted); cursor: pointer; display: flex; gap: 6px; align-items: center;">
+                        <span>💬</span> Reply
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR: Suggestions -->
+    <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <div class="app-card" style="padding: 1.5rem;">
+            <h4 style="margin-bottom: 1.5rem; color: var(--secondary);"><span class="emo">🌟</span> Farmers to Follow
+            </h4>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for person in suggestions %}
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 36px; height: 36px; background: rgba(255,255,255,0.05); border-radius: 50%;">
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 0.9rem;">{{ person.name }}</div>
+                            <div style="font-size: 0.7rem; color: var(--text-muted);">{{ person.specialty }} • {{
+                                person.location }}</div>
+                        </div>
+                    </div>
+                    <a href="/community/follow/{{ person.id }}"
+                        style="font-size: 1.2rem; text-decoration: none; color: var(--primary);">+</a>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if not suggestions %}
+            <p style="color: var(--text-muted); font-size: 0.8rem; text-align: center;">You are following everyone
+                suggested!</p>
+            {% endif %}
+        </div>
+
+        <div class="app-card"
+            style="padding: 1.5rem; background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0,0,0,0));">
+            <h4 style="margin-bottom: 0.5rem; color: var(--primary);"><span class="emo">📢</span> Active Insight</h4>
+            <p style="font-size: 0.9rem; color: #ddd; line-height: 1.4;">
+                <strong style="color: #fff;">{{ analytics.active_farmers|length }} regions</strong> are currently
+                active.
+                Disease risk is trending <strong>{{ analytics.disease_trends[0].trend }}</strong> in your area.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    @media (max-width: 900px) {
+
+        /* Mobile Stack Layout */
+        div[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
