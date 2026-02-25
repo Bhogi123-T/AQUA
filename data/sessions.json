@@ -1,0 +1,28 @@
+[
+    {
+        "id": "SESS-1",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "expert_id": "exp1",
+        "expert_name": "Dr. Anil Sharma",
+        "topic": "kjlikilk",
+        "session_type": "Video Call (30 min)",
+        "datetime": "2026-02-20T01:15",
+        "amount": 800,
+        "status": "Confirmed",
+        "notes": "Session confirmed. Expert will contact you shortly.",
+        "date": "2026-02-20 01:15"
+    },
+    {
+        "id": "SESS-2",
+        "user_id": "admin@aquasphere.com",
+        "expert_id": "exp1",
+        "expert_name": "Dr. Anil Sharma",
+        "topic": "disease",
+        "session_type": "Farm Visit (physical)",
+        "datetime": "2026-03-05T10:44",
+        "amount": 800,
+        "status": "Confirmed",
+        "notes": "Session confirmed. Expert will contact you shortly.",
+        "date": "2026-02-25 10:44"
+    }
+]

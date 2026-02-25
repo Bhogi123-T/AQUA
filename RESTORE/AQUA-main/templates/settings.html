@@ -1,0 +1,90 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">⚙️</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['sys_settings'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['configure_otp'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 800px; text-align: left; align-items: flex-start;">
+    <form action="/settings?lang={{ lang }}" method="POST" class="app-form" style="width: 100%;">
+
+        <!-- Voice-First & WhatsApp Alerts (Feature 5) -->
+        <div
+            style="background: rgba(0, 255, 136, 0.1); border: 2px solid var(--accent); padding: 2rem; border-radius: 2rem; margin-bottom: 3rem; display: flex; align-items: center; justify-content: space-between; width: 100%;">
+            <div style="flex: 1;">
+                <h3 style="color: var(--accent); margin: 0;"><span class="emo">🎙️</span> Voice-First Alerts</h3>
+                <p style="margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted);">Enable IVR Calls & WhatsApp
+                    alerts in local language for critical events.</p>
+            </div>
+            <input type="checkbox" name="VOICE_ALERTS" {% if config.VOICE_ALERTS %}checked{% endif %}
+                style="width: 30px; height: 30px; cursor: pointer; margin-left: 1rem;">
+        </div>
+
+        <h3
+            style="color: var(--primary); margin-bottom: 2rem; font-size: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+            {{ trans['email_gateway'] }}</h3>
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['smtp_server'] }}</span>
+                <input type="text" name="MAIL_SERVER" class="app-input" value="{{ config.MAIL_SERVER }}" required>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['port'] }}</span>
+                <input type="number" name="MAIL_PORT" class="app-input" value="{{ config.MAIL_PORT }}" required>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['email_user'] }}</span>
+                <input type="text" name="MAIL_USERNAME" class="app-input" value="{{ config.MAIL_USERNAME }}"
+                    placeholder="your-email@gmail.com">
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['app_pass'] }}</span>
+                <input type="password" name="MAIL_PASSWORD" class="app-input" value="{{ config.MAIL_PASSWORD }}"
+                    placeholder="16-character code">
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['def_sender'] }}</span>
+                <input type="text" name="MAIL_DEFAULT_SENDER" class="app-input" value="{{ config.MAIL_DEFAULT_SENDER }}"
+                    placeholder="AquaSphere <info@domain.com>">
+            </div>
+            <div class="app-input-group" style="flex-direction: row; align-items: center; gap: 1rem;">
+                <input type="checkbox" name="MAIL_USE_TLS" {% if config.MAIL_USE_TLS %}checked{% endif %}
+                    style="width: 20px; height: 20px;">
+                <span class="app-label" style="margin:0;">{{ trans['use_tls'] }}</span>
+            </div>
+        </div>
+
+        <h3
+            style="color: var(--accent); margin-bottom: 2rem; font-size: 1.5rem; border-bottom: 1px solid var(--glass-border); padding-bottom: 1rem;">
+            {{ trans['sms_gateway'] }}</h3>
+        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['acc_sid'] }}</span>
+                <input type="text" name="TWILIO_ACCOUNT_SID" class="app-input" value="{{ config.TWILIO_ACCOUNT_SID }}"
+                    placeholder="AC...">
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['auth_token'] }}</span>
+                <input type="password" name="TWILIO_AUTH_TOKEN" class="app-input"
+                    value="{{ config.TWILIO_AUTH_TOKEN }}">
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['twilio_phone'] }}</span>
+                <input type="text" name="TWILIO_PHONE_NUMBER" class="app-input" value="{{ config.TWILIO_PHONE_NUMBER }}"
+                    placeholder="+1234567890">
+            </div>
+        </div>
+
+        <button type="submit" class="app-btn-large" style="width: 100%; height: 4rem; font-size: 1.2rem;">{{
+            trans['save_config'] }}</button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back_home'] }}</a>
+</div>
+{% endblock %}

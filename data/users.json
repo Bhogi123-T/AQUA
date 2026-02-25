@@ -1,0 +1,68 @@
+{
+    "local-tester@aqua-ecosystem.io": {
+        "name": "Local Test User (Demo)",
+        "role": "admin",
+        "joined_at": "2026-02-09T13:32:38.754179",
+        "auth_method": "dev_mock"
+    },
+    "bhogeswararaothirumalasetti@gmail.com": {
+        "name": "bhogi",
+        "role": "admin",
+        "joined_at": "2026-02-09T13:45:48.454475"
+    },
+    "pandu@gmail.com": {
+        "name": "pandu",
+        "password": "scrypt:32768:8:1$kCrI4IMJcJKim2j9$b435b7492f6ce3a1619a98de55972b35592ef43e2a4d58a19661523160eb155072f5bae5b30a320f0d000e73a21f05abfa039a84d0a5e461b1c6e515b9c6463c",
+        "role": "business",
+        "joined_at": "2026-02-21T22:24:05.117770",
+        "auth_method": "local"
+    },
+    "Bhogi@gmail.com": {
+        "name": "Bhogi",
+        "password": "scrypt:32768:8:1$hFckLKmg2kqZovU4$da4e86cb98be9840a9b2d6556bc901dc710b3d948fd77d443c56b796d28c09617155abd660304c365ca4380ff542ed96a57b05b10b81fb0517ecb605ef41fd46",
+        "role": "farmer",
+        "joined_at": "2026-02-21T22:39:52.050212",
+        "auth_method": "local",
+        "following": [
+            "exp1",
+            "exp2",
+            "exp3"
+        ]
+    },
+    "admin@aquasphere.com": {
+        "name": "AquaSphere Admin",
+        "password": "scrypt:32768:8:1$PX5HRjKOmliLAeiJ$b9145e920f2eecfe383256082e4c9da7923de9d4ae0f6799f3cd892ca47af2d4ac59cd9159ef1a6cdd794d3a0c6bd1e64a99bc2b625118dae4699889cb70723f",
+        "role": "admin",
+        "joined_at": "2026-02-21T23:32:24.355700",
+        "auth_method": "local",
+        "picture": ""
+    },
+    "nani@gmail.com": {
+        "name": "nani",
+        "password": "scrypt:32768:8:1$XUoMWjr4QNYNDG2N$00d75e56f3510c66caea8ac701d6af5a804c3c32aab6da2f6908cfb3831e0f28b4fc6336088425b5991179ced593dfe50442448c3a567c24c2893b4eed7d5cde",
+        "role": "farmer",
+        "joined_at": "2026-02-21T23:44:07.735467",
+        "auth_method": "local"
+    },
+    "bhogiii@gmail.com": {
+        "name": "Bhogi",
+        "password": "scrypt:32768:8:1$FdeOmN3gQ9yOTJOe$7f2ab9a1d95836c324819f165c897f5bfb8bb33a6751cda70d59425e61d31f6247d0cc5f327492c3dc244e8e95ea15b182031a7c5933f57d2c974df9fa028035",
+        "role": "farmer",
+        "joined_at": "2026-02-23T14:32:49.525469",
+        "auth_method": "local"
+    },
+    "panduu@gmail.com": {
+        "name": "pandu",
+        "password": "scrypt:32768:8:1$gjMnS70mWMCcf6Bj$9f9d330fd3c5ce58f0fa04ad532c27beb42d90bde0b10768128e70b37aa24f638a11edd3ceca66100caccba339dabcda6e8618e6ce615de1a61899a2823cbd52",
+        "role": "business",
+        "joined_at": "2026-02-23T14:34:50.063523",
+        "auth_method": "local"
+    },
+    "bhogii@gmail.com": {
+        "name": "Bhogi",
+        "password": "scrypt:32768:8:1$ebgRkUjuRsoKxVhK$be3bce049a19e5948bdc716617fdc6d5da1a3eb513ef891ed18f334b936e5e9101f3ed8708cfaea7c1838440e8151046cc83322484c1cdb95ffef39c4cec8bb2",
+        "role": "farmer",
+        "joined_at": "2026-02-25T00:19:14.474630",
+        "auth_method": "local"
+    }
+}

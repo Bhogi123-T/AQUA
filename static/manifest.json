@@ -1,0 +1,80 @@
+{
+    "name": "AQUA - Smart Aquaculture (Offline Ready)",
+    "short_name": "AQUA",
+    "description": "AI-Powered Aquaculture Platform - Works Completely Offline After Installation",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#0b1120",
+    "theme_color": "#00d2ff",
+    "orientation": "any",
+    "scope": "/",
+    "prefer_related_applications": false,
+    "launch_handler": {
+        "client_mode": "navigate-existing"
+    },
+    "screenshots": [
+        {
+            "src": "/static/splash.png",
+            "sizes": "1024x1024",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/static/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "form_factor": "narrow"
+        }
+    ],
+    "icons": [
+        {
+            "src": "/static/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/static/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/static/logo.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any"
+        }
+    ],
+    "categories": ["agriculture", "productivity", "utilities"],
+    "shortcuts": [
+        {
+            "name": "Farmer Dashboard",
+            "short_name": "Farmer",
+            "description": "Access farmer tools and predictions",
+            "url": "/farmer",
+            "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Market Prices",
+            "short_name": "Market",
+            "description": "Check global aquaculture market prices",
+            "url": "/market",
+            "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "QR Scanner",
+            "short_name": "Scanner",
+            "description": "Scan QR codes for quick access",
+            "url": "/qr-scanner",
+            "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+        }
+    ],
+    "features": [
+        "offline-capable",
+        "installable",
+        "standalone",
+        "cross-platform"
+    ],
+    "offline_enabled": true
+}

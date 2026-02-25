@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card">
+    <span class="app-emoji">🤝</span>
+    <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['market_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 3.5rem; font-size: 1.3rem;">{{ trans['market_desc'] }}</p>
+
+    <form action="/predict_buyer" method="POST" class="app-form">
+        <input type="hidden" name="lang" value="{{ lang }}">
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['target_export'] }}</span>
+            <select name="country" class="app-input">
+                <option value="USA">{{ trans['country_usa'] }}</option>
+                <option value="China">{{ trans['country_china'] }}</option>
+                <option value="Japan">Japan</option>
+                <option value="EU">EU</option>
+                <option value="India">{{ trans['country_india'] }}</option>
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['species_sell'] }}</span>
+            <select name="species" class="app-input">
+                {% for spec in species_list %}
+                <option value="{{ spec.id }}">{{ spec.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['qty'] }} ({{ trans['tons'] }})</span>
+            <input type="number" name="quantity" class="app-input" placeholder="e.g. 10" required>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['quality_grade'] }}</span>
+            <select name="grade" class="app-input">
+                <option value="A">{{ trans['grade_a'] or 'Grade A' }}</option>
+                <option value="B">{{ trans['grade_b'] or 'Grade B' }}</option>
+                <option value="C">{{ trans['grade_c'] or 'Grade C' }}</option>
+            </select>
+        </div>
+
+        <button class="app-btn-large">🤝 {{ trans['btn_neg'] }}</button>
+    </form>
+</div>
+{% endblock %}

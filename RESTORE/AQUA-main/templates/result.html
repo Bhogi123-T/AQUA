@@ -1,0 +1,137 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .result-card-wide {
+        background: var(--card-bg);
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 3rem;
+        padding: 4rem;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 1200px;
+        /* Wider for horizontal layout */
+        margin: 2rem auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeUp 0.6s ease-out;
+    }
+
+    .result-content-row {
+        display: flex;
+        flex-direction: row;
+        gap: 3rem;
+        width: 100%;
+        margin-top: 2rem;
+        align-items: stretch;
+    }
+
+    .result-main {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 2.5rem;
+        padding: 3rem;
+        border: 2px solid var(--primary);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .result-main:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+    }
+
+    .result-details {
+        flex: 1.2;
+        /* Give slightly more space to text */
+        background: rgba(0, 210, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 2.5rem;
+        padding: 3rem;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (max-width: 900px) {
+        .result-content-row {
+            flex-direction: column;
+        }
+
+        .result-card-wide {
+            padding: 2rem;
+        }
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="result-card-wide">
+    <span class="app-emoji">🎯</span>
+    <h2
+        style="font-size: 3rem; font-weight: 900; margin-bottom: 0.5rem; text-align:center; background: linear-gradient(to right, #fff, #bbb); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ title }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 1.3rem; text-align:center; max-width: 800px;">{{
+        description }}</p>
+
+    <div class="result-content-row">
+        <!-- Left: Main Result Score/Value -->
+        <div class="result-main">
+            <div
+                style="font-size: 2.2rem; color: var(--accent); font-weight: 800; line-height: 1.4; margin: 0; text-shadow: 0 0 30px rgba(0,255,136,0.2); word-wrap: break-word; max-width: 100%; text-align: center;">
+                {{ result | safe }}
+            </div>
+            {% if unit %}
+            <p
+                style="color: var(--text-muted); font-size: 1.2rem; margin-top: 1.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px;">
+                {{ unit | safe }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Right: Precautions / Details / Tips -->
+        {% if precautions %}
+        <div class="result-details">
+            <h3
+                style="color: var(--primary); margin-bottom: 2rem; font-size: 1.8rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 1rem;">
+                🛡️ {{ trans['aquacare_title'] }}
+            </h3>
+            <ul
+                style="color: var(--text-muted); font-size: 1.1rem; line-height: 1.8; padding-left: 0; list-style-position: inside;">
+                {% for item in precautions %}
+                <li style="margin-bottom: 1.2rem; display: flex; align-items: flex-start;">
+                    <span style="color: var(--accent); margin-right: 12px; font-weight: bold;">•</span>
+                    <span>{{ item }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Back Button -->
+    <div style="width: 100%; margin-top: 4rem; max-width: 400px;">
+        <a href="javascript:history.back()" class="app-btn-large"
+            style="display: flex; justify-content: center; align-items: center; text-decoration: none; text-align: center;">
+            <span style="margin-right: 10px;">🔙</span> {{ trans['back'] }}
+        </a>
+    </div>
+</div>
+{% endblock %}

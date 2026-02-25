@@ -1,0 +1,79 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🚨</span>
+    <h2 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['early_warning_network'] or 'EARLY
+        WARNING NETWORK' }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['privacy_desc'] or 'Privacy-First Anonymous
+        Regional Disease Tracking' }}</p>
+</div>
+
+<div class="grid" style="margin-bottom: 5rem;">
+    <!-- Active Threats -->
+    <div class="app-card"
+        style="flex: 2; text-align: left; align-items: flex-start; border-color: #ff0055; background: rgba(255,0,85,0.03);">
+        <h4 style="color: #ff0055; margin-bottom: 2rem;"><span class="emo">🔴</span> {{ trans['regional_threats'] or
+            'REGIONAL THREATS (ACTIVE)'
+            }}</h4>
+
+        {% for alert in alerts %}
+        <div
+            style="width: 100%; padding: 1.5rem; background: rgba(0,0,0,0.2); border-radius: 1.5rem; margin-bottom: 1.5rem; border-left: 5px solid #ff0055;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span style="font-weight: 800; font-size: 1.2rem;">📍 {{ alert.region }}</span>
+                <span
+                    style="background: #ff0055; color: white; padding: 4px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: 900;">{{
+                    alert.intensity }} RISK</span>
+            </div>
+            <p style="font-size: 1rem; margin-bottom: 0.5rem;"><strong>{{ trans['disease_detected'] or 'Disease
+                    Detected:' }}</strong> {{ alert.disease }}
+            </p>
+            <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>{{ trans['transmission_radius'] or
+                    'Transmission Radius:' }}</strong> Detected
+                within {{ alert.radius }} of neighboring farms.</p>
+
+            <div style="margin-top: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.05); border-radius: 1rem;">
+                <p style="font-size: 0.8rem; margin: 0; color: #00ff88;">💡 <strong>PREVENTIVE STEPS:</strong> Stop
+                    water exchange immediately. Increase prophylactic probiotics. Notify local bio-security officer.</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Community Verified Advisory (Feature 9) -->
+    <div class="app-card"
+        style="text-align: left; align-items: flex-start; border-color: var(--accent); background: rgba(0,255,136,0.03);">
+        <h4 style="color: var(--accent); margin-bottom: 2rem;"><span class="emo">🤝</span> COMMUNITY ADVISORY</h4>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 2rem;">Advice verified by local farm data
+            outcomes and community peers.</p>
+
+        <div
+            style="width: 100%; background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(0,255,136,0.1); margin-bottom: 1.5rem;">
+            <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 1rem;">
+                <div
+                    style="width: 40px; height: 40px; background: #3a7bd5; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                    👨‍🌾</div>
+                <div>
+                    <div style="font-size: 0.85rem; font-weight: 800;">Expert Farmer Vijay</div>
+                    <div style="font-size: 0.65rem; color: #00ff88;">✅ DATA VERIFIED (98% SUCCESS)</div>
+                </div>
+            </div>
+            <p style="font-size: 0.9rem;">"In high heat (>32°C), I found that reducing feed by 15% and increasing bottom
+                aeration stopped the RMS symptoms in my last batch."</p>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <span style="font-size: 0.75rem; color: var(--text-muted);">👍 42 farmers found this helpful</span>
+            </div>
+        </div>
+
+        <button class="app-btn-large"
+            style="background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border); padding: 1rem; font-size: 0.9rem;">JOIN
+            COMMUNITY DISCUSSION</button>
+    </div>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer" style="color: var(--text-muted); font-weight: 800; text-decoration: none;">🔙 {{
+        trans['back_to_hub'] or 'BACK TO COMMAND HUB' }}</a>
+</div>
+{% endblock %}

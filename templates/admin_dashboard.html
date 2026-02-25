@@ -1,0 +1,856 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, rgba(255, 0, 85, 0.12), rgba(255, 107, 53, 0.06));
+        border: 1.5px solid rgba(255, 0, 85, 0.3);
+        border-radius: 2rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .admin-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .admin-stat {
+        background: rgba(255, 0, 85, 0.06);
+        border: 1px solid rgba(255, 0, 85, 0.2);
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .admin-stat:hover {
+        border-color: rgba(255, 0, 85, 0.5);
+        transform: translateY(-3px);
+    }
+
+    .admin-stat-value {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #ff4d7d;
+    }
+
+    .admin-stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 0.25rem;
+    }
+
+    .admin-stat-sub {
+        font-size: 0.8rem;
+        color: #00ff88;
+        font-weight: 700;
+        margin-top: 0.25rem;
+    }
+
+    .user-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.04);
+        border-radius: 1.25rem;
+        margin-bottom: 0.75rem;
+        border: 1px solid var(--glass-border);
+        flex-wrap: wrap;
+        transition: all 0.3s;
+    }
+
+    .user-row:hover {
+        border-color: rgba(255, 0, 85, 0.3);
+        background: rgba(255, 0, 85, 0.04);
+    }
+
+    .user-avatar-sm {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #00d2ff, #00ff88);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+
+    .role-badge-admin {
+        font-size: 0.7rem;
+        padding: 3px 10px;
+        border-radius: 2rem;
+        font-weight: 700;
+    }
+
+    .role-badge-admin.farmer {
+        background: rgba(0, 210, 255, 0.15);
+        border: 1px solid rgba(0, 210, 255, 0.3);
+        color: #00d2ff;
+    }
+
+    .role-badge-admin.business {
+        background: rgba(255, 165, 0, 0.15);
+        border: 1px solid rgba(255, 165, 0, 0.3);
+        color: #ffa500;
+    }
+
+    .role-badge-admin.expert {
+        background: rgba(123, 97, 255, 0.15);
+        border: 1px solid rgba(123, 97, 255, 0.3);
+        color: #a78bfa;
+    }
+
+    .role-badge-admin.admin {
+        background: rgba(255, 0, 85, 0.15);
+        border: 1px solid rgba(255, 0, 85, 0.3);
+        color: #ff4d7d;
+    }
+
+    .admin-action-btn {
+        padding: 5px 12px;
+        border-radius: 0.6rem;
+        border: 1px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.06);
+        color: white;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+
+    .admin-action-btn:hover {
+        background: rgba(255, 0, 85, 0.2);
+        border-color: rgba(255, 0, 85, 0.4);
+    }
+
+    .admin-action-btn.danger {
+        background: rgba(255, 0, 85, 0.15);
+        border-color: rgba(255, 0, 85, 0.3);
+        color: #ff4d7d;
+    }
+
+    .health-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+    }
+
+    .health-dot {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .health-dot.green {
+        background: #00ff88;
+        box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+    }
+
+    .health-dot.yellow {
+        background: #ffa500;
+        box-shadow: 0 0 10px rgba(255, 165, 0, 0.5);
+    }
+
+    .health-dot.red {
+        background: #ff0055;
+        box-shadow: 0 0 10px rgba(255, 0, 85, 0.5);
+    }
+
+    .revenue-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #ff0055, #ff6b35);
+        margin: 6px 0;
+        transition: width 1s ease;
+    }
+
+    /* Role Distribution Bars */
+    .bar-farmer {
+        background: linear-gradient(90deg, #00d2ff, #00ff88);
+    }
+
+    .bar-business {
+        background: linear-gradient(90deg, #ffa500, #ff6b35);
+    }
+
+    .bar-expert {
+        background: linear-gradient(90deg, #7b61ff, #c878ff);
+    }
+
+    .bar-admin {
+        background: linear-gradient(90deg, #ff0055, #ff6b35);
+    }
+
+    /* Transaction Colors */
+    .txn-credit {
+        color: #00ff88 !important;
+    }
+
+    .txn-debit {
+        color: #ff4d7d !important;
+    }
+
+    /* Health Colors */
+    .status-green {
+        color: #00ff88 !important;
+    }
+
+    .status-yellow {
+        color: #ffa500 !important;
+    }
+
+    .status-red {
+        color: #ff4d7d !important;
+    }
+
+    .crisis-row-open {
+        border-left: 4px solid #ff0055 !important;
+    }
+
+    .crisis-row-resolved {
+        border-left: 4px solid #00ff88 !important;
+    }
+
+    /* Alert Styling classes */
+    .alert-card {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 1rem;
+        margin-bottom: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .alert-critical {
+        background: rgba(255, 0, 85, 0.08);
+        border: 1px solid rgba(255, 0, 85, 0.25);
+    }
+
+    .alert-warning {
+        background: rgba(255, 165, 0, 0.08);
+        border: 1px solid rgba(255, 165, 0, 0.25);
+    }
+
+    .alert-info {
+        background: rgba(0, 210, 255, 0.08);
+        border: 1px solid rgba(0, 210, 255, 0.25);
+    }
+
+    .alert-title-critical {
+        color: #ff4d7d;
+    }
+
+    .alert-title-warning {
+        color: #ffa500;
+    }
+
+    .alert-title-info {
+        color: var(--primary);
+    }
+
+    .alert-badge-critical {
+        background: rgba(255, 0, 85, 0.15);
+        color: #ff4d7d;
+    }
+
+    .alert-badge-warning {
+        background: rgba(255, 165, 0, 0.15);
+        color: #ffa500;
+    }
+
+    .alert-badge-info {
+        background: rgba(0, 210, 255, 0.15);
+        color: var(--primary);
+    }
+</style>
+
+<!-- 🛡️ OS HEADER -->
+<header style="margin-bottom: 4rem; text-align: center;">
+    <div
+        style="display: inline-flex; align-items: center; gap: 1rem; padding: 10px 25px; background: rgba(255, 0, 85, 0.1); border: 1px solid #ff0055; border-radius: 30px; margin-bottom: 2rem;">
+        <span class="live-pulse" style="background: #ff0055; width: 10px; height: 10px;"></span>
+        <span style="font-size: 1rem; font-weight: 900; color: #ff0055; letter-spacing: 2px;">ADMIN AUTHORITY OS v5.5
+            ONLINE</span>
+    </div>
+    <h1
+        style="font-size: clamp(3.5rem, 8vw, 6rem); font-weight: 950; letter-spacing: -3px; line-height: 0.9; margin-bottom: 1.5rem;">
+        Platform <span style="color:#ff0055; text-shadow: 0 0 30px rgba(255, 0, 85, 0.4);">Authority</span> OS
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.6rem; font-weight: 700; max-width: 800px; margin: 0 auto;">
+        Command center for user authorization, financial oversight, system integrity, and global intelligence
+        parameters.
+    </p>
+</header>
+
+<!-- 📊 PLATFORM STATS GRID -->
+<div class="admin-stat-grid"
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 4rem;">
+    <div class="admin-stat"
+        style="background: rgba(255,0,85,0.03); border: 1px solid rgba(255,0,85,0.1); padding: 1.5rem; border-radius: 20px; text-align: center;">
+        <div class="admin-stat-value" style="font-size: 2.22rem; font-weight: 950; color: #ff0055;">{{ stats.total_users
+            }}</div>
+        <div class="admin-stat-label"
+            style="text-transform: uppercase; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px;">
+            Total Users</div>
+        <div class="admin-stat-sub" style="font-size: 0.8rem; color: #00ff88; font-weight: 700;">+{{
+            stats.new_users_today }} today</div>
+    </div>
+    <div class="admin-stat"
+        style="background: rgba(0,255,136,0.03); border: 1px solid rgba(0,255,136,0.1); padding: 1.5rem; border-radius: 20px; text-align: center;">
+        <div class="admin-stat-value" style="font-size: 2.22rem; font-weight: 950; color: #00ff88;">₹{{
+            stats.total_revenue }}</div>
+        <div class="admin-stat-label"
+            style="text-transform: uppercase; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px;">
+            Total Revenue</div>
+        <div class="admin-stat-sub" style="font-size: 0.8rem; color: #00ff88; font-weight: 700;">+{{
+            stats.revenue_growth }}% month</div>
+    </div>
+    <div class="admin-stat"
+        style="background: rgba(0,210,255,0.03); border: 1px solid rgba(0,210,255,0.1); padding: 1.5rem; border-radius: 20px; text-align: center;">
+        <div class="admin-stat-value" style="font-size: 2.22rem; font-weight: 950; color: #00d2ff;">{{
+            stats.active_sessions }}</div>
+        <div class="admin-stat-label"
+            style="text-transform: uppercase; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px;">
+            Live Nodes</div>
+        <div class="admin-stat-sub" style="font-size: 0.8rem; color: #00d2ff; font-weight: 700;">ACTIVE NOW</div>
+    </div>
+    <div class="admin-stat"
+        style="background: rgba(255,165,0,0.03); border: 1px solid rgba(255,165,0,0.1); padding: 1.5rem; border-radius: 20px; text-align: center;">
+        <div class="admin-stat-value" style="font-size: 2.22rem; font-weight: 950; color: #ffa500;">{{
+            stats.total_orders }}</div>
+        <div class="admin-stat-label"
+            style="text-transform: uppercase; font-size: 0.75rem; font-weight: 800; color: var(--text-muted); letter-spacing: 1.5px;">
+            Orders (GMV)</div>
+        <div class="admin-stat-sub" style="font-size: 0.8rem; color: #ffa500; font-weight: 700;">₹{{ stats.orders_value
+            }}</div>
+    </div>
+</div>
+
+<!-- 🖱️ AUTHORITY SECTOR NAVIGATION -->
+<div class="hub-tabs"
+    style="display: flex; gap: 0.75rem; margin-bottom: 4rem; flex-wrap: wrap; justify-content: center;">
+    <button onclick="showAdminTab('overview')" id="atab-overview" class="hub-tab-btn active">📊 OVERVIEW</button>
+    <button onclick="showAdminTab('users')" id="atab-users" class="hub-tab-btn">👥 USERS</button>
+    <button onclick="showAdminTab('revenue')" id="atab-revenue" class="hub-tab-btn">💰 REVENUE</button>
+    <button onclick="showAdminTab('trade')" id="atab-trade" class="hub-tab-btn">🤝 TRADE</button>
+    <button onclick="showAdminTab('crisis')" id="atab-crisis" class="hub-tab-btn">🚑 CRISIS MGMT</button>
+    <button onclick="showAdminTab('system')" id="atab-system" class="hub-tab-btn">⚙️ SYSTEM</button>
+    <button onclick="showAdminTab('alerts')" id="atab-alerts" class="hub-tab-btn">🚨 ALERTS</button>
+</div>
+
+<style>
+    .hub-tab-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        padding: 1rem 1.8rem;
+        border-radius: 12px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.3s;
+        letter-spacing: 1px;
+        font-size: 0.85rem;
+    }
+
+    .hub-tab-btn.active {
+        background: #ff0055;
+        color: #fff;
+        border-color: #ff0055;
+        box-shadow: 0 0 25px rgba(255, 0, 85, 0.3);
+    }
+
+    .admin-sector {
+        display: none;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .admin-sector.active {
+        display: block;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    function showAdminTab(sectorId) {
+        document.querySelectorAll('.admin-sector').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.hub-tab-btn').forEach(b => b.classList.remove('active'));
+
+        const targetSector = document.getElementById('admin-section-' + sectorId);
+        if (targetSector) {
+            targetSector.classList.add('active');
+        }
+
+        const targetBtn = document.getElementById('atab-' + sectorId);
+        if (targetBtn) {
+            targetBtn.classList.add('active');
+        }
+
+        // Update URL hash without jumping
+        history.replaceState(null, null, '#' + sectorId);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            showAdminTab(hash);
+        } else {
+            showAdminTab('overview');
+        }
+    });
+
+    function filterUsers(q) {
+        const query = q.toLowerCase();
+        document.querySelectorAll('#users-list .user-row').forEach(row => {
+            const email = row.dataset.email.toLowerCase();
+            const visible = !query || email.includes(query);
+            row.style.display = visible ? 'flex' : 'none';
+        });
+    }
+
+    function filterUsersByRole(role) {
+        document.querySelectorAll('#users-list .user-row').forEach(row => {
+            const visible = !role || row.dataset.role === role;
+            row.style.display = visible ? 'flex' : 'none';
+        });
+    }
+</script>
+
+<!-- OVERVIEW TAB -->
+<div id="admin-section-overview" class="admin-sector active">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-bottom:2rem;">
+        <!-- Role Distribution -->
+        <div class="app-card">
+            <h3 style="color:#ff4d7d; margin-top:0;">👥 User Role Distribution</h3>
+            {% for role, count in role_dist.items() %}
+            <div style="margin-bottom:1.25rem;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:0.4rem;">
+                    <span style="font-weight:600; text-transform:capitalize;">{{ role }}</span>
+                    <span style="color:var(--text-muted);">{{ count }} users</span>
+                </div>
+                <div style="height:8px; background:rgba(255,255,255,0.08); border-radius:4px;">
+                    <div class="bar-{{ role }}"
+                        style="height:100%; --w: {{ ((count / stats.total_users) * 100)|int if stats.total_users > 0 else 0 }}%; width: var(--w); border-radius:4px;">
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Revenue Breakdown -->
+        <div class="app-card">
+            <h3 style="color:#ff4d7d; margin-top:0;">💰 Revenue Streams</h3>
+            {% for stream in revenue_streams %}
+            <div style="margin-bottom:1.25rem;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <span style="font-weight:600;">{{ stream.name }}</span>
+                    <span style="color:#00ff88; font-weight:700;">₹{{ stream.amount }}</span>
+                </div>
+                <div style="height:8px; background:rgba(255,255,255,0.08); border-radius:4px;">
+                    <div class="revenue-bar" style="--w: {{ stream.percent }}%; width: var(--w);"></div>
+                </div>
+                <p style="margin:4px 0 0; font-size:0.75rem; color:var(--text-muted);">{{ stream.percent }}% of total
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="app-card">
+        <h3 style="color:#ff4d7d; margin-top:0;">📋 Recent Platform Activity</h3>
+        {% for activity in recent_activity %}
+        <div
+            style="display:flex; align-items:center; gap:1rem; padding:0.75rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <span style="font-size:1.5rem; flex-shrink:0;">{{ activity.icon }}</span>
+            <div style="flex:1;">
+                <p style="margin:0; font-weight:600; font-size:0.9rem;">{{ activity.message }}</p>
+                <p style="margin:2px 0 0; font-size:0.75rem; color:var(--text-muted);">{{ activity.time }}</p>
+            </div>
+            {% if activity.value %}
+            <span style="color:#00ff88; font-weight:700; font-size:0.9rem;">{{ activity.value }}</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- USERS TAB -->
+<div id="admin-section-users" class="admin-sector">
+    <div class="app-card">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+            <h2 style="margin:0; color:#ff4d7d;">👥 User Management</h2>
+            <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+                <input type="text" class="app-input" placeholder="Search users..." style="width:180px;"
+                    oninput="filterUsers(this.value)">
+                <select class="app-input" style="width:auto;" onchange="filterUsersByRole(this.value)">
+                    <option value="">All Roles</option>
+                    <option>farmer</option>
+                    <option>business</option>
+                    <option>expert</option>
+                    <option>admin</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="users-list">
+            {% for email, data in users.items() %}
+            <div class="user-row" data-email="{{ email }}" data-role="{{ data.get('role','farmer') }}">
+                <div class="user-avatar-sm">{{ data.get('name','U')[0].upper() }}</div>
+                <div style="flex:1; min-width:140px;">
+                    <p style="margin:0; font-weight:700; font-size:0.9rem;">{{ data.get('name','Unknown') }}</p>
+                    <p style="margin:2px 0 0; font-size:0.75rem; color:var(--text-muted);">{{ email }}</p>
+                </div>
+                <span class="role-badge-admin {{ data.get('role','farmer') }}">{{ data.get('role','farmer')|upper
+                    }}</span>
+                <span style="font-size:0.75rem; color:var(--text-muted);">{{ data.get('joined_at','N/A')[:10] }}</span>
+                <div style="display:flex; gap:0.5rem; flex-shrink:0; flex-wrap:wrap;">
+                    <form method="POST" action="/admin/set-role" style="display:inline;">
+                        <input type="hidden" name="email" value="{{ email }}">
+                        <select name="role" onchange="this.form.submit()" class="admin-action-btn"
+                            style="cursor:pointer; min-width:100px;">
+                            <option value="">Change Role</option>
+                            <option value="farmer" {% if data.get('role')=='farmer' %}selected{% endif %}>Farmer
+                            </option>
+                            <option value="business" {% if data.get('role')=='business' %}selected{% endif %}>Business
+                            </option>
+                            <option value="expert" {% if data.get('role')=='expert' %}selected{% endif %}>Expert
+                            </option>
+                            <option value="admin" {% if data.get('role')=='admin' %}selected{% endif %}>Admin</option>
+                        </select>
+                    </form>
+                    <form method="POST" action="/admin/delete-user" style="display:inline;"
+                        onsubmit="return confirm('Delete user {{ email }}?')">
+                        <input type="hidden" name="email" value="{{ email }}">
+                        <button class="admin-action-btn danger" type="submit">🗑️ Delete</button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align:center; color:var(--text-muted); padding:2rem;">No users found</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- REVENUE TAB -->
+<div id="admin-section-revenue" class="admin-sector">
+    <div
+        style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; margin-bottom:2rem;">
+        <div class="app-card" style="border-color:rgba(0,255,136,0.2);">
+            <h3 style="color:#00ff88; margin-top:0;">Today</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#00ff88; margin:0;">₹{{ revenue.today }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">{{ revenue.today_txns }}
+                transactions</p>
+        </div>
+        <div class="app-card" style="border-color:rgba(255,165,0,0.2);">
+            <h3 style="color:#ffa500; margin-top:0;">This Month</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#ffa500; margin:0;">₹{{ revenue.month }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">+{{ revenue.month_growth }}% vs
+                last month</p>
+        </div>
+        <div class="app-card" style="border-color:rgba(255,0,85,0.2);">
+            <h3 style="color:#ff4d7d; margin-top:0;">Total GMV</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#ff4d7d; margin:0;">₹{{ revenue.total }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Since launch</p>
+        </div>
+    </div>
+
+    <div class="app-card">
+        <h3 style="color:#ff4d7d; margin-top:0;">💳 Recent Transactions</h3>
+        {% for txn in transactions %}
+        <div
+            style="display:flex; align-items:center; gap:1rem; padding:0.75rem 0; border-bottom:1px solid rgba(255,255,255,0.05); flex-wrap:wrap;">
+            <span style="font-size:1.2rem;">{{ txn.icon }}</span>
+            <div style="flex:1; min-width:150px;">
+                <p style="margin:0; font-weight:600; font-size:0.9rem;">{{ txn.description }}</p>
+                <p style="margin:2px 0 0; font-size:0.75rem; color:var(--text-muted);">{{ txn.user }} • {{ txn.method }}
+                    • {{ txn.time }}</p>
+            </div>
+            <span class="{% if txn.type=='credit' %}txn-credit{% else %}txn-debit{% endif %}"
+                style="font-weight:800; white-space:nowrap;">
+                {% if txn.type=='credit'%}+{% else %}-{% endif %}₹{{ txn.amount }}
+            </span>
+            <span
+                style="font-size:0.7rem; padding:3px 10px; border-radius:2rem; background:rgba(0,255,136,0.1); border:1px solid rgba(0,255,136,0.3); color:#00ff88; white-space:nowrap;">{{
+                txn.status }}</span>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- SYSTEM TAB -->
+<div id="admin-section-system" class="admin-sector">
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem;">
+        <div class="app-card">
+            <h3 style="color:#ff4d7d; margin-top:0;">🔧 System Health</h3>
+            {% for service in services %}
+            <div class="health-card">
+                <div class="health-dot {{ service.status }}"></div>
+                <div style="flex:1;">
+                    <p style="margin:0; font-weight:700;">{{ service.name }}</p>
+                    <p style="margin:2px 0 0; font-size:0.8rem; color:var(--text-muted);">{{ service.details }}</p>
+                </div>
+                <span class="status-{{ service.status }}" style="font-size:0.8rem; font-weight:700;">
+                    {% if service.status=='green' %}ONLINE{% elif service.status=='yellow' %}DEGRADED{% else %}OFFLINE{%
+                    endif %}
+                </span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="app-card">
+            <h3 style="color:#ff4d7d; margin-top:0;">⚙️ Platform Configuration</h3>
+            <form action="/admin/config" method="POST">
+                <div style="display:flex; flex-direction:column; gap:1rem; margin-bottom:1.5rem;">
+                    <div>
+                        <label
+                            style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Maintenance
+                            Mode</label>
+                        <div style="display:flex; gap:0.75rem;">
+                            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                <input type="radio" name="maintenance" value="off" {% if not admin_config.maintenance
+                                    %}checked{% endif %}> <span>Off</span>
+                            </label>
+                            <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
+                                <input type="radio" name="maintenance" value="on" {% if admin_config.maintenance
+                                    %}checked{% endif %}> <span style="color:#ff4d7d;">On (site down)</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div>
+                        <label
+                            style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Platform
+                            UPI ID (for receiving payments)</label>
+                        <input type="text" name="platform_upi" value="{{ admin_config.platform_upi }}" class="app-input"
+                            placeholder="aquasphere@hdfcbank">
+                    </div>
+                    <div>
+                        <label
+                            style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Expert
+                            Commission Rate (%)</label>
+                        <input type="number" name="commission_rate" value="{{ admin_config.commission_rate }}"
+                            class="app-input" min="0" max="50">
+                    </div>
+                    <div>
+                        <label
+                            style="color:var(--text-muted); font-size:0.85rem; display:block; margin-bottom:0.5rem;">Free
+                            Tier Limit (predictions/day)</label>
+                        <input type="number" name="free_limit" value="{{ admin_config.free_limit }}" class="app-input">
+                    </div>
+                </div>
+                <button type="submit" class="pay-btn"
+                    style="background:linear-gradient(135deg,#ff0055,#ff6b35); color:white; border:none; width:100%;">Save
+                    Configuration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="app-card" style="margin-top:1.5rem;">
+        <h3 style="color:#ff4d7d; margin-top:0;">⚡ Quick Admin Actions</h3>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap;">
+            <form method="POST" action="/admin/broadcast" style="flex:1; min-width:200px;">
+                <input type="text" name="message" class="app-input" placeholder="Broadcast message to all users..."
+                    style="margin-bottom:0.75rem; width:100%;">
+                <button type="submit" class="admin-action-btn" style="width:100%; padding:0.75rem;">📢 Send
+                    Broadcast</button>
+            </form>
+            <div style="flex:1; min-width:200px; display:flex; flex-direction:column; gap:0.75rem;">
+                <a href="/admin/export-data" class="admin-action-btn"
+                    style="text-decoration:none; text-align:center; padding:0.75rem;">📥 Export All Data (CSV)</a>
+                <button onclick="if(confirm('Clear all cache?')) fetch('/api/clear-session',{method:'POST'})"
+                    class="admin-action-btn">🗑️ Clear System Cache</button>
+                <a href="/settings" class="admin-action-btn"
+                    style="text-decoration:none; text-align:center; padding:0.75rem;">⚙️ Email/SMS Config</a>
+            </div>
+        </div>
+
+        <!-- 🔐 Change Admin Password -->
+        <div class="app-card" style="margin-top:1.5rem; border-color:rgba(255,0,85,0.3);">
+            <h3 style="color:#ff4d7d; margin-top:0; font-size:1.1rem;">🔐 Change Admin Password</h3>
+            <form action="/admin/change-password" method="POST"
+                style="display:flex; flex-direction:column; gap:0.75rem; max-width:480px;">
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:4px;">Current
+                        Password</label>
+                    <input type="password" name="old_password" class="app-input" placeholder="Enter current password"
+                        required style="width:100%;">
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:4px;">New
+                        Password <span style="color:#888;">(min. 8 characters)</span></label>
+                    <input type="password" name="new_password" class="app-input" placeholder="New password" required
+                        minlength="8" style="width:100%;">
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.8rem; display:block; margin-bottom:4px;">Confirm
+                        New Password</label>
+                    <input type="password" name="confirm_password" class="app-input" placeholder="Repeat new password"
+                        required minlength="8" style="width:100%;">
+                </div>
+                <button type="submit" class="admin-action-btn"
+                    style="background:rgba(255,0,85,0.2); border-color:rgba(255,0,85,0.4); color:#ff4d7d; padding:0.75rem; font-weight:800;">
+                    🔒 Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ALERTS TAB -->
+<div id="admin-section-alerts" class="admin-sector">
+    <div class="app-card">
+        <h3 style="color:#ff4d7d; margin-top:0;">🚨 Platform Alerts & Notifications</h3>
+        {% for alert in platform_alerts %}
+        <div class="alert-card alert-{{ alert.level }}">
+            <span style="font-size:1.5rem; flex-shrink:0;">{{ alert.icon }}</span>
+            <div style="flex:1;">
+                <p class="alert-title-{{ alert.level }}" style="margin:0; font-weight:700;">
+                    {{ alert.title }}</p>
+                <p style="margin:2px 0 0; font-size:0.8rem; color:var(--text-muted);">{{ alert.message }} • {{
+                    alert.time }}</p>
+            </div>
+            <span class="role-badge-admin alert-badge-{{ alert.level }}" style="font-weight:700;">{{
+                alert.level|upper }}</span>
+        </div>
+        {% else %}
+        <p style="text-align:center; color:#00ff88; padding:2rem;">✅ No active alerts. Platform running smoothly!</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- TRADE TAB -->
+<div id="admin-section-trade" class="admin-sector">
+    <div
+        style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:1.5rem; margin-bottom:2rem;">
+        <div class="app-card" style="border-color:rgba(0,255,136,0.2);">
+            <h3 style="color:#00ff88; margin-top:0; font-size:1.5rem;"><span class="emo">📦</span> Farmer Listings</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#00ff88; margin:0;">{{ trade_listings_count or 0 }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Active stock on market</p>
+        </div>
+        <div class="app-card" style="border-color:rgba(255,115,22,0.2);">
+            <h3 style="color:#f97316; margin-top:0; font-size:1.5rem;"><span class="emo">🏢</span> Company Tenders</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#f97316; margin:0;">{{ trade_tenders_count or 3 }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Buying interest active</p>
+        </div>
+        <div class="app-card" style="border-color:rgba(123,97,255,0.2);">
+            <h3 style="color:#a78bfa; margin-top:0; font-size:1.5rem;"><span class="emo">💬</span> Trade Messages</h3>
+            <p style="font-size:2.5rem; font-weight:900; color:#a78bfa; margin:0;">{{ trade_messages_count or 0 }}</p>
+            <p style="color:var(--text-muted); font-size:0.85rem; margin-top:0.5rem;">Farmer-company dialogues</p>
+        </div>
+    </div>
+
+    <div class="app-card" style="border-color:rgba(255,0,85,0.2); text-align:left; padding:2rem;">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+            <h3 style="margin:0; color:#ff4d7d; font-size:1.3rem;"><span class="emo">🛒</span> Supply Chain Activity
+            </h3>
+            <a href="/admin/trade-monitor"
+                style="padding:0.75rem 1.5rem; background:rgba(255,0,85,0.15); border:1px solid rgba(255,0,85,0.4); border-radius:1rem; color:#ff4d7d; text-decoration:none; font-weight:700; font-size:0.85rem;"><span
+                    class="emo">📊</span> Full Trade Monitor</a>
+        </div>
+        <p style="color:var(--text-muted); font-size:0.9rem;">The Direct Supply Chain connects farmers to enterprises
+            with zero middleman fees. Click <strong>Full Trade Monitor</strong> to see all listings, messages, and
+            tenders across the platform.</p>
+        <div
+            style="margin-top:1.5rem; padding:1.5rem; background:rgba(0,255,136,0.05); border:1px dashed rgba(0,255,136,0.3); border-radius:1.25rem;">
+            <p style="margin:0; color:#00ff88; font-weight:700;"><span class="emo">✅</span> Secure Trade Guarantee
+                Active</p>
+            <p style="margin:4px 0 0; color:var(--text-muted); font-size:0.85rem;">All direct trades are verified by
+                AquaSphere's Smart Contract engine. Farmer payments are protected.</p>
+        </div>
+    </div>
+</div>
+
+<!-- CRISIS MGMT TAB -->
+<div id="admin-section-crisis" class="admin-sector">
+    <div class="app-card" style="border-top: 5px solid #ff0055;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2 style="color:#ff0055; margin: 0; font-size: 2.2rem; font-weight: 950;">🚑 Universal Health Oversight
+            </h2>
+            <div
+                style="background: rgba(255,0,85,0.1); padding: 8px 20px; border-radius: 30px; border: 1px solid rgba(255,0,85,0.3); color: #ff0055; font-weight: 800; font-size: 0.8rem;">
+                {{ problems|length }} ACTIVE INCIDENTS
+            </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for p in problems %}
+            <div class="user-row {{ 'crisis-row-open' if p.status == 'Open' else 'crisis-row-resolved' }}"
+                style="padding: 1.5rem; justify-content: space-between;">
+                <div style="display: flex; gap: 1.5rem; align-items: center;">
+                    <div style="font-size: 1.5rem;">{{ '🚨' if p.status == 'Open' else '✅' }}</div>
+                    <div>
+                        <div style="font-weight: 800; font-size: 1.1rem; color: #fff;">{{ p.title }}</div>
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">
+                            ID: {{ p.id }} | Role: Farmer ({{ p.user_name }}) | Reported: {{ p.timestamp }}
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; align-items: center; gap: 2rem;">
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">STATUS</div>
+                        <span class="role-badge-admin {{ 'admin' if p.status == 'Open' else 'farmer' }}">{{
+                            p.status|upper }}</span>
+                    </div>
+                    {% if p.expert_name %}
+                    <div style="text-align: right;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px;">HANDLED BY</div>
+                        <div style="font-weight: 700; color: var(--primary);">{{ p.expert_name }}</div>
+                    </div>
+                    {% endif %}
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="admin-action-btn" onclick="viewProblemDetail('{{ p.id }}')">👁️ VIEW</button>
+                        <button class="admin-action-btn danger">🗑️ DELETE</button>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <p style="text-align: center; color: var(--text-muted); padding: 3rem;">No health incidents reported across
+                the platform.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- PROBLEM DETAIL MODAL placeholder -->
+<div id="prob-detail-modal" class="session-modal" style="display: none;">
+    <!-- Content injected via JS -->
+</div>
+
+<script>
+    function viewProblemDetail(id) {
+        // Mock detail view for admin
+        alert('Universal Oversight: Incident #' + id + '\n\nFull diagnostic logs and expert responses can be audited here.\n(Admin Audit Trace Active)');
+    }
+</script>
+{% endblock %}

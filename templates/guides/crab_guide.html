@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: #ffab00; margin-bottom: 2rem;"><span class="emo">🦀</span>
+        Mud Crab Culture Guide
+    </h1>
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        Mud Crab farming is one of the most profitable aquaculture ventures. It can be done as 'Fattening' (quick
+        turnaround) or 'Grow-out' (full culture).
+    </p>
+
+    <div style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; margin-bottom: 3rem;">
+        <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;">Optimal Parameters</h3>
+        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+            <li>🌡️ <strong>Temperature:</strong> 26°C - 30°C</li>
+            <li>⚖️ <strong>pH:</strong> 7.5 - 8.5</li>
+            <li>🧂 <strong>Salinity:</strong> 15 - 30 ppt</li>
+            <li>🌬️ <strong>Dissolved Oxygen:</strong> > 3.0 mg/L</li>
+            <li>🌊 <strong>Water Source:</strong> Brackish or Marine</li>
+        </ul>
+    </div>
+
+    <h3 style="color: var(--accent); font-size: 1.8rem; margin-bottom: 1.5rem;">Key Success Factors</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Fence Management</h4>
+            <p style="font-size: 0.9rem;">Crabs are escape artists. Use sturdy nylon net or bamboo fencing around the
+                pond.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Shelter Design</h4>
+            <p style="font-size: 0.9rem;">Provide hiding spots using PVC pipes or tiles to reduce cannibalism after
+                molting.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Feeding</h4>
+            <p style="font-size: 0.9rem;">Feed trash fish or pellets at 5-10% of body weight, preferably during late
+                evening.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

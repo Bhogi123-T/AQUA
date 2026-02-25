@@ -1,0 +1,33 @@
+{
+    "es": {
+        "demo_desc": "Habilite para ver OTPs directamente en el navegador sin claves de Twilio/Email.",
+        "special_tip_biosecurity": "Bioseguridad: Limite el acceso solo al personal autorizado.",
+        "special_tip_sampling": "Muestreo Proactivo: Pese los peces semanalmente para ajustar el alimento.",
+        "special_tip_aeration": "Aireación de Emergencia: Mantenga motores de respaldo listos 24/7.",
+        "tip_automatic_feeders": "Consejo: Use alimentadores automáticos para reducir desperdicio en un 15%."
+    },
+    "hi": {
+        "demo_desc": "Twilio/ईमेल कुंजियों के बिना सीधे ब्राउज़र में OTP देखने के लिए सक्षम करें।",
+        "tip_automatic_feeders": "टिप: बर्बादी को 15% कम करने के लिए स्वचालित फीडर का उपयोग करें।"
+    },
+    "zh": {
+        "demo_desc": "启用以在浏览器中直接查看 OTP，无需 Twilio/电子邮件密钥。",
+        "tip_automatic_feeders": "提示：使用自动喂食器可减少 15% 的浪费。"
+    },
+    "ar": {
+        "demo_desc": "قم بالتمكين لرؤية OTP مباشرة في المتصفح بدون مفاتيح Twilio/Email.",
+        "tip_automatic_feeders": "نصيحة: استخدم وحدات التغذية التلقائية لتقليل الهدر بنسبة 15%."
+    },
+    "fr": {
+        "demo_desc": "Activez pour voir les OTP directement dans le navigateur sans clés Twilio/Email.",
+        "tip_automatic_feeders": "Conseil : Utilisez des distributeurs automatiques pour réduire le gaspillage de 15%."
+    },
+    "ja": {
+        "demo_desc": "Twilio/Emailキーなしでブラウザで直接OTPを確認できるようにします。",
+        "tip_automatic_feeders": "ヒント：自動給餌器を使用して無駄を15％削減します。"
+    },
+    "te": {
+        "demo_desc": "Twilio/Email కీలు లేకుండా నేరుగా బ్రౌజర్‌లో OTPని చూడటానికి ప్రారంభించండి.",
+        "tip_automatic_feeders": "చిట్కా: వృధాను 15% తగ్గించడానికి ఆటోమేటిక్ ఫీడర్లను ఉపయోగించండి."
+    }
+}

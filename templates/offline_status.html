@@ -1,0 +1,127 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 2rem 0;">
+    <div class="app-card"
+        style="border: 2px solid var(--primary); padding: 2rem; text-align: center; margin-bottom: 2rem;">
+        <h1 style="color: var(--primary); margin-bottom: 0.5rem;"><span class="emo">📡</span> Offline Status Dashboard
+        </h1>
+        <p style="color: var(--text-muted); margin: 0;">View cached data and sync status</p>
+    </div>
+
+    <!-- Online Status Indicator -->
+    <div class="app-card"
+        style="border: 2px solid var(--accent); padding: 1.5rem; margin-bottom: 2rem; background: rgba(0, 255, 136, 0.05);">
+        <h2 style="color: var(--accent); margin-top: 0;"><span class="emo">🌐</span> Connection Status</h2>
+        <div id="connection-status" style="font-size: 1.2rem; font-weight: 800; color: #00ff88;">
+            ✅ Online & Connected
+        </div>
+        <p style="color: var(--text-muted); margin: 0.5rem 0;">Data will sync automatically when offline</p>
+    </div>
+
+    <!-- Cached Datasets -->
+    <div class="app-card" style="border: 2px solid var(--primary); padding: 2rem; margin-bottom: 2rem;">
+        <h2 style="color: var(--primary); margin-top: 0;"><span class="emo">💾</span> Cached Datasets</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+            {% for dataset in datasets %}
+            <div
+                style="background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); padding: 1rem; border-radius: 1rem;">
+                <p style="margin: 0; color: var(--primary); font-weight: 800; text-transform: uppercase;">
+                    {{ dataset.name }}
+                </p>
+                <p style="margin: 0.5rem 0 0; color: var(--text-muted); font-size: 0.9rem;">
+                    {% if dataset.available %}
+                    ✅ Available
+                    {% else %}
+                    ❌ Not Available
+                    {% endif %}
+                </p>
+                <p style="margin: 0.3rem 0 0; color: var(--accent); font-size: 0.85rem;">
+                    {{ (dataset.size / 1024) | round(2) }} KB
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Offline Features -->
+    <div class="app-card"
+        style="border: 2px solid var(--accent); padding: 2rem; margin-bottom: 2rem; background: rgba(0, 255, 136, 0.05);">
+        <h2 style="color: var(--accent); margin-top: 0;"><span class="emo">✨</span> Available Offline</h2>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+            <li style="padding: 0.8rem; color: #fff;">✓ Disease Risk Prediction (based on cached data)</li>
+            <li style="padding: 0.8rem; color: #fff;">✓ Feed Calculation (sample recommendations)</li>
+            <li style="padding: 0.8rem; color: #fff;">✓ Yield Forecasting (historical averages)</li>
+            <li style="padding: 0.8rem; color: #fff;">✓ Market Prices (last known rates)</li>
+            <li style="padding: 0.8rem; color: #fff;">✓ Stocking Advisor (cached data)</li>
+            <li style="padding: 0.8rem; color: #fff;">✓ Seed Quality Checker (reference data)</li>
+        </ul>
+    </div>
+
+    <!-- Synced Predictions -->
+    <div class="app-card" style="border: 2px solid var(--primary); padding: 2rem;">
+        <h2 style="color: var(--primary); margin-top: 0;"><span class="emo">🔄</span> Synced Predictions</h2>
+        {% if offline_predictions %}
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="border-bottom: 2px solid var(--primary);">
+                        <th style="text-align: left; padding: 1rem; color: var(--primary);">Type</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--primary);">Synced At</th>
+                        <th style="text-align: left; padding: 1rem; color: var(--primary);">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pred in offline_predictions %}
+                    <tr style="border-bottom: 1px solid rgba(0, 210, 255, 0.2);">
+                        <td style="padding: 1rem; color: #fff;">{{ pred.type }}</td>
+                        <td style="padding: 1rem; color: var(--text-muted); font-size: 0.9rem;">{{ pred.synced_at }}
+                        </td>
+                        <td style="padding: 1rem; color: var(--accent); font-weight: 800;">✅ Synced</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: var(--text-muted); text-align: center; padding: 2rem 0; margin: 0;">
+            No synced predictions yet. Make predictions offline to see them here!
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Instructions -->
+    <div class="app-card"
+        style="border: 2px solid var(--glass-border); padding: 2rem; margin-top: 2rem; background: rgba(255, 255, 255, 0.02);">
+        <h2 style="color: var(--text-muted); margin-top: 0;"><span class="emo">📚</span> How to Use Offline Mode</h2>
+        <ol style="color: #fff; line-height: 1.8;">
+            <li>🔗 <strong>First Visit (Online)</strong>: Open the app once on a normal internet connection. This loads
+                all datasets into your device's storage.</li>
+            <li>📡 <strong>Go Offline</strong>: Turn off WiFi or airplane mode. The app continues working!</li>
+            <li>🧪 <strong>Use Predictions</strong>: All prediction features use cached data and show demo results.</li>
+            <li>💾 <strong>Data Saved</strong>: Your predictions are stored locally on your device.</li>
+            <li>🌐 <strong>Auto-Sync</strong>: When you get back online, predictions automatically sync to the server.
+            </li>
+        </ol>
+    </div>
+</div>
+
+<script>
+    // Update connection status in real-time
+    function updateConnectionStatus() {
+        const statusDiv = document.getElementById('connection-status');
+        if (navigator.onLine) {
+            statusDiv.innerHTML = '✅ Online & Connected';
+            statusDiv.style.color = '#00ff88';
+        } else {
+            statusDiv.innerHTML = '📡 Offline Mode Active';
+            statusDiv.style.color = '#ff9800';
+        }
+    }
+
+    window.addEventListener('online', updateConnectionStatus);
+    window.addEventListener('offline', updateConnectionStatus);
+
+    updateConnectionStatus();
+</script>
+{% endblock %}

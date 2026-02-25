@@ -1,0 +1,233 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">📍</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['loc_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['loc_desc'] }}</p>
+</div>
+
+<div class="grid">
+    <div class="app-card" style="max-width: 100%; margin: 0;">
+        <h3 style="margin-bottom: 2rem; color: var(--primary);">{{ trans['reg_analysis'] }}</h3>
+        <form action="/predict_location" method="POST" class="app-form">
+            <div class="app-input-group">
+                <span class="app-label">🏳️ {{ trans['country'] }}</span>
+                <select name="country" id="country-select" class="app-input" onchange="updateStates()">
+                    <option value="">{{ trans['sel_country'] }}</option>
+                    {% for country in region_db.keys() %}
+                    <option value="{{ country }}">{{ trans['country_' + country.lower()] or country }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🗺️ {{ trans['state'] }}</span>
+                <select name="state" id="state-select" class="app-input" onchange="updateDistricts()">
+                    <option value="">{{ trans['sel_state'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🏙️ {{ trans['dist_reg'] }}</span>
+                <select name="district" id="district-select" class="app-input">
+                    <option value="">{{ trans['sel_dist'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">☀️ {{ trans['climate'] }}</span>
+                <select name="climate" class="app-input">
+                    <option value="Tropical">{{ trans['tropical'] }}</option>
+                    <option value="Subtropical">{{ trans['subtropical'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🐟 {{ trans['species'] }}</span>
+                <select name="species" class="app-input">
+                    {% for spec in species_list %}
+                    <option value="{{ spec.id }}">{{ spec.display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🏭 {{ trans['aqua_type'] }}</span>
+                <select name="aqua_type" class="app-input">
+                    <option value="Fish">{{ trans['fish'] }}</option>
+                    <option value="Prawn">{{ trans['prawn'] }}</option>
+                    <option value="Crab">{{ trans['crab'] }}</option>
+                </select>
+            </div>
+            <button class="app-btn-large">🔍 {{ trans['btn_analyze'] }}</button>
+        </form>
+    </div>
+
+    <!-- Live Position & Nearby Availability -->
+    <div class="app-card"
+        style="max-width: 100%; margin: 0; background: linear-gradient(135deg, rgba(79, 172, 254, 0.05), rgba(0,0,0,0));">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <span class="app-emoji" style="font-size: 3rem; margin: 0;">📡</span>
+            <div id="gps-status"
+                style="font-size: 0.8rem; background: rgba(255,171,0,0.1); color: #ffab00; padding: 5px 12px; border-radius: 20px; font-weight: 800; border: 1px solid rgba(255,171,0,0.2);">
+                LOCATING...
+            </div>
+        </div>
+
+        <h3 style="margin-bottom: 1rem; color: var(--accent);">{{ trans['near_insights'] or 'Live Position Explorer' }}
+        </h3>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 2.5rem;">Connecting to global satellite
+            telemetry...</p>
+
+        <div id="district-data-view" style="width: 100%;">
+            <button onclick="detectLocation()" class="app-btn-large"
+                style="background: var(--primary); color: #000; border: none; font-weight: 900;">
+                📍 UNLOCK LIVE POSITION
+            </button>
+        </div>
+
+        <div style="margin-top: 3rem; width: 100%; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,0.05);">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="sub-pane"
+                    style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05);">
+                    <p class="small-label"
+                        style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">LATITUDE</p>
+                    <p id="live-lat" style="font-size: 1.2rem; font-weight: 800; margin: 0;">--</p>
+                </div>
+                <div class="sub-pane"
+                    style="background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.05);">
+                    <p class="small-label"
+                        style="font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase;">LONGITUDE</p>
+                    <p id="live-lon" style="font-size: 1.2rem; font-weight: 800; margin: 0;">--</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const db = JSON.parse('{{ region_db | tojson | safe }}');
+
+    function updateStates() {
+        const country = document.getElementById('country-select').value;
+        const stateSelect = document.getElementById('state-select');
+        const distSelect = document.getElementById('district-select');
+
+        stateSelect.innerHTML = `<option value="">${"{{ trans['sel_state'] }}"}</option>`;
+        distSelect.innerHTML = `<option value="">${"{{ trans['sel_dist'] }}"}</option>`;
+
+        if (country && db[country]) {
+            Object.keys(db[country]).forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function updateDistricts() {
+        const country = document.getElementById('country-select').value;
+        const state = document.getElementById('state-select').value;
+        const distSelect = document.getElementById('district-select');
+        const dataView = document.getElementById('district-data-view');
+
+        distSelect.innerHTML = `<option value="">${"{{ trans['sel_dist'] }}"}</option>`;
+
+        if (country && state && db[country][state]) {
+            db[country][state].forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                distSelect.appendChild(opt);
+            });
+
+            dataView.innerHTML = `
+                <div style="background: rgba(0, 210, 255, 0.05); padding: 2rem; border-radius: 2rem; border: 1px solid var(--primary); text-align: left;">
+                    <p style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--primary);">📍 ${state} {{ trans['insights'] }}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.95rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">🌡️ <span style="color: var(--text-muted);">{{ trans['avg'] }}:</span> 28.2°C</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">🧪 <span style="color: var(--text-muted);">pH:</span> 7.8</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">📦 <span style="color: var(--text-muted);">{{ trans['stock'] }}:</span> 420T</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">👨‍🔧 <span style="color: var(--text-muted);">{{ trans['tech_title'] }}:</span> 8 {{ trans['nearby'] }}</div>
+                    </div>
+                </div>`;
+        } else {
+            dataView.innerHTML = `
+                <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 2rem; border: 1px dashed var(--glass-border); text-align: center;">
+                    <p style="color: var(--text-muted);">${"{{ trans['unlock_insights'] | safe }}"}</p>
+                </div>`;
+        }
+    }
+    function detectLocation() {
+        const gpsStatus = document.getElementById('gps-status');
+        const latEl = document.getElementById('live-lat');
+        const lonEl = document.getElementById('live-lon');
+        const dataView = document.getElementById('district-data-view');
+
+        gpsStatus.innerText = '📡 ACCESSING SATELLITE...';
+        gpsStatus.style.background = 'rgba(0, 210, 255, 0.1)';
+        gpsStatus.style.color = 'var(--primary)';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                latEl.innerText = lat.toFixed(4);
+                lonEl.innerText = lon.toFixed(4);
+
+                // Fetch location name
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=10`)
+                    .then(res => res.json())
+                    .then(data => {
+                        const name = data.address.city || data.address.town || data.address.village || data.address.district || data.address.state || "Detected Zone";
+                        const region = data.address.state || data.address.country || "Asia/Pacific";
+
+                        gpsStatus.innerText = '✅ POSITION VERIFIED';
+                        gpsStatus.style.background = 'rgba(0, 255, 136, 0.1)';
+                        gpsStatus.style.color = '#00ff88';
+
+                        // Simulate regional data based on detected name
+                        dataView.innerHTML = `
+                            <div style="background: rgba(0, 255, 136, 0.05); padding: 2rem; border-radius: 2rem; border: 1px solid #00ff88; text-align: left;">
+                                <p style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; color: #00ff88;">🌍 LOCAL REGION DETECTED</p>
+                                <p style="color: white; font-weight: 700; margin-bottom: 1rem;">📍 ${name}, ${region}</p>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.95rem;">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">🌡️ <span style="color: var(--text-muted);">Avg Temp:</span> 29.2°C</div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">🧪 <span style="color: var(--text-muted);">Avg pH:</span> 7.9</div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">📦 <span style="color: var(--text-muted);">Production:</span> High</div>
+                                    <div style="display: flex; align-items: center; gap: 0.5rem;">🛡️ <span style="color: var(--text-muted);">Status:</span> Verified</div>
+                                </div>
+                                <div style="margin-top: 2rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 1rem; font-size: 0.8rem; color: #00ff88;">
+                                    > Satellite link active. Monitoring ${name} aquaculture zone.
+                                </div>
+                            </div>
+                        `;
+                    })
+                    .catch(() => {
+                        gpsStatus.innerText = '✅ POSITION VERIFIED';
+                        gpsStatus.style.background = 'rgba(0, 255, 136, 0.1)';
+                        gpsStatus.style.color = '#00ff88';
+                        // Fallback to simple view
+                    });
+            }, (error) => {
+                gpsStatus.innerText = '⚠️ GPS SYNC PENDING';
+                gpsStatus.style.background = 'rgba(255, 171, 0, 0.1)';
+                gpsStatus.style.color = '#ffab00';
+
+                dataView.innerHTML = `
+                    <div style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; border: 1px dashed var(--glass-border); text-align: center;">
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">GPS Access Denied or Timed Out. Please enable location permissions in your browser settings.</p>
+                        <button onclick="detectLocation()" class="app-btn-large" style="background: var(--primary); color: #000; border: none; font-weight: 900; width: auto; padding: 1rem 2rem;">
+                             Retry Connection
+                        </button>
+                    </div>
+                `;
+            });
+        } else {
+            alert("Geolocation is not supported by this browser.");
+        }
+    }
+
+    // Auto-run if possible
+    window.addEventListener('load', () => {
+        setTimeout(detectLocation, 1500);
+    });
+</script>
+{% endblock %}

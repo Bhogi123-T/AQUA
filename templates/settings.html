@@ -1,0 +1,270 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="settings-portal" style="max-width: 1100px; margin: 0 auto; padding: 2rem;">
+    <!-- ⚙️ Neural Settings Header -->
+    <header style="text-align: left; margin-bottom: 4rem;">
+        <h1 class="glow-text" style="font-size: 3.5rem; font-weight: 950; margin: 0; text-align: left !important;">
+            System Configuration</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; font-weight: 600;">Optimize your AquaSphere OS experience
+        </p>
+    </header>
+
+    <form action="/settings?lang={{ lang }}" method="POST" class="settings-matrix">
+        <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem;">
+            <!-- 🛠️ Navigation & Categories -->
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <div class="settings-category-btn active" onclick="switchSettingsTab('personalization')"
+                    id="btn-personalization">
+                    <span class="emo">🎨</span> Personalization
+                </div>
+                <div class="settings-category-btn" onclick="switchSettingsTab('notifications')" id="btn-notifications">
+                    <span class="emo">🔔</span> Notifications & Alerts
+                </div>
+                <div class="settings-category-btn" onclick="switchSettingsTab('technical')" id="btn-technical">
+                    <span class="emo">📡</span> Technical Gateways
+                </div>
+                <div class="settings-category-btn" onclick="switchSettingsTab('security')" id="btn-security">
+                    <span class="emo">🛡️</span> Security & Data
+                </div>
+                <div class="settings-category-btn" onclick="switchSettingsTab('modules')" id="btn-modules">
+                    <span class="emo">🧩</span> Modules & Options
+                </div>
+
+                <button type="submit" class="app-btn-large"
+                    style="margin-top: 2rem; padding: 1.5rem; font-size: 1.1rem; box-shadow: 0 10px 30px rgba(0,210,255,0.3);">
+                    💾 Commit Changes
+                </button>
+            </div>
+
+            <!-- 📝 Active Config Panel -->
+            <div class="app-card"
+                style="padding: 3rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 3rem; backdrop-filter: blur(30px);">
+
+                <!-- Category: Personalization -->
+                <div id="set-personalization" class="settings-sector active">
+                    <h3
+                        style="margin-top:0; border-bottom: 2px solid var(--primary); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem;">
+                        User Interface</h3>
+                    <div class="app-input-group">
+                        <span class="app-label">Neural Theme Engine</span>
+                        <select class="app-input" style="background: rgba(0,0,0,0.3);">
+                            <option>Deep Sea (Default)</option>
+                            <option>Midnight Abyss</option>
+                            <option>Oceanic Bioluminescence</option>
+                        </select>
+                    </div>
+                    <div class="app-input-group" style="margin-top: 2rem;">
+                        <span class="app-label">Dynamic Motion Effects</span>
+                        <div
+                            style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.03); padding: 1.2rem; border-radius: 1.5rem;">
+                            <span>Enable High-fidelity transitions</span>
+                            <input type="checkbox" checked style="width: 25px; height: 25px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Category: Notifications -->
+                <div id="set-notifications" class="settings-sector" style="display:none;">
+                    <h3
+                        style="margin-top:0; border-bottom: 2px solid var(--accent); display: inline-block; padding-bottom: 5px; margin-bottom: 2rem;">
+                        Alert Ecosystem</h3>
+
+                    <div
+                        style="background: rgba(0, 255, 136, 0.05); border: 1px solid var(--accent); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <strong style="display: block; color: var(--accent);">🎙️ Voice-First (IVR)</strong>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Real-time voice calls for water
+                                criticals</span>
+                        </div>
+                        <input type="checkbox" name="VOICE_ALERTS" {% if config.VOICE_ALERTS %}checked{% endif %}
+                            style="width: 25px; height: 25px;">
+                    </div>
+
+                    <div class="app-input-group">
+                        <span class="app-label">WhatsApp Telemetry</span>
+                        <input type="text" class="app-input" placeholder="+91 XXX XXX XXXX"
+                            value="{{ session.get('phone', '') }}">
+                    </div>
+                </div>
+
+                <!-- Category: Technical -->
+                <div id="set-technical" class="settings-sector" style="display:none;">
+                    <h3
+                        style="margin-top:0; border-bottom: 2px solid #ffbd2e; display: inline-block; padding-bottom: 5px; margin-bottom: 2rem;">
+                        Backbone Gateways</h3>
+
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Configure SMTP and
+                        API keys for system communications.</p>
+
+                    <div class="grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                        <div class="app-input-group">
+                            <span class="app-label">SMTP Server</span>
+                            <input type="text" name="MAIL_SERVER" class="app-input" value="{{ config.MAIL_SERVER }}">
+                        </div>
+                        <div class="app-input-group">
+                            <span class="app-label">Server Port</span>
+                            <input type="number" name="MAIL_PORT" class="app-input" value="{{ config.MAIL_PORT }}">
+                        </div>
+                    </div>
+                    <div class="app-input-group" style="margin-top:1.5rem;">
+                        <span class="app-label">Twilio SID (Secure)</span>
+                        <input type="text" name="TWILIO_ACCOUNT_SID" class="app-input"
+                            value="{{ config.TWILIO_ACCOUNT_SID }}" placeholder="AC...">
+                    </div>
+                </div>
+
+                <!-- Category: Security -->
+                <div id="set-security" class="settings-sector" style="display:none;">
+                    <h3
+                        style="margin-top:0; border-bottom: 2px solid #ff4d7d; display: inline-block; padding-bottom: 5px; margin-bottom: 2rem;">
+                        Data Integrity</h3>
+
+                    <button type="button" class="app-btn-large"
+                        style="background: rgba(255, 77, 125, 0.1); color: #ff4d7d; border: 1px solid #ff4d7d; margin-bottom: 1rem;"
+                        onclick="clearSystemCache()">🗑️ Purge Local Cache</button>
+                    <button type="button" class="app-btn-large"
+                        style="background: transparent; color: white; border: 1px solid var(--glass-border);">📤 Export
+                        Personal Data (JSON)</button>
+
+                    <div
+                        style="margin-top: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.03); border-radius: 1.5rem; font-size: 0.85rem;">
+                        <strong>Note:</strong> AquaSphere uses decentralized session tokens. Clearing cache will require
+                        unauthenticated users to re-log.
+                    </div>
+                </div>
+
+                <!-- Category: Modules -->
+                <div id="set-modules" class="settings-sector" style="display:none;">
+                    <h3
+                        style="margin-top:0; border-bottom: 2px solid #7b61ff; display: inline-block; padding-bottom: 5px; margin-bottom: 2rem;">
+                        Platform Feature Matrix</h3>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+                        <div class="module-toggle">
+                            <div>
+                                <strong style="display: block; color: white;">AI AquaBot Advisory</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Neural chat interface for
+                                    real-time problem solving</span>
+                            </div>
+                            <input type="checkbox" name="FEAT_AI_CHATBOT" {% if config.FEATURES.AI_CHATBOT %}checked{%
+                                endif %} class="toggle-switch">
+                        </div>
+
+                        <div class="module-toggle">
+                            <div>
+                                <strong style="display: block; color: white;">Neural Live Ticker</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Streaming telemetry for
+                                    global market data</span>
+                            </div>
+                            <input type="checkbox" name="FEAT_NEURAL_TICKER" {% if config.FEATURES.NEURAL_TICKER
+                                %}checked{% endif %} class="toggle-switch">
+                        </div>
+
+                        <div class="module-toggle">
+                            <div>
+                                <strong style="display: block; color: white;">PayHub Matrix</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Integrated PhonePe/GPay
+                                    financial rail support</span>
+                            </div>
+                            <input type="checkbox" name="FEAT_PAYMENT_TRANSFERS" {% if config.FEATURES.PAYMENT_TRANSFERS
+                                %}checked{% endif %} class="toggle-switch">
+                        </div>
+
+                        <div class="module-toggle">
+                            <div>
+                                <strong style="display: block; color: white;">Species AI Matrix</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">Location suitability &
+                                    disease forecasting algorithms</span>
+                            </div>
+                            <input type="checkbox" name="FEAT_DISEASE_ANALYSIS" {% if config.FEATURES.DISEASE_ANALYSIS
+                                %}checked{% endif %} class="toggle-switch">
+                        </div>
+
+                        <div
+                            style="margin-top: 1rem; padding: 1.5rem; background: rgba(0,210,255,0.05); border-radius: 1.5rem; border: 1px dashed var(--primary);">
+                            <p
+                                style="font-size: 0.7rem; font-weight: 800; color: var(--primary); margin-bottom: 1rem; letter-spacing: 1px;">
+                                WEBSITE OPTION TYPES</p>
+                            <div class="app-input-group">
+                                <span class="app-label">Data Density Mode</span>
+                                <select class="app-input" style="padding: 8px; font-size: 0.8rem;">
+                                    <option>Standard (Balanced)</option>
+                                    <option>High Performance (Compact)</option>
+                                    <option>Rich Telemetry (Detailed)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </form>
+</div>
+
+<style>
+    .settings-category-btn {
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .settings-category-btn:hover {
+        background: rgba(255, 255, 255, 0.07);
+        transform: translateX(10px);
+    }
+
+    .settings-category-btn.active {
+        background: var(--primary);
+        color: #000;
+        border-color: var(--primary);
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.2);
+    }
+
+    .module-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 1.5rem;
+        border-radius: 2rem;
+        border: 1px solid var(--glass-border);
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .module-toggle:hover {
+        transform: scale(1.02);
+        background: rgba(255, 255, 255, 0.05);
+    }
+
+    .toggle-switch {
+        width: 40px;
+        height: 20px;
+        cursor: pointer;
+    }
+</style>
+
+<script>
+    function switchSettingsTab(tab) {
+        document.querySelectorAll('.settings-sector').forEach(s => s.style.display = 'none');
+        document.querySelectorAll('.settings-category-btn').forEach(b => b.classList.remove('active'));
+
+        document.getElementById('set-' + tab).style.display = 'block';
+        document.getElementById('btn-' + tab).classList.add('active');
+    }
+
+    function clearSystemCache() {
+        if (confirm('Purge all localized system data?')) {
+            localStorage.clear();
+            alert('Cache Decoupled Successfully.');
+        }
+    }
+</script>
+{% endblock %}

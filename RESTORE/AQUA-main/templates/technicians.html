@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">👨‍🔬</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['tech_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['tech_desc'] }}</p>
+</div>
+
+<!-- Consultation Modal (Simulated) -->
+<div id="consultation-section" style="display: none; width: 100%; max-width: 800px; margin: 0 auto 5rem;">
+    <div class="app-card" style="max-width: 100%; border: 2px solid var(--accent);">
+        <h3 id="consult-tech-name" style="color: var(--accent); margin-bottom: 2rem;">{{ trans['consulting'] }}</h3>
+        <form action="/consult_technician" method="POST" enctype="multipart/form-data" class="app-form">
+            <input type="hidden" name="tech_id" id="consult-tech-id">
+
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['describe_issue'] }}</span>
+                <textarea name="message" class="app-input"
+                    style="height: 120px; border-radius: 1.5rem !important; padding: 1.5rem;"
+                    placeholder="e.g. Unusual spots on shrimp shell..."></textarea>
+            </div>
+
+            <div class="app-input-group">
+                <span class="app-label">{{ trans['upload_media'] }}</span>
+                <div style="position: relative; overflow: hidden; display: block; width: 100%;">
+                    <input type="file" name="media" id="media-upload" class="app-input" accept="image/*,video/*"
+                        style="opacity: 0; position: absolute; z-index: -1;">
+                    <label for="media-upload" class="app-btn-large"
+                        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); display: block; cursor: pointer; padding: 1.5rem;">
+                        {{ trans['select_file'] }}
+                    </label>
+                </div>
+                <p id="file-name" style="margin-top: 1rem; color: var(--accent); font-weight: 700;"></p>
+            </div>
+
+            <button class="app-btn-large">{{ trans['send_tech'] }}</button>
+            <button type="button" onclick="closeConsult()" class="app-btn-large"
+                style="background: transparent; box-shadow: none; margin-top: 1rem; font-size: 1rem; opacity: 0.6;">{{
+                trans['btn_cancel'] }}</button>
+        </form>
+    </div>
+</div>
+
+<div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; width: 100%;">
+    <!-- Expert 1 -->
+    <div class="app-card"
+        style="max-width: 100%; border-top: 6px solid var(--primary); align-items: flex-start; text-align: left; padding: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 1.5rem;">
+            <span
+                style="background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800;">
+                {{ trans['near_me'] }} • KRISHNA, AP
+            </span>
+            <span style="color: var(--accent); font-weight: 800; font-size: 0.9rem;">{{ trans['online'] }}</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin-bottom: 0.8rem;"><span class="emo">👨‍🔧</span> Dr. Rajesh Kumar</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong style="color: var(--primary);">{{
+                trans['expertise'] }}:</strong> Water Quality & Disease</p>
+        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem;"><strong>{{ trans['availability']
+                }}:</strong> Mon-Sat (9AM-6PM)</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+            <a href="javascript:void(0)" onclick="openConsult('Dr. Rajesh Kumar', 'TECH-001')" class="app-btn-large"
+                style="text-decoration: none; padding: 1rem; font-size: 1rem;">{{ trans['consult_now'] }}</a>
+            <a href="#" class="app-btn-large"
+                style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1rem; font-size: 1rem;">{{
+                trans['live_chat'] }}</a>
+        </div>
+    </div>
+
+    <!-- Expert 2 -->
+    <div class="app-card"
+        style="max-width: 100%; border-top: 6px solid var(--accent); align-items: flex-start; text-align: left; padding: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 1.5rem;">
+            <span
+                style="background: rgba(0, 255, 136, 0.1); color: var(--accent); padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800;">
+                {{ trans['near_me'] }} • MEKONG DELTA, VN
+            </span>
+            <span style="color: #ffcc00; font-weight: 800; font-size: 0.9rem;">{{ trans['busy'] }}</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin-bottom: 0.8rem;"><span class="emo">👩‍🔬</span> Sarah Nguyen</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong style="color: var(--accent);">{{ trans['expertise']
+                }}:</strong> Shrimp Nutrition</p>
+        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem;"><strong>{{ trans['availability']
+                }}:</strong> 24/7 Global Support</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+            <a href="javascript:void(0)" onclick="openConsult('Sarah Nguyen', 'TECH-002')" class="app-btn-large"
+                style="text-decoration: none; padding: 1rem; font-size: 1rem;">{{ trans['consult_now'] }}</a>
+            <a href="#" class="app-btn-large"
+                style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1rem; font-size: 1rem;">{{
+                trans['live_chat'] }}</a>
+        </div>
+    </div>
+
+    <!-- Expert 3 --><!-- Expert 3 -->
+    <div class="app-card"
+        style="max-width: 100%; border-top: 6px solid #ff0055; align-items: flex-start; text-align: left; padding: 2.5rem;">
+        <div style="display: flex; justify-content: space-between; width: 100%; margin-bottom: 1.5rem;">
+            <span
+                style="background: rgba(255, 0, 85, 0.1); color: #ff0055; padding: 5px 12px; border-radius: 12px; font-size: 0.8rem; font-weight: 800;">
+                {{ trans['near_me'] }} • NELLORE, AP
+            </span>
+            <span style="color: #ff0055; font-weight: 800; font-size: 0.9rem;">{{ trans['offline'] }}</span>
+        </div>
+        <h3 style="font-size: 1.8rem; margin-bottom: 0.8rem;"><span class="emo">👷</span> Amit Shah</h3>
+        <p style="font-size: 1.1rem; margin-bottom: 0.5rem;"><strong style="color: #ff0055;">{{ trans['expertise']
+                }}:</strong> RAS & Biofloc</p>
+        <p style="font-size: 1.1rem; color: var(--text-muted); margin-bottom: 2rem;"><strong>{{ trans['availability']
+                }}:</strong> Mon-Fri (10AM-4PM)</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%;">
+            <a href="javascript:void(0)" onclick="openConsult('Amit Shah', 'TECH-003')" class="app-btn-large"
+                style="text-decoration: none; padding: 1rem; font-size: 1rem; opacity: 0.5;">{{ trans['consult_now']
+                }}</a>
+            <a href="#" class="app-btn-large"
+                style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1rem; font-size: 1rem; opacity: 0.5; cursor: not-allowed;">{{
+                trans['live_chat'] }}</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openConsult(name, id) {
+        document.getElementById('consultation-section').style.display = 'block';
+        document.getElementById('consult-tech-name').innerText = "{{ trans['consult_with'] }}" + name;
+        document.getElementById('consult-tech-id').value = id;
+        window.scrollTo({ top: 100, behavior: 'smooth' });
+    }
+
+    function closeConsult() {
+        document.getElementById('consultation-section').style.display = 'none';
+    }
+
+    document.getElementById('media-upload').onchange = function () {
+        if (this.files[0]) {
+            document.getElementById('file-name').innerText = '✅ Selected: ' + this.files[0].name;
+        }
+    };
+</script>
+
+<div style="text-align: center; margin-top: 4rem; margin-bottom: 4rem;">
+    <a href="/farmer?lang={{ lang }}" class="app-btn-large"
+        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1.2rem 3rem;">🔙
+        {{ trans['back'] }}</a>
+</div>
+{% endblock %}

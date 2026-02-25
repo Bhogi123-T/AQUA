@@ -1,0 +1,319 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="landing-page" style="margin-top: -2rem;">
+    <!-- HERO SECTION -->
+    <section class="hero-section"
+        style="padding: 10rem 0 6rem; text-align: center; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+
+        <!-- FLOATERS -->
+        <div class="swimmer"
+            style="--d: 15s; --top: 25%; --left: 10%; --size: 3rem; position: absolute; opacity: 0.15;">🐟</div>
+        <div class="swimmer"
+            style="--d: 20s; --top: 65%; --left: 80%; --size: 4rem; position: absolute; opacity: 0.15; animation-delay: -5s;">
+            🦐</div>
+        <div class="swimmer"
+            style="--d: 25s; --top: 75%; --left: 20%; --size: 3.5rem; position: absolute; opacity: 0.15; animation-delay: -10s;">
+            🦀</div>
+
+        <div class="hero-content"
+            style="max-width: 1100px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 2;">
+            <div data-aos="fade-up" style="margin-bottom: 2rem;">
+                <span
+                    style="background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); padding: 0.6rem 1.5rem; border-radius: 5rem; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);">
+                    🚀 {{ trans['next_feeding'] or 'ADVANCED AQUACULTURE AI' }}
+                </span>
+            </div>
+
+            <h1
+                style="font-size: clamp(2.5rem, 8vw, 4.5rem); line-height: 1.1; font-weight: 900; margin-bottom: 2rem; background: linear-gradient(135deg, #fff 30%, #4facfe 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 30px rgba(0, 210, 255, 0.2)); text-shadow: 0 0 50px rgba(79, 172, 254, 0.3);">
+                {{ trans['hero_title_eco'] | safe }}
+            </h1>
+
+            <p
+                style="font-size: clamp(1.1rem, 3vw, 1.4rem); color: var(--text-muted); line-height: 1.6; margin-bottom: 4rem; max-width: 800px; margin-left: auto; margin-right: auto; opacity: 0.8;">
+                {{ trans['prob_statement'] }}
+            </p>
+
+            <div style="display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; width: 100%;">
+                {% if not session.get('user') %}
+                <a href="/login?lang={{ lang }}" class="app-btn-large active-btn"
+                    style="min-width: 250px; padding: 1.5rem; font-size: 1.1rem; border-radius: 1.2rem; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">
+                    {{ trans['login'] }}
+                </a>
+                <a href="/signup?lang={{ lang }}" class="app-btn-large"
+                    style="min-width: 250px; background: rgba(15, 23, 42, 0.6); border: 2px solid var(--glass-border); padding: 1.5rem; font-size: 1.1rem; border-radius: 1.2rem; text-decoration: none; text-transform: uppercase; letter-spacing: 2px; color: white;">
+                    {{ trans['signup'] }}
+                </a>
+                {% else %}
+                <a href="/home?lang={{ lang }}" class="app-btn-large active-btn"
+                    style="min-width: 300px; padding: 1.5rem; font-size: 1.2rem; border-radius: 1.2rem; text-decoration: none; text-transform: uppercase; letter-spacing: 2px;">
+                    {{ trans['nav_farmer'] }} 👨‍🌾
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+
+    <!-- IMPACT STATS SECTION (REUSED) -->
+    <section style="padding: 6rem 0; background: #0a0f1e;">
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div class="app-card"
+                style="text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+                <div style="font-size: 3.5rem; font-weight: 900; color: #00ff88;">92%</div>
+                <div
+                    style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">
+                    {{ trans['yield_accuracy'] or 'Yield Accuracy' }}</div>
+            </div>
+            <div class="app-card"
+                style="text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+                <div style="font-size: 3.5rem; font-weight: 900; color: #00d2ff;">{{ live_stats.global_users }}</div>
+                <div
+                    style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">
+                    {{ trans['global_farmers'] or 'Global Farmers' }}</div>
+            </div>
+            <div class="app-card"
+                style="text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+                <div style="font-size: 3.5rem; font-weight: 900; color: #ff6b35;">15+</div>
+                <div
+                    style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">
+                    {{ trans['regional_hubs'] or 'Regional Hubs' }}</div>
+            </div>
+            <div class="app-card"
+                style="text-align: center; background: rgba(255,255,255,0.02); border: 1px solid var(--glass-border);">
+                <div style="font-size: 3.5rem; font-weight: 900; color: #ff0055;">24/7</div>
+                <div
+                    style="color: var(--text-muted); text-transform: uppercase; font-size: 0.8rem; letter-spacing: 2px;">
+                    {{ trans['ai_monitoring'] or 'AI Monitoring' }}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer
+        style="padding: 6rem 2rem; background: #05080f; border-top: 1px solid rgba(255,255,255,0.05); text-align: center;">
+        <div style="color: var(--text-muted); font-size: 1rem; opacity: 0.8;">
+            &copy; 2026 AquaSphere AI Ecosystem. {{ trans['copyright'] | safe }}<br>
+            <div style="margin-top: 1rem; font-size: 0.8rem; letter-spacing: 1px;">THE WORLD'S FIRST AUTONOMOUS
+                AQUACULTURE COMMAND CENTER</div>
+        </div>
+    </footer>
+</div>
+
+<style>
+    .landing-page {
+        overflow-x: hidden;
+    }
+
+    .intel-card {
+        padding: 2.5rem 1.5rem;
+        border-radius: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .intel-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        font-weight: 900;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .badge {
+        padding: 4px 10px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 0.65rem;
+    }
+
+    .pulse-badge {
+        animation: intel-pulse 2s infinite;
+    }
+
+    @keyframes intel-pulse {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .small-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+    }
+
+    .value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+    }
+
+    .big-value {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #fff;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .status-tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-top: 0.3rem;
+        color: var(--text-muted);
+    }
+
+    .sub-panel {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quality-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .quality-bar div {
+        height: 100%;
+        background: linear-gradient(to right, #00d2ff, #00ff88);
+        border-radius: 10px;
+    }
+
+    .intel-btn {
+        background: transparent;
+        border: 1px solid;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+    .intel-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .activity-log {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        border-radius: 10px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.65rem;
+        color: #00ff88;
+        line-height: 1.4;
+    }
+
+    .activity-log p {
+        margin: 0 0 0.5rem 0;
+    }
+
+    .active-btn {
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+        background: var(--primary);
+        color: black !important;
+        font-weight: 800;
+        transition: all 0.3s ease;
+    }
+
+    .active-btn:hover {
+        box-shadow: 0 15px 50px rgba(0, 210, 255, 0.5);
+        transform: translateY(-2px);
+    }
+</style>
+<script>
+    function refreshLocation() {
+        const latEl = document.querySelector('.intel-card:first-child .value:first-of-type');
+        const lonEl = document.querySelectorAll('.intel-card:first-child .value')[1];
+        const statusEl = document.querySelector('.intel-card:first-child h4');
+        const zoneEl = document.querySelector('.intel-card:first-child .value:last-child');
+
+        statusEl.innerText = '📡 Locating...';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                latEl.innerText = position.coords.latitude.toFixed(4);
+                lonEl.innerText = position.coords.longitude.toFixed(4);
+                statusEl.innerText = '📍 Location Verified';
+                statusEl.style.color = '#00ff88';
+                zoneEl.innerText = 'Aquaculture Alpha-1';
+
+                // Simulate data fetch for this location
+                document.querySelectorAll('.big-value').forEach(el => {
+                    const current = parseFloat(el.innerText);
+                    if (!isNaN(current)) {
+                        const variation = (Math.random() - 0.5) * (current * 0.1);
+                        el.innerText = (current + variation).toFixed(current % 1 === 0 ? 0 : 2);
+                    }
+                });
+            }, (error) => {
+                statusEl.innerText = '❌ GPS Access Denied';
+                statusEl.style.color = '#ff4444';
+            });
+        } else {
+            statusEl.innerText = '❌ Browser not supported';
+        }
+    }
+
+    // Attach to button
+    document.querySelector('.intel-btn').addEventListener('click', refreshLocation);
+
+    // Initial check - make placeholder clickable
+    setTimeout(() => {
+        const statusEl = document.querySelector('.intel-card:first-child h4');
+        if (statusEl && statusEl.innerText.includes('Enable')) {
+            statusEl.style.cursor = 'pointer';
+            statusEl.onclick = refreshLocation;
+        }
+    }, 1000);
+</script>
+{% endblock %}

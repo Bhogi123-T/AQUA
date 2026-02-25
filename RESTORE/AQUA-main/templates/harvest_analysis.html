@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">📊</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['harvest_title'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['harvest_desc'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 600px; text-align: left; align-items: flex-start;">
+    <form action="/predict_harvest?lang={{ lang }}" method="POST" class="app-form" style="width: 100%;">
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['species'] }}</span>
+            <select name="species" class="app-input" required>
+                {% for s in species_list %}
+                <option value="{{ s.id }}">{{ s.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['doc'] }}</span>
+            <input type="number" name="days" class="app-input" placeholder="e.g., 90" required>
+        </div>
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['feed_consumed'] }}</span>
+            <input type="number" name="feed" class="app-input" placeholder="e.g., 5000" required>
+        </div>
+        <button type="submit" class="app-btn-large" style="width: 100%;">{{ trans['predict_size'] }}</button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: #00ff88; margin-bottom: 2rem;"><span class="emo">🐚</span>
+        Mollusk & Seaweed Farming
+    </h1>
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        Integrated Multi-Trophic Aquaculture (IMTA) involving mussels, oysters, and seaweeds is the most sustainable way
+        to farm the ocean.
+    </p>
+
+    <div style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; margin-bottom: 3rem;">
+        <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;">Optimal Environment</h3>
+        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+            <li>🌡️ <strong>Temperature:</strong> 15°C - 25°C (Species dependent)</li>
+            <li>🌊 <strong>Water Flow:</strong> Moderate currents for nutrient supply</li>
+            <li>⚓ <strong>Substrate:</strong> Ropes, rafts, or cages</li>
+            <li>🌱 <strong>Nutrients:</strong> Nitrogen-rich waters for seaweed</li>
+        </ul>
+    </div>
+
+    <h3 style="color: var(--accent); font-size: 1.8rem; margin-bottom: 1.5rem;">Key Success Factors</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Site Selection</h4>
+            <p style="font-size: 0.9rem;">Choose sites away from industrial runoff to ensure metal-free harvests.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Density Control</h4>
+            <p style="font-size: 0.9rem;">Avoid overcrowding to prevent nutrient depletion and stunted growth.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Harvest Timing</h4>
+            <p style="font-size: 0.9rem;">Harvest seaweed before high-temperature cycles to avoid bleaching.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

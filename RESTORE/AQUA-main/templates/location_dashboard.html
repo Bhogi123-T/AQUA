@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">📍</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['loc_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['loc_desc'] }}</p>
+</div>
+
+<div class="grid">
+    <div class="app-card" style="max-width: 100%; margin: 0;">
+        <h3 style="margin-bottom: 2rem; color: var(--primary);">{{ trans['reg_analysis'] }}</h3>
+        <form action="/predict_location" method="POST" class="app-form">
+            <div class="app-input-group">
+                <span class="app-label">🏳️ {{ trans['country'] }}</span>
+                <select name="country" id="country-select" class="app-input" onchange="updateStates()">
+                    <option value="">{{ trans['sel_country'] }}</option>
+                    {% for country in region_db.keys() %}
+                    <option value="{{ country }}">{{ trans['country_' + country.lower()] or country }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🗺️ {{ trans['state'] }}</span>
+                <select name="state" id="state-select" class="app-input" onchange="updateDistricts()">
+                    <option value="">{{ trans['sel_state'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🏙️ {{ trans['dist_reg'] }}</span>
+                <select name="district" id="district-select" class="app-input">
+                    <option value="">{{ trans['sel_dist'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">☀️ {{ trans['climate'] }}</span>
+                <select name="climate" class="app-input">
+                    <option value="Tropical">{{ trans['tropical'] }}</option>
+                    <option value="Subtropical">{{ trans['subtropical'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🐟 {{ trans['species'] }}</span>
+                <select name="species" class="app-input">
+                    {% for spec in species_list %}
+                    <option value="{{ spec.id }}">{{ spec.display }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">🏭 {{ trans['aqua_type'] }}</span>
+                <select name="aqua_type" class="app-input">
+                    <option value="Fish">{{ trans['fish'] }}</option>
+                    <option value="Prawn">{{ trans['prawn'] }}</option>
+                    <option value="Crab">{{ trans['crab'] }}</option>
+                </select>
+            </div>
+            <button class="app-btn-large">🔍 {{ trans['btn_analyze'] }}</button>
+        </form>
+    </div>
+
+    <!-- Nearby Availability Section -->
+    <div class="app-card" style="max-width: 100%; margin: 0;">
+        <span class="app-emoji" style="font-size: 4rem;">📡</span>
+        <h3 style="margin-bottom: 1rem; color: var(--accent);">{{ trans['near_insights'] }}</h3>
+        <p style="font-size: 1rem; color: var(--text-muted); margin-bottom: 2.5rem;">{{ trans['live_analytics'] }}</p>
+
+        <div id="district-data-view" style="width: 100%;">
+            <div
+                style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 2rem; border: 1px dashed var(--glass-border); text-align: center;">
+                <p style="color: var(--text-muted);">{{ trans['unlock_insights'] | safe }}</p>
+            </div>
+        </div>
+
+        <div style="margin-top: 3rem; width: 100%;">
+            <a href="/districts?lang={{ lang }}" class="app-btn-large"
+                style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; font-size: 1.1rem;">{{
+                trans['view_global_dist'] }}</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const db = JSON.parse('{{ region_db | tojson | safe }}');
+
+    function updateStates() {
+        const country = document.getElementById('country-select').value;
+        const stateSelect = document.getElementById('state-select');
+        const distSelect = document.getElementById('district-select');
+
+        stateSelect.innerHTML = `<option value="">${"{{ trans['sel_state'] }}"}</option>`;
+        distSelect.innerHTML = `<option value="">${"{{ trans['sel_dist'] }}"}</option>`;
+
+        if (country && db[country]) {
+            Object.keys(db[country]).forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function updateDistricts() {
+        const country = document.getElementById('country-select').value;
+        const state = document.getElementById('state-select').value;
+        const distSelect = document.getElementById('district-select');
+        const dataView = document.getElementById('district-data-view');
+
+        distSelect.innerHTML = `<option value="">${"{{ trans['sel_dist'] }}"}</option>`;
+
+        if (country && state && db[country][state]) {
+            db[country][state].forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                distSelect.appendChild(opt);
+            });
+
+            dataView.innerHTML = `
+                <div style="background: rgba(0, 210, 255, 0.05); padding: 2rem; border-radius: 2rem; border: 1px solid var(--primary); text-align: left;">
+                    <p style="font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; color: var(--primary);">📍 ${state} {{ trans['insights'] }}</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.95rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">🌡️ <span style="color: var(--text-muted);">{{ trans['avg'] }}:</span> 28.2°C</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">🧪 <span style="color: var(--text-muted);">pH:</span> 7.8</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">📦 <span style="color: var(--text-muted);">{{ trans['stock'] }}:</span> 420T</div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">👨‍🔧 <span style="color: var(--text-muted);">{{ trans['tech_title'] }}:</span> 8 {{ trans['nearby'] }}</div>
+                    </div>
+                </div>`;
+        } else {
+            dataView.innerHTML = `
+                <div style="background: rgba(255,255,255,0.03); padding: 2rem; border-radius: 2rem; border: 1px dashed var(--glass-border); text-align: center;">
+                    <p style="color: var(--text-muted);">${"{{ trans['unlock_insights'] | safe }}"}</p>
+                </div>`;
+        }
+    }
+</script>
+{% endblock %}

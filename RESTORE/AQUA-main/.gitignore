@@ -1,0 +1,109 @@
+﻿# ============================================
+# ENVIRONMENT & SECRETS
+# ============================================
+.env
+.env.local
+.env*.local
+config.json
+
+# ============================================
+# PYTHON VIRTUAL ENVIRONMENTS
+# ============================================
+venv/
+env/
+.venv/
+ENV/
+.env.venv/
+*.egg-info/
+dist/
+build/
+
+# ============================================
+# PYTHON BYTECODE & CACHE
+# ============================================
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+*.egg
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ============================================
+# IDE & EDITOR
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+.project
+.pydevproject
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# ============================================
+# OS METADATA
+# ============================================
+.DS_Store
+Thumbs.db
+Desktop.ini
+.Spotlight-V100
+.Trashes
+
+# ============================================
+# NODE MODULES (if using any Node tools)
+# ============================================
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# ============================================
+# GENERATED/TEMPORARY FILES
+# ============================================
+*.log
+*.tmp
+.tmp/
+temp/
+*.pid
+.cache/
+
+# ============================================
+# UPLOADED FILES (User generated content)
+# ============================================
+static/uploads/*
+!static/uploads/.gitkeep
+
+# ============================================
+# LOCAL TESTING & DEBUGGING
+# ============================================
+test-results/
+.vscode-test/
+dump.rdb
+
+# ============================================
+# OPTIONAL: GENERATED ARTIFACTS
+# ============================================
+# Uncomment these if you want to regenerate them:
+# Models/*.pkl
+# dataset/*.csv
+
+# ============================================
+# OS SPECIFIC
+# ============================================
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.TemporaryItems
+ehthumbs.db
+
+# ============================================
+# WINDOWS
+# ============================================
+$RECYCLE.BIN/
+[Dd]esktop.ini

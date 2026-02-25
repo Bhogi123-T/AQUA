@@ -1,0 +1,431 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="intel-dashboard-page" style="padding-bottom: 4rem;">
+    <!-- HEADER SECTION -->
+    <div style="text-align: center; margin-bottom: 2rem; padding-top: 2rem;">
+        <h1
+            style="font-size: 2.5rem; font-weight: 900; background: linear-gradient(135deg, #fff 30%, #4facfe 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            {{ trans['nav_live'] or 'LIVE FARM INTELLIGENCE' }}
+        </h1>
+        <p style="color: var(--text-muted);">Real-time telemetry and AI analytics from your active ponds.</p>
+    </div>
+
+    <!-- LIVE FARM INTELLIGENCE DASHBOARD (Extracted) -->
+    <section style="padding: 2rem; background: transparent;">
+        <div style="max-width: 1400px; margin: 0 auto;">
+
+            <div class="intel-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+
+                <!-- CARD 1: LIVE REAL-TIME -->
+                <div class="intel-card" style="border-top: 4px solid #f97316; background: rgba(249, 115, 22, 0.05);">
+                    <div class="card-header">
+                        <span style="color: #f97316;">📍 LIVE</span>
+                        <span class="badge" style="background: #f97316;">REAL-TIME</span>
+                    </div>
+                    <div class="card-content">
+                        <p class="label">Current Location</p>
+                        <h4 style="color: #fff; margin: 0.5rem 0 1.5rem 0; font-size: 1rem;"><span class="emo">📍</span>
+                            Enable GPS for location
+                        </h4>
+
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 1.5rem;">
+                            <div>
+                                <p class="small-label">● Latitude</p>
+                                <p class="value">--</p>
+                            </div>
+                            <div>
+                                <p class="small-label">● Longitude</p>
+                                <p class="value">--</p>
+                            </div>
+                        </div>
+
+                        <div class="sub-panel">
+                            <p class="small-label">● Live Weather</p>
+                            <h3 style="margin: 0.5rem 0;">28°C Clear</h3>
+                            <p class="small-label">Humidity: 65%</p>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;">
+                            <p class="small-label">● Aquaculture Zone</p>
+                            <p class="value" style="color: #00ff88;">--</p>
+                        </div>
+
+                        <button class="intel-btn" style="border-color: #f97316; color: #f97316; margin-top: 2rem;">
+                            🔄 Refresh Location
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CARD 2: WATER QUALITY -->
+                <div class="intel-card" style="border-top: 4px solid #00d2ff; background: rgba(0, 210, 255, 0.05);">
+                    <div class="card-header">
+                        <span style="color: #00d2ff;">🌊 WATER QUALITY</span>
+                        <span class="badge pulse-badge" style="background: #ec4899;">● SENSORS ACTIVE</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <p class="small-label">🌡️ TEMPERATURE</p>
+                                <p class="big-value">29.1°C</p>
+                                <p class="status-tag" style="color: #00ff88;">Optimal</p>
+                            </div>
+                            <div class="stat-box">
+                                <p class="small-label">⚖️ pH LEVEL</p>
+                                <p class="big-value">8.28</p>
+                                <p class="status-tag" style="color: #00ff88;">Balanced</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <p class="small-label">💨 D.O. (OXYGEN)</p>
+                                <p class="big-value">5.13 mg/L</p>
+                                <p class="status-tag" style="color: #00ff88;">High</p>
+                            </div>
+                            <div class="stat-box">
+                                <p class="small-label">🧪 AMMONIA</p>
+                                <p class="big-value">0.1 mg/L</p>
+                                <p class="status-tag" style="color: #00ff88;">Safe</p>
+                            </div>
+                        </div>
+
+                        <div class="stat-row">
+                            <div class="stat-box">
+                                <p class="small-label">☁️ TURBIDITY</p>
+                                <p class="big-value">33.6 NTU</p>
+                                <p class="status-tag" style="color: #00ff88;">Normal</p>
+                            </div>
+                            <div class="stat-box">
+                                <p class="small-label">🧂 SALINITY</p>
+                                <p class="big-value">17.8 ppt</p>
+                                <p class="status-tag" style="color: #00ff88;">Optimal</p>
+                            </div>
+                        </div>
+
+                        <div class="quality-bar" style="margin-top: 2rem;">
+                            <div style="width: 85%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 3: BIOLOGICAL TRACKER -->
+                <div class="intel-card" style="border-top: 4px solid #00ff88; background: rgba(0, 255, 136, 0.05);">
+                    <div class="card-header">
+                        <span style="color: #00ff88;">🐟 BIOLOGICAL TRACKER</span>
+                    </div>
+                    <div class="card-content">
+                        <div style="margin-bottom: 2rem;">
+                            <p class="small-label">❤️ STOCK HEALTH INDEX <span style="color: #00ff88;">91%</span></p>
+                            <div class="quality-bar" style="background: rgba(0,255,136,0.1);">
+                                <div style="width: 91%; background: #00ff88;"></div>
+                            </div>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <p class="small-label">⚖️ LIVE FCR</p>
+                            <p class="big-value" style="font-size: 2.5rem;">1.23</p>
+                            <p class="status-tag" style="color: #00d2ff;">Efficient</p>
+                        </div>
+
+                        <div style="margin-bottom: 2rem;">
+                            <p class="small-label">📈 GROWTH RATE</p>
+                            <p class="big-value" style="font-size: 2.5rem;">2.1</p>
+                            <p class="status-tag">g/D</p>
+                        </div>
+
+                        <div style="margin-top: 3rem;">
+                            <p class="small-label">📅 HARVEST READINESS</p>
+                            <p class="big-value" style="color: #facc15; font-size: 2.5rem;">14 Days</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 4: RISK CENTER -->
+                <div class="intel-card" style="border-top: 4px solid #ef4444; background: rgba(239, 68, 68, 0.05);">
+                    <div class="card-header">
+                        <span style="color: #ef4444;">⚠️ RISK CENTER</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="sub-panel"
+                            style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); padding: 2rem;">
+                            <p class="small-label" style="color: #ef4444;">● OXYGEN CRASH PROBABILITY</p>
+                            <p class="big-value" style="font-size: 3.5rem;">1.1%</p>
+                            <p class="status-tag" style="color: #00ff88;">STABLE</p>
+                        </div>
+
+                        <div style="margin-top: 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div class="sub-panel">
+                                <p class="small-label">💉 DISEASE RISK</p>
+                                <p class="value" style="font-size: 1.5rem;">3.3%</p>
+                                <p class="status-tag" style="color: #00ff88;">Stable</p>
+                            </div>
+                            <div class="sub-panel">
+                                <p class="small-label">☁️ WEATHER RISK</p>
+                                <p class="value" style="font-size: 1.5rem; color: #facc15;">MINOR</p>
+                                <p class="status-tag">pH Flux Likely</p>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1.5rem;" class="sub-panel">
+                            <p class="small-label">📍 REGIONAL EARLY WARNINGS</p>
+                            <marquee scrollamount="2" style="font-size: 0.7rem; color: #ff0055; margin-top: 0.5rem;">
+                                ⚠️ WSSV HIGH RISK in Nellore Delta (15km) | ⚠️ RMS MEDIUM ALERT in Mekong Basin (50km)
+                            </marquee>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 5: AI COMMAND INSIGHTS -->
+                <div class="intel-card" style="border-top: 4px solid #fff; background: rgba(255, 255, 255, 0.03);">
+                    <div class="card-header">
+                        <span style="color: #fff;">🤖 AI COMMAND INSIGHTS</span>
+                    </div>
+                    <div class="card-content">
+                        <p class="small-label">Deep Learning Core v4.2</p>
+
+                        <div style="margin: 2rem 0; text-align: center;">
+                            <p class="small-label">NEXT FEEDING</p>
+                            <p class="big-value" style="color: #00d2ff; font-size: 3rem;">9m</p>
+                        </div>
+
+                        <div class="sub-panel"
+                            style="text-align: center; margin-bottom: 1rem; border: 1px dashed rgba(255,255,255,0.2);">
+                            <p class="small-label">GEAR RECOMMENDATION</p>
+                            <p class="value" style="color: #fff; font-weight: 800;">⚙️ 2 AERATORS ON</p>
+                        </div>
+
+                        <div class="sub-panel" style="text-align: center; margin-bottom: 2rem;">
+                            <p class="small-label">EST. POWER LOAD</p>
+                            <p class="value" style="color: #facc15;">🔋 1.6 kWh</p>
+                        </div>
+
+                        <div class="activity-log">
+                            <p>> AquaSphere Neural Core Synchronized.</p>
+                            <p>> Bio-security check: No abnormal viral signatures detected</p>
+                            <p>> Analyzing turbidity patterns... Water clarity Stable</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .intel-card {
+        padding: 2.5rem 1.5rem;
+        border-radius: 2rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        display: flex;
+        flex-direction: column;
+        transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+
+    .intel-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.5);
+        border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        font-weight: 900;
+        font-size: 0.8rem;
+        letter-spacing: 1px;
+    }
+
+    .badge {
+        padding: 4px 10px;
+        border-radius: 4px;
+        color: #fff;
+        font-size: 0.65rem;
+    }
+
+    .pulse-badge {
+        animation: intel-pulse 2s infinite;
+    }
+
+    @keyframes intel-pulse {
+        0% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: 0.6;
+        }
+
+        100% {
+            opacity: 1;
+        }
+    }
+
+    .label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .small-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+    }
+
+    .value {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: #fff;
+        margin: 0;
+    }
+
+    .big-value {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #fff;
+        margin: 0;
+        line-height: 1;
+    }
+
+    .status-tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-top: 0.3rem;
+        color: var(--text-muted);
+    }
+
+    .sub-panel {
+        background: rgba(255, 255, 255, 0.02);
+        padding: 1rem;
+        border-radius: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .stat-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-box {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .quality-bar {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .quality-bar div {
+        height: 100%;
+        background: linear-gradient(to right, #00d2ff, #00ff88);
+        border-radius: 10px;
+    }
+
+    .intel-btn {
+        background: transparent;
+        border: 1px solid;
+        padding: 0.8rem;
+        border-radius: 10px;
+        font-weight: 800;
+        font-size: 0.8rem;
+        cursor: pointer;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+    .intel-btn:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .activity-log {
+        background: rgba(0, 0, 0, 0.3);
+        padding: 1rem;
+        border-radius: 10px;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 0.65rem;
+        color: #00ff88;
+        line-height: 1.4;
+    }
+
+    .activity-log p {
+        margin: 0 0 0.5rem 0;
+    }
+</style>
+
+<script>
+    function refreshLocation() {
+        const latEl = document.querySelector('.intel-card:first-child .value:first-of-type');
+        const lonEl = document.querySelectorAll('.intel-card:first-child .value')[1];
+        const statusEl = document.querySelector('.intel-card:first-child h4');
+        const zoneEl = document.querySelector('.intel-card:first-child .value:last-child');
+        const dashboardGrid = document.querySelector('.intel-grid');
+
+        statusEl.innerHTML = '<span class="emo">📡</span> Locating...';
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                latEl.innerText = position.coords.latitude.toFixed(4);
+                lonEl.innerText = position.coords.longitude.toFixed(4);
+                statusEl.innerHTML = '<span class="emo">📍</span> Location Verified';
+                statusEl.style.color = '#00ff88';
+                zoneEl.innerText = 'Aquaculture Alpha-1';
+
+                // Online State
+                if (dashboardGrid) {
+                    dashboardGrid.style.opacity = '1';
+                    dashboardGrid.style.pointerEvents = 'all';
+                    dashboardGrid.style.filter = 'none';
+                }
+
+                // Simulate data fetch for this location
+                document.querySelectorAll('.big-value').forEach(el => {
+                    const current = parseFloat(el.innerText);
+                    if (!isNaN(current)) {
+                        const variation = (Math.random() - 0.5) * (current * 0.1);
+                        el.innerText = (current + variation).toFixed(current % 1 === 0 ? 0 : 2);
+                    }
+                });
+            }, (error) => {
+                statusEl.innerHTML = '<span class="emo">❌</span> GPS Access Denied - Offline Mode';
+                statusEl.style.color = '#ff4444';
+
+                // Offline State
+                if (dashboardGrid) {
+                    dashboardGrid.style.opacity = '0.5';
+                    dashboardGrid.style.pointerEvents = 'none';
+                    dashboardGrid.style.filter = 'grayscale(100%)';
+                }
+            });
+        } else {
+            statusEl.innerHTML = '<span class="emo">❌</span> Browser not supported';
+        }
+    }
+
+    // Attach to button
+    document.querySelector('.intel-btn').addEventListener('click', refreshLocation);
+
+    // Initial check - make placeholder clickable
+    setTimeout(() => {
+        const statusEl = document.querySelector('.intel-card:first-child h4');
+        if (statusEl && statusEl.innerText.includes('Enable')) {
+            statusEl.style.cursor = 'pointer';
+            statusEl.onclick = refreshLocation;
+            refreshLocation(); // Auto-start on dashboard page
+        }
+    }, 1000);
+</script>
+{% endblock %}

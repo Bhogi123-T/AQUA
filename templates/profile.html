@@ -1,0 +1,94 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="profile-container" style="max-width: 1000px; margin: 0 auto; padding: 2rem;">
+    <!-- 👤 Neural Profile Header -->
+    <div class="app-card"
+        style="padding: 3rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 3rem; position: relative; overflow: hidden; margin-bottom: 3rem; color: white;">
+        <div style="position: absolute; top: 0; right: 0; padding: 2rem; opacity: 0.1; font-size: 10rem;">👤</div>
+        <div style="display: flex; align-items: center; gap: 2.5rem; position: relative; z-index: 1;">
+            <div
+                style="width: 120px; height: 120px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; box-shadow: 0 10px 40px rgba(0,0,0,0.2);">
+                🧬
+            </div>
+            <div>
+                <h1 style="font-size: 3rem; font-weight: 950; margin: 0; text-align: left !important;">{{
+                    session.get('user_name', 'Aqua Partner') }}</h1>
+                <p
+                    style="font-size: 1.1rem; font-weight: 800; opacity: 0.9; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">
+                    {{ session.get('role', 'FARMER')|upper }} HUB OPERATOR</p>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <span
+                        style="background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 2rem; font-size: 0.8rem; font-weight: 800;">ID:
+                        {{ session.get('user', 'USR-000')[:8] }}</span>
+                    <span
+                        style="background: rgba(0,255,136,0.3); padding: 5px 15px; border-radius: 2rem; font-size: 0.8rem; font-weight: 800;">VERIFIED
+                        PARTNER</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 📊 Activity & Stats Matrix -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
+        <div class="app-card"
+            style="padding: 2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 2rem; backdrop-filter: blur(20px);">
+            <p style="color: var(--text-muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px;">TOTAL
+                HARVESTS</p>
+            <h2 style="font-size: 2.5rem; margin: 10px 0; text-align: left !important;">12.5 <span
+                    style="font-size: 1.2rem; color: var(--text-muted);">Tons</span></h2>
+            <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; margin-top: 10px;">
+                <div style="width: 75%; height: 100%; background: var(--primary); border-radius: 2px;"></div>
+            </div>
+        </div>
+        <div class="app-card"
+            style="padding: 2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 2rem; backdrop-filter: blur(20px);">
+            <p style="color: var(--text-muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px;">SYSTEM
+                ACCURACDY</p>
+            <h2 style="font-size: 2.5rem; margin: 10px 0; text-align: left !important;">94.8%</h2>
+            <p style="color: var(--accent); font-size: 0.85rem; font-weight: 700;">+2.3% since last cycle</p>
+        </div>
+        <div class="app-card"
+            style="padding: 2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 2rem; backdrop-filter: blur(20px);">
+            <p style="color: var(--text-muted); font-size: 0.8rem; font-weight: 800; letter-spacing: 1px;">LEDGER
+                BALANCE</p>
+            <h2 style="font-size: 2.5rem; margin: 10px 0; text-align: left !important;">₹1.2L</h2>
+            <a href="/payments"
+                style="color: var(--primary); text-decoration: none; font-size: 0.9rem; font-weight: 800;">View
+                Transactions ➜</a>
+        </div>
+    </div>
+
+    <!-- 🛠️ Personal Data Matrix -->
+    <div class="app-card"
+        style="padding: 2.5rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 2.5rem;">
+        <h3 style="margin: 0 0 2rem 0; font-size: 1.5rem; text-align: left !important;">Identity Configuration</h3>
+        <form style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+            <div class="app-input-group">
+                <span class="app-label">Full Operator Name</span>
+                <input type="text" class="app-input" value="{{ session.get('user_name', 'Aqua Partner') }}" readonly>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">Primary Email Registry</span>
+                <input type="email" class="app-input" value="{{ session.get('user', 'partner@aquasphere.io') }}"
+                    readonly>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">Operational Role</span>
+                <input type="text" class="app-input" value="{{ session.get('role', 'Farmer')|capitalize }}" readonly>
+            </div>
+            <div class="app-input-group">
+                <span class="app-label">Account Security</span>
+                <button type="button" class="app-btn-large"
+                    style="padding: 0.8rem; font-size: 0.9rem; background: rgba(255,255,255,0.05); color: white; border: 1px solid var(--glass-border);">Reset
+                    Authentication</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="margin-top: 3rem; text-align: center;">
+        <a href="/logout" style="color: #ff4d7d; text-decoration: none; font-weight: 900; letter-spacing: 2px;">🚪
+            TERMINATE SESSION</a>
+    </div>
+</div>
+{% endblock %}

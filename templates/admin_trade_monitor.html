@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .urgency-badge {
+        font-size: 0.75rem;
+        padding: 3px 10px;
+        border-radius: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .urgency-high {
+        background: rgba(255, 0, 0, 0.1);
+        color: #ff4d7d;
+    }
+
+    .urgency-normal {
+        background: rgba(0, 255, 0, 0.1);
+        color: #00ff88;
+    }
+</style>
+<div class="container" style="padding-top: 2rem;">
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 3rem;">
+        <div>
+            <h1
+                style="font-size: 3rem; font-weight: 1000; letter-spacing: -2px; margin: 0; background: linear-gradient(90deg, #fff, #ff4d7d); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                GLOBAL TRADE MONITOR</h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem; font-size: 1.1rem; font-weight: 700;">Direct Supply
+                Chain Oversight & Verification Matrix</p>
+        </div>
+        <a href="/admin" class="app-btn-small"
+            style="background: rgba(255,255,255,0.05); color:#fff; border: 1px solid rgba(255,255,255,0.1);">Back to
+            OS</a>
+    </div>
+
+    <!-- Trade Statistics -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+        <div class="app-card" style="border-left: 5px solid #00ff88; padding: 2rem;">
+            <p
+                style="margin:0; font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">
+                Active Listings</p>
+            <h2 style="margin:10px 0 0; font-size:2.5rem; font-weight:1000; color:#00ff88;">{{ listings|length }}</h2>
+        </div>
+        <div class="app-card" style="border-left: 5px solid #f97316; padding: 2rem;">
+            <p
+                style="margin:0; font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">
+                Active Tenders</p>
+            <h2 style="margin:10px 0 0; font-size:2.5rem; font-weight:1000; color:#f97316;">{{ tenders|length }}</h2>
+        </div>
+        <div class="app-card" style="border-left: 5px solid #a78bfa; padding: 2rem;">
+            <p
+                style="margin:0; font-size:0.8rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">
+                Negotiations</p>
+            <h2 style="margin:10px 0 0; font-size:2.5rem; font-weight:1000; color:#a78bfa;">{{ messages|length }}</h2>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;">
+        <!-- Farmer Listings -->
+        <div class="app-card">
+            <h3
+                style="color:#ff4d7d; margin-top:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem; display:flex; justify-content:space-between; align-items:center;">
+                <span>📦 Farmer Inventory</span>
+                <span
+                    style="font-size:0.75rem; background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:10px;">LIVE
+                    FEED</span>
+            </h3>
+            <div style="max-height: 600px; overflow-y:auto;">
+                {% for item in listings|reverse %}
+                <div
+                    style="padding:1.25rem; background:rgba(255,255,255,0.02); border-radius:15px; margin-bottom:1rem; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.75rem;">
+                        <span style="font-weight:900; color:#fff;">{{ item.species }}</span>
+                        <span style="font-size:0.75rem; color:#00ff88; font-weight:700;">{{ item.status|upper }}</span>
+                    </div>
+                    <div
+                        style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:var(--text-muted);">
+                        <span>Quantity: <strong style="color:#fff;">{{ item.quantity }} {{ item.unit }}</strong></span>
+                        <span>Price: <strong style="color:#fff;">₹{{ item.expected_price }}</strong></span>
+                        <span>Farmer: <strong style="color:#fff;">{{ item.farmer_name }}</strong></span>
+                        <span>Harvest: <strong style="color:#fff;">{{ item.harvest_date }}</strong></span>
+                    </div>
+                </div>
+                {% else %}
+                <p style="text-align:center; color:var(--text-muted); padding:3rem;">No active farmer listings</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Company Tenders -->
+        <div class="app-card">
+            <h3
+                style="color:#ff4d7d; margin-top:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">
+                🏢 Corporate Demand Tenders</h3>
+            <div style="max-height: 600px; overflow-y:auto;">
+                {% for tender in tenders|reverse %}
+                <div
+                    style="padding:1.25rem; background:rgba(255,255,255,0.02); border-radius:15px; margin-bottom:1rem; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.75rem;">
+                        <span style="font-size:1.5rem;">{{ tender.icon }}</span>
+                        <div style="flex:1;">
+                            <h4 style="margin:0; color:#fff;">{{ tender.company }}</h4>
+                            <p style="margin:0; font-size:0.75rem; color:var(--text-muted);">{{ tender.location }}</p>
+                        </div>
+                        <span
+                            class="urgency-badge {{ 'urgency-high' if tender.urgency == 'High' else 'urgency-normal' }}">
+                            {{ tender.urgency }}
+                        </span>
+                    </div>
+                    <div
+                        style="display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:0.85rem; color:var(--text-muted);">
+                        <span>Needs: <strong style="color:#fff;">{{ tender.need }}</strong></span>
+                        <span>Quantity: <strong style="color:#fff;">{{ tender.qty }}</strong></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Communication Logs -->
+    <div class="app-card" style="margin-top:2.5rem;">
+        <h3 style="color:#ff4d7d; margin-top:0; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:1rem;">💬
+            Supply Chain Negotiation Logs</h3>
+        {% for msg in messages|reverse %}
+        <div style="display:flex; gap:1.25rem; padding:1.25rem 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div
+                style="width:45px; height:45px; border-radius:12px; background:rgba(255,255,255,0.05); display:flex; align-items:center; justify-content:center; font-weight:1000;">
+                {{ msg.from[0]|upper }}</div>
+            <div style="flex:1;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                    <span style="font-weight:800; color:#fff;">From: {{ msg.from }} → To: {{ msg.to }}</span>
+                    <span style="font-size:0.75rem; color:var(--text-muted);">{{ msg.timestamp }}</span>
+                </div>
+                <p style="margin:0; font-size:0.9rem; color:rgba(255,255,255,0.8); line-height:1.4;">{{ msg.content }}
+                </p>
+            </div>
+        </div>
+        {% else %}
+        <p style="text-align:center; color:var(--text-muted); padding:3rem;">No trade messages recorded</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

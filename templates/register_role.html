@@ -1,0 +1,364 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div
+    style="min-height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; background: radial-gradient(circle at top right, rgba(0, 210, 255, 0.05), transparent), radial-gradient(circle at bottom left, rgba(123, 97, 255, 0.05), transparent);">
+
+    <div style="text-align: center; margin-bottom: 4rem; max-width: 800px; animation: fadeInDown 0.8s ease-out;">
+        <div
+            style="display: inline-flex; align-items: center; gap: 0.75rem; padding: 8px 20px; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); border-radius: 30px; margin-bottom: 1.5rem;">
+            <span class="live-pulse" style="background: var(--primary); width: 8px; height: 8px;"></span>
+            <span
+                style="font-size: 0.85rem; font-weight: 900; color: var(--primary); letter-spacing: 2px; text-transform: uppercase;">Identity
+                Verification</span>
+        </div>
+        <h1
+            style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 950; letter-spacing: -2px; line-height: 1.1; margin-bottom: 1.5rem;">
+            Choose Your <span
+                style="color: var(--primary); text-shadow: 0 0 30px var(--primary-glow);">AquaSphere</span> Persona
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem; font-weight: 500; line-height: 1.6;">
+            Select the role that best defines your contribution to the aquaculture ecosystem. Each persona grants unique
+            tools and data access.
+        </p>
+    </div>
+
+    <form action="/register-role" method="POST" id="role-form" style="width: 100%; max-width: 1200px;">
+        <input type="hidden" name="role" id="selected-role" required>
+
+        <div
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+            <!-- Farmer -->
+            <div class="role-card" onclick="selectRole('farmer')" id="card-farmer">
+                <div class="role-icon">🐟</div>
+                <h3>Farmer</h3>
+                <p>Manage ponds, use AI diagnostics, and sell directly to companies.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Business / Buyer -->
+            <div class="role-card" onclick="selectRole('business')" id="card-business">
+                <div class="role-icon">💼</div>
+                <h3>Businessman / Buyer</h3>
+                <p>Access exports/imports, place orders, and manage trade logistics.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Expert -->
+            <div class="role-card" onclick="selectRole('expert')" id="card-expert">
+                <div class="role-icon">👨‍🔬</div>
+                <h3>Expert / Consultant</h3>
+                <p>Provide consultations, analyze media, and share specialized knowledge.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Supplier -->
+            <div class="role-card" onclick="selectRole('supplier')" id="card-supplier">
+                <div class="role-icon">🛒</div>
+                <h3>Supplier / Vendor</h3>
+                <p>Sell feed, equipment, and probiotics to verified farmers.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Hatchery -->
+            <div class="role-card" onclick="selectRole('hatchery')" id="card-hatchery">
+                <div class="role-icon">👶</div>
+                <h3>Hatchery Owner</h3>
+                <p>Supply high-quality seeds and manage PL tracking.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Transport -->
+            <div class="role-card" onclick="selectRole('transport')" id="card-transport">
+                <div class="role-icon">🚛</div>
+                <h3>Logistics Partner</h3>
+                <p>Cold storage, transport, and fleet management for aquaculture.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+
+            <!-- Government -->
+            <div class="role-card" onclick="selectRole('government')" id="card-government">
+                <div class="role-icon">🏛️</div>
+                <h3>Govt Officer</h3>
+                <p>Issue alerts, post schemes, and verify farm compliance.</p>
+                <div class="role-select-indicator"></div>
+            </div>
+        </div>
+
+        <div id="geo-selection"
+            style="display:none; margin-top: 4rem; padding-top: 3rem; border-top: 1px dashed rgba(255,255,255,0.1); animation: fadeInUp 0.5s ease-out;">
+            <div style="text-align: center; margin-bottom: 2.5rem;">
+                <h2 style="color: white; margin-bottom: 0.5rem; font-size: 1.8rem; font-weight: 900;">🌍 Regional
+                    Context</h2>
+                <p style="color: var(--text-muted); font-size: 1rem;">Setup your location to receive localized alerts
+                    and trade requests.</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
+                <div class="app-input-group">
+                    <span class="app-label"
+                        style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary);">SELECT
+                        COUNTRY</span>
+                    <select name="country" id="country-select" class="app-input"
+                        style="background: rgba(0,0,0,0.3); border-radius: 1rem; color: white;"
+                        onchange="updateStates()" required>
+                        <option value="">-- Choose Country --</option>
+                        {% for country in geography.keys() %}
+                        <option value="{{ country }}">{{ country }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="app-input-group">
+                    <span class="app-label"
+                        style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary);">STATE /
+                        PROVINCE</span>
+                    <select name="state" id="state-select" class="app-input"
+                        style="background: rgba(0,0,0,0.3); border-radius: 1rem; color: white;"
+                        onchange="updateDistricts()" disabled required>
+                        <option value="">-- Select State --</option>
+                    </select>
+                </div>
+
+                <div class="app-input-group">
+                    <span class="app-label"
+                        style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary);">DISTRICT /
+                        CITY</span>
+                    <select name="district" id="district-select" class="app-input"
+                        style="background: rgba(0,0,0,0.3); border-radius: 1rem; color: white;" disabled required>
+                        <option value="">-- Select District --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div
+            style="text-align: center; margin-top: 4rem; animation: fadeInUp 0.8s ease-out; animation-delay: 0.4s; animation-fill-mode: both;">
+            <button type="submit" id="submit-btn" disabled class="premium-submit-btn">
+                Initialize My Dashboard ➔
+            </button>
+            <p style="margin-top: 1.5rem; color: var(--text-muted); font-size: 0.9rem; font-weight: 600;">
+                <span class="emo">🔒</span> Your role determines your interface and security clearance.
+            </p>
+        </div>
+    </form>
+</div>
+
+<style>
+    .role-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        border-radius: 2rem;
+        padding: 2.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .role-card:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(0, 210, 255, 0.3);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .role-card.selected {
+        background: rgba(0, 210, 255, 0.08);
+        border-color: var(--primary);
+        box-shadow: 0 0 30px var(--primary-glow);
+    }
+
+    .role-icon {
+        font-size: 3.5rem;
+        margin-bottom: 0.5rem;
+        transition: transform 0.3s;
+    }
+
+    .role-card:hover .role-icon {
+        transform: scale(1.1);
+    }
+
+    .role-card h3 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        margin: 0;
+        color: white;
+    }
+
+    .role-card p {
+        font-size: 0.95rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin: 0;
+    }
+
+    .role-select-indicator {
+        position: absolute;
+        top: 1.5rem;
+        right: 1.5rem;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s;
+    }
+
+    .role-card.selected .role-select-indicator {
+        background: var(--primary);
+        border-color: var(--primary);
+    }
+
+    .role-card.selected .role-select-indicator::after {
+        content: '✓';
+        color: black;
+        font-weight: 900;
+        font-size: 0.8rem;
+    }
+
+    .premium-submit-btn {
+        padding: 1.5rem 4rem;
+        border-radius: 100px;
+        font-size: 1.2rem;
+        font-weight: 950;
+        letter-spacing: 1px;
+        background: var(--primary);
+        color: black;
+        border: none;
+        cursor: pointer;
+        transition: all 0.4s;
+        box-shadow: 0 10px 30px var(--primary-glow);
+    }
+
+    .premium-submit-btn:disabled {
+        background: rgba(255, 255, 255, 0.05);
+        color: rgba(255, 255, 255, 0.2);
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .premium-submit-btn:not(:disabled):hover {
+        transform: scale(1.05);
+        filter: brightness(1.1);
+        box-shadow: 0 20px 50px var(--primary-glow);
+    }
+
+    @keyframes fadeInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    const geoData = JSON.parse('{{ geography|tojson|safe }}');
+
+    function selectRole(role) {
+        // Clear all selections
+        document.querySelectorAll('.role-card').forEach(card => card.classList.remove('selected'));
+
+        // Select new role
+        const card = document.getElementById('card-' + role);
+        if (card) {
+            card.classList.add('selected');
+            document.getElementById('selected-role').value = role;
+
+            // Show geography selection
+            document.getElementById('geo-selection').style.display = 'block';
+
+            // Scroll to it
+            setTimeout(() => {
+                document.getElementById('geo-selection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+        checkButtons();
+    }
+
+    function updateStates() {
+        const country = document.getElementById('country-select').value;
+        const stateSelect = document.getElementById('state-select');
+        const districtSelect = document.getElementById('district-select');
+
+        // Reset
+        stateSelect.innerHTML = '<option value="">-- Select State --</option>';
+        stateSelect.disabled = true;
+        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+        districtSelect.disabled = true;
+
+        if (country && geoData[country]) {
+            stateSelect.disabled = false;
+            Object.keys(geoData[country]).forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.innerText = state;
+                stateSelect.appendChild(opt);
+            });
+        }
+        checkButtons();
+    }
+
+    function updateDistricts() {
+        const country = document.getElementById('country-select').value;
+        const state = document.getElementById('state-select').value;
+        const districtSelect = document.getElementById('district-select');
+
+        // Reset
+        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+        districtSelect.disabled = true;
+
+        if (state && geoData[country] && geoData[country][state]) {
+            districtSelect.disabled = false;
+            geoData[country][state].forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.innerText = dist;
+                districtSelect.appendChild(opt);
+            });
+        }
+        checkButtons();
+    }
+
+    function checkButtons() {
+        const role = document.getElementById('selected-role').value;
+        const country = document.getElementById('country-select').value;
+        const state = document.getElementById('state-select').value;
+        const district = document.getElementById('district-select').value;
+
+        const btn = document.getElementById('submit-btn');
+        if (role && country && state && district) {
+            btn.disabled = false;
+        } else {
+            btn.disabled = true;
+        }
+    }
+
+    // Attach listener for the final district selection
+    document.getElementById('district-select').addEventListener('change', checkButtons);
+</script>
+{% endblock %}

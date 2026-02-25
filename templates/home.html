@@ -1,0 +1,550 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="home-dashboard" style="padding: 2.5rem; position: relative; z-index: 1;">
+
+    <!-- 🌌 ADVANCED WAVE BACKGROUND OVERLAY -->
+    <div
+        style="position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% -20%, rgba(0, 210, 255, 0.1), transparent 70%); pointer-events:none; z-index:-1;">
+    </div>
+
+    <!-- 🚀 COMMANDER WELCOME HEADER -->
+    <header
+        style="margin-bottom: 4rem; display:flex; align-items:center; gap:2.5rem; flex-wrap:wrap; animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1) both;">
+        <div style="position: relative;">
+            <div
+                style="width:100px; height:100px; border-radius:30% 70% 70% 30% / 30% 30% 70% 70%; background:linear-gradient(135deg, var(--primary), var(--violet)); display:flex; align-items:center; justify-content:center; font-size:3rem; box-shadow:0 0 40px var(--glow); animation: floatUp 6s ease-in-out infinite;">
+                <span class="emo">🧑‍🌾</span>
+            </div>
+            <div
+                style="position: absolute; bottom: 5px; right: 5px; width: 22px; height: 22px; background: var(--accent); border: 4px solid var(--dark-bg); border-radius: 50%; box-shadow: 0 0 15px var(--accent); animation: expertPing 2s infinite;">
+            </div>
+        </div>
+        <div style="flex:1; text-align: center;">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 0.8rem; margin-bottom: 1rem;">
+                <span
+                    style="padding: 6px 14px; background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); border-radius: 20px; color: var(--accent); font-size: 0.9rem; font-weight: 800; letter-spacing: 1px;">
+                    {{ trans['sync_active']|safe }}</span>
+                <span style="color: var(--text-muted); font-size: 0.95rem;">ID: AQUA-F-{{ user.name[:3]|upper }}-{{
+                    range(1000, 9999)|random }}</span>
+            </div>
+            <h1
+                style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 950; margin: 0; line-height:1.1; letter-spacing: -2px;">
+                {{ trans['welcome']|safe }}, <span class="glow-text">{{ user.name }}</span>
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.25rem; margin-top:1.2rem; font-weight: 700;">
+                {{ (trans['monitoring_msg'] or 'AQUA Neural Network is monitoring {count}
+                Facilities').format(count='<span style="color:var(--accent); font-weight:900;">18 Advanced
+                    Facilities</span>')|safe }}
+            </p>
+        </div>
+        <div>
+            <a href="#expert-consult" class="shimmer-btn"
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 1.2rem; padding: 1.8rem 4rem; font-size: 1.5rem; border-radius: 25px;">
+                <span class="emo" style="font-size: 2rem;">🔬</span> {{ trans['contact_expert']|upper|safe }}
+            </a>
+        </div>
+    </header>
+
+    <!-- 📊 QUANTUM TELEMETRY HUB (Real-time Intel) -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2.5rem; margin-bottom: 4.5rem;">
+
+        <!-- BIOLOGICAL IA ENGINE -->
+        <div class="app-card"
+            style="border-top: 5px solid var(--violet); background: linear-gradient(145deg, rgba(123, 97, 255, 0.05), transparent);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2.5rem;">
+                <h4
+                    style="margin:0; color:#fff; font-size:1.8rem; background:none; -webkit-text-fill-color:#fff; font-weight: 900; text-align: center; width: 100%;">
+                    Biological IA v4</h4>
+                <div class="live-pulse" style="background:var(--accent); width: 15px; height: 15px;"></div>
+            </div>
+            <div style="display:flex; align-items:center; gap:2.5rem;">
+                <div style="position:relative; width:120px; height:120px;">
+                    <svg viewBox="0 0 100 100" style="transform: rotate(-90deg);">
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="8">
+                        </circle>
+                        <circle cx="50" cy="50" r="45" fill="none" stroke="var(--violet)" stroke-width="8"
+                            stroke-dasharray="283" stroke-dashoffset="20" stroke-linecap="round"></circle>
+                    </svg>
+                    <div
+                        style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-weight:950; font-size:1.8rem; color:#fff;">
+                        95%</div>
+                </div>
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; margin:0; font-weight: 800;">
+                        {{ (trans['growth_stability_msg'] or 'Growth Stability')|safe }}</p>
+                    <p style="font-size:1.8rem; font-weight:950; color:#fff; margin:10px 0;">{{ (trans['mortality'] or
+                        'Mortality')|safe
+                        }}:
+                        <span style="color:var(--accent);">
+                            &lt; 2.1%</span>
+                    </p>
+                    <p style="font-size:1.35rem; color:var(--primary); font-weight:900;">{{
+                        (trans['fcr_optimal'] or 'FCR: {val} Optimal').format(val='1.23')|safe }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- AQUA SENSOR STREAM -->
+        <div class="app-card" style="border-top: 5px solid var(--primary);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+                <h4
+                    style="margin:0; color:#fff; font-size:1.8rem; background:none; -webkit-text-fill-color:#fff; font-weight: 900; text-align: center; width: 100%;">
+                    {{ trans['sensors_active']|safe }}</h4>
+                <span style="font-size:1.1rem; color:var(--primary); font-weight:900; letter-spacing: 1.5px;">🛰️
+                    SYNCED</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:1.5rem;">
+                <div
+                    style="padding:1.5rem; background:rgba(0,210,255,0.05); border-radius:20px; border:1px solid rgba(0,210,255,0.15);">
+                    <p
+                        style="font-size:1rem; color:var(--text-muted); text-transform:uppercase; margin-bottom: 8px; font-weight: 800;">
+                        {{
+                        trans['temperature']|safe }}</p>
+                    <p style="font-size:2.2rem; font-weight:950; color:#fff; margin:0;">28.5°C</p>
+                </div>
+                <div
+                    style="padding:1.5rem; background:rgba(0,255,136,0.05); border-radius:20px; border:1px solid rgba(0,255,136,0.15);">
+                    <p
+                        style="font-size:1rem; color:var(--text-muted); text-transform:uppercase; margin-bottom: 8px; font-weight: 800;">
+                        {{
+                        trans['ph_level']|safe }}</p>
+                    <p style="font-size:2.2rem; font-weight:950; color:#fff; margin:0;">8.2</p>
+                </div>
+                <div
+                    style="padding:1rem; background:rgba(255,189,46,0.05); border-radius:15px; border:1px solid rgba(255,189,46,0.1);">
+                    <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Oxygen</p>
+                    <p style="font-size:1.4rem; font-weight:900; color:#fff; margin:0;">5.4 mg/L</p>
+                </div>
+                <div
+                    style="padding:1rem; background:rgba(255,77,125,0.05); border-radius:15px; border:1px solid rgba(255,77,125,0.1);">
+                    <p style="font-size:0.65rem; color:var(--text-muted); text-transform:uppercase;">Ammonia</p>
+                    <p style="font-size:1.4rem; font-weight:900; color:#fff; margin:0;">0.02 ppm</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRODUCTION FORECAST -->
+        <div class="app-card" style="border-top: 5px solid var(--amber);">
+            <div style="display:flex; justify-content:space-between; margin-bottom:2rem;">
+                <h4
+                    style="margin:0; color:#fff; font-size:1.8rem; background:none; -webkit-text-fill-color:#fff; font-weight: 900;">
+                    {{ trans['production_intel']|default('Production Intel')|safe }}</h4>
+                <div
+                    style="padding:6px 14px; background:rgba(255,189,46,0.1); color:var(--amber); border-radius:12px; font-size:1rem; font-weight:900;">
+                    {{ trans['estimated']|default('ESTIMATED')|upper|safe }}</div>
+            </div>
+            <div style="margin-bottom:2rem;">
+                <p
+                    style="font-size:1.1rem; color:var(--text-muted); text-transform:uppercase; font-weight: 800; letter-spacing: 1px;">
+                    {{ trans['projected_yield']|default('Projected Yield') }}</p>
+                <p style="font-size:3.5rem; font-weight:950; color:#fff; margin:0; line-height:1;">4,850<span
+                        style="font-size:1.5rem; color:var(--text-muted);">kg</span></p>
+            </div>
+            <div
+                style="display:flex; justify-content:space-between; align-items:center; background:rgba(0,0,0,0.2); padding:1.5rem; border-radius:15px;">
+                <div>
+                    <p style="font-size:0.9rem; color:var(--text-muted); font-weight: 800;">{{
+                        trans['valuation']|default('VALUATION') }}</p>
+                    <p style="font-size:1.5rem; font-weight:950; color:var(--accent);">₹21.4 Lakh</p>
+                </div>
+                <div style="text-align:right;">
+                    <p style="font-size:0.9rem; color:var(--text-muted); font-weight: 800;">{{
+                        trans['ready_in']|default('READY IN') }}</p>
+                    <p style="font-size:1.5rem; font-weight:950; color:var(--amber);">14 {{
+                        trans['days']|default('Days') }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 🛡️ CRITICAL RISK CONTROL & AI COMMAND -->
+    <div
+        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 2.5rem; margin-bottom: 4.5rem;">
+
+        <!-- RISK PANEL -->
+        <div class="app-card" style="border-left: 8px solid #ff0055; background: rgba(255,0,85,0.03);">
+            <h3
+                style="margin:0 0 2rem; font-size:2.2rem; color:#fff; background:none; -webkit-text-fill-color:#fff; font-weight: 950;">
+                {{ trans['risk_center']|safe }}</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:2rem; margin-bottom:2rem;">
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing: 1px;">
+                        {{
+                        trans['oxygen_crash_prob']|safe }}</p>
+                    <p style="font-size:2.4rem; font-weight:950; color:#00ff88;">1.1%</p>
+                </div>
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing: 1px;">
+                        {{
+                        trans['disease_risk']|safe }}</p>
+                    <p style="font-size:2.4rem; font-weight:950; color:#facc15;">3.3%</p>
+                </div>
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing: 1px;">
+                        {{
+                        trans['weather_risk']|safe }}</p>
+                    <p style="font-size:2.4rem; font-weight:950; color:var(--accent);">{{ trans['low_risk']|upper|safe
+                        }}</p>
+                </div>
+            </div>
+            <div
+                style="background:rgba(0,0,0,0.4); padding:1.2rem; border-radius:15px; border:1px solid rgba(255,0,85,0.3);">
+                <marquee scrollamount="4"
+                    style="font-size:1.25rem; color:#ff4d7d; font-weight:900; text-transform:uppercase;">⚠️ {{
+                    trans['regional_updates'] }}:
+                    Coastal AP expecting 5ppt drop | ⚠️ MARKET SPIKE: Vannamei 30c up by ₹15/kg.</marquee>
+            </div>
+        </div>
+
+        <!-- AI COMMAND HUB -->
+        <div class="app-card" style="border-left: 8px solid var(--primary); background: rgba(0,210,255,0.03);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
+                <h3
+                    style="margin:0; font-size:2.2rem; color:#fff; background:none; -webkit-text-fill-color:#fff; font-weight: 950;">
+                    {{ trans['ai_command_insights']|safe }}</h3>
+                <span
+                    style="padding:8px 18px; background:var(--primary); color:#000; border-radius:25px; font-size:1.1rem; font-weight:1000;">SMART
+                    MODE</span>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:2.5rem;">
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing: 1px;">
+                        {{
+                        trans['aerators_on']|safe }}</p>
+                    <p style="font-size:2rem; font-weight:950; color:#fff;">⚙️ 2 {{ trans['online']|upper|safe }} (ECO)
+                    </p>
+                    <p style="font-size:1.2rem; color:var(--primary); font-weight:800;">{{ trans['est_power_load']|safe
+                        }}:
+                        1.6
+                        kWh/avg</p>
+                </div>
+                <div>
+                    <p
+                        style="font-size:1.15rem; color:var(--text-muted); font-weight:900; text-transform:uppercase; letter-spacing: 1px;">
+                        {{
+                        trans['next_feeding']|safe }}</p>
+                    <p style="font-size:2rem; font-weight:950; color:#fff;">🍕 NEXT @ 08:30</p>
+                    <p style="font-size:1.2rem; color:var(--accent); font-weight:800;">{{ trans['qty']|safe }}: 12.5 kg
+                        {{ trans['recommended']|default('RECOMMENDED')|upper|safe }}</p>
+                </div>
+            </div>
+            <button class="app-btn-small shimmer-btn" onclick="runAIOptimization()"
+                style="width:100%; margin-top:2.5rem; padding: 1.5rem; font-size: 1.4rem; background:rgba(0, 210, 255, 0.1); border:1px solid var(--primary); color:white; font-weight:1000; letter-spacing:2px; cursor:pointer; border-radius: 20px;">
+                RUN AI OPTIMIZATION
+            </button>
+        </div>
+
+    </div>
+
+    <!-- 🛸 INTEGRATED COMMAND HUBS -->
+    <div style="margin-bottom: 5rem;">
+        <h2
+            style="font-size: 3rem; font-weight: 1000; margin-bottom: 3.5rem; text-transform: uppercase; letter-spacing: 3px; color: #fff; background: linear-gradient(to right, #fff, var(--primary)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+            <span style="color:var(--accent);">●</span> {{ trans['integrated_command']|safe }}
+        </h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 2.5rem;">
+
+            <!-- HUB 1: FARMER COMMAND -->
+            <div class="app-card hub-card"
+                style="border: 1px solid var(--primary); background: linear-gradient(135deg, rgba(0, 210, 255, 0.05), transparent); padding: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 2rem;">
+                    <span style="font-size: 4rem;">👨‍🌾</span>
+                    <span
+                        style="background: var(--primary); color:#000; padding:4px 12px; border-radius:10px; font-weight:900; font-size:0.8rem;">CORE
+                        OS</span>
+                </div>
+                <h3 style="font-size: 2.2rem; font-weight: 950; margin-bottom: 1rem;">Farmer Command Hub</h3>
+                <p style="font-size: 1.3rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.5;">
+                    Centralized system for logbooks, AI vision, seed checking, and local pond management tools.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:2.5rem; opacity:0.6;">
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Logbook</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Vision
+                        Scan</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Seasonal
+                        Advisor</span>
+                </div>
+                <a href="/home" class="shimmer-btn"
+                    style="text-decoration: none; display: block; text-align: center; padding: 1.5rem; border-radius: 20px; background: var(--primary); color:#000; font-weight: 950; font-size: 1.2rem;">
+                    OPEN FARMER HUB
+                </a>
+            </div>
+
+            <!-- HUB 2: AI INTELLIGENCE -->
+            <div class="app-card hub-card"
+                style="border: 1px solid var(--violet); background: linear-gradient(135deg, rgba(123, 97, 255, 0.05), transparent); padding: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 2rem;">
+                    <span style="font-size: 4rem;">🧠</span>
+                    <span
+                        style="background: var(--violet); color:#fff; padding:4px 12px; border-radius:10px; font-weight:900; font-size:0.8rem;">PREDICTIVE</span>
+                </div>
+                <h3 style="font-size: 2.2rem; font-weight: 950; margin-bottom: 1rem;">AI Intelligence Matrix</h3>
+                <p style="font-size: 1.3rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.5;">
+                    Neural network analysis for pathogen forecasting, high-precision yield modeling, and geospatial
+                    suitability.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:2.5rem; opacity:0.6;">
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Disease
+                        Risk</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Yield
+                        Engine</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Location
+                        AI</span>
+                </div>
+                <a href="/ai-intelligence" class="shimmer-btn"
+                    style="text-decoration: none; display: block; text-align: center; padding: 1.5rem; border-radius: 20px; background: var(--violet); color:#fff; font-weight: 950; font-size: 1.2rem;">
+                    ENTER AI MATRIX
+                </a>
+            </div>
+
+            <!-- HUB 3: BUSINESS MATRIX -->
+            <div class="app-card hub-card"
+                style="border: 1px solid var(--accent); background: linear-gradient(135deg, rgba(0, 255, 136, 0.05), transparent); padding: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 2rem;">
+                    <span style="font-size: 4rem;">💼</span>
+                    <span
+                        style="background: var(--accent); color:#000; padding:4px 12px; border-radius:10px; font-weight:900; font-size:0.8rem;">EQUITY</span>
+                </div>
+                <h3 style="font-size: 2.2rem; font-weight: 950; margin-bottom: 1rem;">Business Matrix</h3>
+                <p style="font-size: 1.3rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.5;">
+                    Global trade portal, insurance claim processing engine, and live cold-chain logistics tracking.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:2.5rem; opacity:0.6;">
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Marketplace</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Logistics</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Insurance</span>
+                </div>
+                <a href="/business" class="shimmer-btn"
+                    style="text-decoration: none; display: block; text-align: center; padding: 1.5rem; border-radius: 20px; background: var(--accent); color:#000; font-weight: 950; font-size: 1.2rem;">
+                    ACCESS BUSINESS HUBS
+                </a>
+            </div>
+
+            <!-- HUB 4: EXPERT ECOSYSTEM -->
+            <div class="app-card hub-card"
+                style="border: 1px solid #ffcc00; background: linear-gradient(135deg, rgba(255, 204, 0, 0.05), transparent); padding: 3rem;">
+                <div style="display:flex; justify-content:space-between; align-items:start; margin-bottom: 2rem;">
+                    <span style="font-size: 4rem;">🤝</span>
+                    <span
+                        style="background: #ffcc00; color:#000; padding:4px 12px; border-radius:10px; font-weight:900; font-size:0.8rem;">COMMUNITY</span>
+                </div>
+                <h3 style="font-size: 2.2rem; font-weight: 950; margin-bottom: 1rem;">Expert Ecosystem</h3>
+                <p style="font-size: 1.3rem; color: var(--text-muted); margin-bottom: 2.5rem; line-height: 1.5;">
+                    Direct communication with aquaculture scientists and high-level community insight exchange.
+                </p>
+                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:2.5rem; opacity:0.6;">
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Consultants</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">Community
+                        Feed</span>
+                    <span
+                        style="font-size:0.9rem; padding:4px 10px; background:rgba(255,255,255,0.05); border-radius:15px; border:1px solid rgba(255,255,255,0.1);">AquaCare</span>
+                </div>
+                <a href="/expert" class="shimmer-btn"
+                    style="text-decoration: none; display: block; text-align: center; padding: 1.5rem; border-radius: 20px; background: #ffcc00; color:#000; font-weight: 950; font-size: 1.2rem;">
+                    JOIN ECOSYSTEM
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🔬 EXPERT NEURAL NETWORK (FACILITY 17 & 18) -->
+    <section id="expert-consult" style="margin-bottom: 4rem; scroll-margin-top: 100px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 2.5rem;">
+            <div>
+                <h2
+                    style="font-size: 2.8rem; font-weight: 1000; letter-spacing: -1px; margin: 0; background: linear-gradient(90deg, #fff, var(--violet)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+                    {{ trans['tech_title']|safe }}</h2>
+                <p style="color: var(--text-muted); margin-top: 0.8rem; font-size: 1.5rem; font-weight: 700;">{{
+                    trans['tech_desc']|safe }}</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <div class="live-pulse" style="background: var(--accent); animation: expertPing 1.5s infinite;"></div>
+                <span style="font-weight: 800; font-size: 1rem; color: var(--accent);">{{
+                    trans['ticker_experts_online'].format(count='34') }}</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: start;">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+                {% for expert in experts[:4] %}
+                <div class="app-card"
+                    style="padding: 1.5rem; border: 1px solid var(--glass-border); transition: transform 0.4s;">
+                    <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+                        <div
+                            style="width: 55px; height: 55px; border-radius: 15px; background: rgba(123, 97, 255, 0.1); border: 2px solid var(--violet); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+                            {{ expert.emoji }}</div>
+                        <div style="flex: 1;">
+                            <h4
+                                style="margin: 0; font-size: 1.6rem; color: #fff; background: none; -webkit-text-fill-color: #fff; font-weight: 950;">
+                                {{ expert.name }}</h4>
+                            <p
+                                style="font-size: 1rem; color: var(--violet); font-weight: 900; text-transform: uppercase; margin-top: 5px;">
+                                {{ expert.specialty }}</p>
+                        </div>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                        <span style="font-size:1.3rem; font-weight:1000;">₹{{ expert.rate }}<span
+                                style="font-size:1rem; color:var(--text-muted); font-weight: 700;">/min</span></span>
+                        <button class="app-btn-small" onclick="chatExpert('{{ expert.name }}')"
+                            style="background: var(--violet); color:#fff; border:none; padding:12px 25px; border-radius:15px; font-size: 1.1rem; font-weight:1000; cursor:pointer;">CONNECT</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="app-card"
+                style="background: linear-gradient(145deg, rgba(255, 77, 125, 0.1), rgba(123, 97, 255, 0.1)); border: 2.5px solid rgba(255, 77, 125, 0.3); animation: pulseGlowViolet 3s infinite; height: 100%; display: flex; flex-direction: column; justify-content: center; text-align: center; padding: 3rem;">
+                <h3
+                    style="margin: 0 0 1.5rem; font-size: 2.22rem; color: #fff; background: none; -webkit-text-fill-color: #fff; font-weight: 1000;">
+                    Emergency Neural Support</h3>
+                <p
+                    style="font-size: 1.35rem; color: var(--text-muted); margin-bottom: 2.5rem; font-weight: 700; line-height: 1.5;">
+                    Detected a disease? Hit
+                    SOS for immediate Specialist response.</p>
+                <button class="shimmer-btn" onclick="sosEmergency()"
+                    style="width: 100%; border-radius: 20px; padding: 1.8rem; font-size: 1.6rem; font-weight: 1000;">⚡
+                    SOS PRIORITY CHAT</button>
+                <p style="font-size: 1.1rem; color: var(--text-muted); margin-top: 2rem; font-weight: 800;">Average
+                    Response: <span style="color:var(--accent); font-weight:1000;">4 MINUTES</span></p>
+            </div>
+        </div>
+    </section>
+
+    </section>
+
+</div>
+
+</div>
+
+<style>
+    .feature-tile {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        padding: 1.75rem;
+        border-radius: 1.5rem;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .feature-tile:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: var(--primary);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 20px rgba(0, 210, 255, 0.1);
+    }
+
+    .feature-tile .emo {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-tile:hover .emo {
+        transform: scale(1.2) rotate(5deg);
+    }
+
+    .feature-tile h4 {
+        margin: 0;
+        color: #fff;
+        font-size: 1.8rem;
+        font-weight: 950;
+        background: none;
+        -webkit-text-fill-color: #fff;
+    }
+
+    .feature-tile p {
+        margin: 0;
+        color: var(--text-muted);
+        font-size: 1.25rem;
+        line-height: 1.6;
+        font-weight: 700;
+    }
+
+    .sub-panel {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 1rem;
+        border-radius: 12px;
+    }
+
+    .small-label {
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 4px;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        font-weight: 900;
+        padding: 3px 10px;
+        border-radius: 20px;
+        color: #fff;
+    }
+</style>
+
+<script>
+    function refreshDashboardData() {
+        // Use the global window.LOCATION_ENABLED flag set by main.js
+        if (window.LOCATION_ENABLED || navigator.onLine) {
+            fetch('/api/realtime/all')
+                .then(res => res.json())
+                .then(data => {
+                    console.log('📊 Dashboard Background Sync Complete');
+                })
+                .catch(err => console.warn('Sync failed:', err));
+        }
+    }
+    // Delay sync to let main.js finish its checks
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(refreshDashboardData, 2000);
+    });
+    function chatExpert(name) {
+        alert('💬 INITIALIZING NEURAL CHALNEL...\n\nRequesting secure link with ' + name + '. \nExpert is being paged. Please stand by.');
+    }
+    function sosEmergency() {
+        const confirmed = confirm('🚨 ACTIVATE EMERGENCY DISPATCH?\n\nThis will broadcast an SOS to all regional technicians and experts immediately.');
+        if (confirmed) {
+            alert('🚀 SOS SIGNAL BROADCASTED.\n\nPriority Support Ticket #SOS-' + Math.floor(Math.random() * 9000 + 1000) + ' created. \nTechnician response expected in 4 minutes.');
+            window.location.href = '/expert';
+        }
+    }
+    function runAIOptimization() {
+        const btn = event.currentTarget;
+        btn.innerText = "🧠 OPTIMIZING NEURAL TENSORS...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            alert('🚀 AI OPTIMIZATION COMPLETE!\n\nAerator runtime adjusted for energy efficiency. \nFeed coefficients updated based on current bio-telemetry.');
+            btn.innerText = "RUN AI OPTIMIZATION";
+            btn.disabled = false;
+        }, 2000);
+    }
+</script>
+{% endblock %}

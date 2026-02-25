@@ -1,0 +1,335 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="finance-portal" style="max-width: 1200px; margin: 0 auto; padding: 2rem;">
+    <style>
+        .tx-row {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 1rem;
+        }
+
+        .tx-row:hover {
+            transform: scale(1.01);
+        }
+
+        .tx-method-cell {
+            padding: 1.5rem;
+            border-radius: 1rem 0 0 1rem;
+            border-left: 4px solid var(--tx-color);
+        }
+
+        .sparkline-bar {
+            flex: 1;
+            height: var(--h);
+            background: linear-gradient(0deg, var(--primary), var(--accent));
+            border-radius: 10px 10px 0 0;
+            opacity: 0.6;
+        }
+    </style>
+    <!-- 💳 Neural Header: Financial Command Center -->
+    <header
+        style="text-align: left; margin-bottom: 3rem; display: flex; justify-content: space-between; align-items: flex-end;">
+        <div>
+            <h1 class="glow-text" style="font-size: 3rem; margin: 0; text-align: left !important;">PayHub OS</h1>
+            <p style="color: var(--text-muted); font-weight: 600; font-size: 1.1rem;">Secure Real-time Financial
+                Ecosystem</p>
+        </div>
+        <div style="text-align: right;">
+            <div
+                style="background: rgba(0,210,255,0.1); border: 1px solid var(--primary); padding: 1rem 1.5rem; border-radius: 1.5rem; display: inline-block;">
+                <p style="font-size: 0.8rem; font-weight: 800; color: var(--primary); margin: 0; letter-spacing: 1px;">
+                    TOTAL DISBURSEMENTS</p>
+                <p style="font-size: 1.8rem; font-weight: 900; color: white; margin: 0;">₹42,850.00</p>
+            </div>
+        </div>
+    </header>
+
+    <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem;">
+        <!-- 💹 Main Ledger Section -->
+        <div class="app-card"
+            style="padding: 2.5rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 2.5rem; backdrop-filter: blur(20px);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                <h2 style="margin: 0; font-size: 1.6rem; text-align: left !important;">Transaction Ledger</h2>
+                <div style="display: flex; gap: 1rem;">
+                    <button class="app-btn-large"
+                        style="padding: 0.6rem 1.2rem; font-size: 0.85rem; background: rgba(0,255,136,0.1); color: var(--accent); border: 1px solid var(--accent);"
+                        onclick="exportCSV()">CSV Export</button>
+                    <button class="app-btn-large" style="padding: 0.6rem 1.2rem; font-size: 0.85rem;"
+                        onclick="showPaymentModal()">⚡ New Transfer</button>
+                </div>
+            </div>
+
+            <div class="ledger-table" style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: separate; border-spacing: 0 1rem;">
+                    <thead>
+                        <tr
+                            style="color: var(--text-muted); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; font-weight: 800;">
+                            <th style="padding: 1rem; text-align: left;">ID / Method</th>
+                            <th style="padding: 1rem; text-align: left;">Purpose</th>
+                            <th style="padding: 1rem; text-align: right;">Amount</th>
+                            <th style="padding: 1rem; text-align: right;">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tx-ledger-body">
+                        {% for tx in transactions | reverse %}
+                        <tr class="tx-row"
+                            style="--tx-color: {% if tx.method == 'PhonePe' %}#5f259f{% elif tx.method == 'GPay' %}#4285f4{% else %}var(--primary){% endif %}; transition: transform 0.3s; cursor: pointer;">
+                            <td class="tx-method-cell">
+                                <strong style="display: block; color: white;">{{ tx.id }}</strong>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">{{ tx.method }} • {{
+                                    tx.timestamp }}</span>
+                            </td>
+                            <td style="padding: 1.5rem; color: #cbd5e1; font-weight: 600;">{{ tx.purpose }}</td>
+                            <td style="padding: 1.5rem; text-align: right;">
+                                <strong style="color: var(--accent); font-size: 1.2rem;">₹{{ tx.amount }}</strong>
+                            </td>
+                            <td style="padding: 1.5rem; text-align: right; border-radius: 0 1rem 1rem 0;">
+                                <span
+                                    style="background: rgba(0,255,136,0.15); color: var(--accent); padding: 5px 12px; border-radius: 1rem; font-size: 0.75rem; font-weight: 800;">{{
+                                    tx.status|upper }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% if not transactions %}
+                <div style="text-align: center; padding: 4rem; opacity: 0.5;">
+                    <p style="font-size: 3rem; margin-bottom: 1rem;">📁</p>
+                    <p>No transactions found in this cycle.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 🏧 Wallets & Analytics Side-car -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <!-- Wallet Card -->
+            <div class="app-card"
+                style="padding: 2rem; background: linear-gradient(135deg, #5f259f, #332150); border-radius: 2.5rem; border: 1px solid rgba(255,255,255,0.1); position: relative; overflow: hidden; box-shadow: 0 20px 40px rgba(95, 37, 159, 0.4);">
+                <div
+                    style="position: absolute; top: -10%; right: -10%; width: 50%; height: 50%; background: rgba(255,255,255,0.1); border-radius: 50%; filter: blur(40px);">
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3rem; position: relative; z-index: 1;">
+                    <div>
+                        <p
+                            style="color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 800; margin: 0; letter-spacing: 2px;">
+                            VIRTUAL LINKED CARD</p>
+                        <h3 style="color: white; margin: 5px 0 0 0; font-size: 1.4rem; text-align: left !important;">{{
+                            session.get('user_name', 'Farmer Pro') }}</h3>
+                    </div>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/1200px-UPI-Logo-vector.svg.png"
+                        style="height: 30px; filter: brightness(0) invert(1);" alt="UPI">
+                </div>
+                <p
+                    style="font-family: 'Space Mono', monospace; font-size: 1.4rem; letter-spacing: 4px; color: white; margin-bottom: 2rem; position: relative; z-index: 1;">
+                    **** **** **** 4410</p>
+                <div
+                    style="display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.7rem; font-weight: 800; margin: 0;">BALANCE
+                        </p>
+                        <p style="color: white; font-size: 1.8rem; font-weight: 900; margin: 0;">₹1,24,500</p>
+                    </div>
+                    <div
+                        style="background: white; color: #5f259f; padding: 10px 15px; border-radius: 1rem; font-weight: 900; font-size: 0.8rem; cursor: pointer;">
+                        MANAGE</div>
+                </div>
+            </div>
+
+            <!-- Business Analytics Quick-View -->
+            <div class="app-card"
+                style="padding: 2rem; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--glass-border); border-radius: 2.5rem; backdrop-filter: blur(20px);">
+                <h3 style="margin: 0 0 1.5rem 0; font-size: 1.2rem; text-align: left !important;">Cashflow Analytics
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,255,136,0.05); padding: 1rem; border-radius: 1.2rem; border-left: 4px solid var(--accent);">
+                        <span style="font-weight: 700;">Market In-flow</span>
+                        <span style="color: var(--accent); font-weight: 900;">+72%</span>
+                    </div>
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; background: rgba(255,77,125,0.05); padding: 1rem; border-radius: 1.2rem; border-left: 4px solid #ff4d7d;">
+                        <span style="font-weight: 700;">Input Costs</span>
+                        <span style="color: #ff4d7d; font-weight: 900;">-14%</span>
+                    </div>
+                    <!-- Mock Sparkline -->
+                    <div class="sparkline-container"
+                        style="height: 100px; margin-top:1rem; display: flex; align-items: flex-end; gap: 5px; padding: 0 10px;">
+                        {% for i in range(12) %}
+                        <div class="sparkline-bar"
+                            style="--h: {{ [20, 45, 30, 60, 80, 55, 90, 40, 75, 45, 95, 85][i] }}%;"></div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🏧 Real-time Payment Processing Modal (Ultra-Premium) -->
+<div id="payment-modal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(25px); z-index: 5000; align-items: center; justify-content: center; padding: 1rem;">
+    <div id="checkout-container"
+        style="background: #0b1120; border: 1px solid var(--primary); width: 100%; max-width: 500px; border-radius: 3rem; padding: 2.5rem; box-shadow: 0 50px 100px rgba(0,0,0,0.6); position: relative; overflow: hidden;">
+
+        <div id="payment-step-1">
+            <h2 style="margin-top: 0; font-size: 2rem; color: white;">AquaSphere <span
+                    style="color: var(--primary);">Secure Checkout</span></h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Gateway ID: AS-9921-X // ENCRYPTED_SSL_ACTIVE</p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                <!-- Card Option -->
+                <div class="payment-node" onclick="togglePayView('card')"
+                    style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 1.25rem; border-radius: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;">
+                    <div style="font-size: 1.5rem;">💳</div>
+                    <div style="flex: 1;">
+                        <strong style="color: white; display: block;">Credit/Debit Card</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">Visa, Mastercard, RuPay</span>
+                    </div>
+                </div>
+
+                <!-- UPI Option -->
+                <div class="payment-node" onclick="togglePayView('upi')"
+                    style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); padding: 1.25rem; border-radius: 1.5rem; cursor: pointer; display: flex; align-items: center; gap: 1rem;">
+                    <div style="font-size: 1.5rem;">📱</div>
+                    <div style="flex: 1;">
+                        <strong style="color: white; display: block;">Instant UPI</strong>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);">PhonePe, GPay, Paytm</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="card-form" style="display: none; margin-top: 2rem; animation: slideIn 0.3s ease;">
+                <input type="text" placeholder="Card Number (0000 0000 0000 0000)"
+                    style="width: 100%; padding: 1rem; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); border-radius: 1rem; color: white; margin-bottom: 1rem;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <input type="text" placeholder="MM/YY"
+                        style="padding: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 1rem; color: white;">
+                    <input type="password" placeholder="CVV"
+                        style="padding: 1rem; background: rgba(0,0,0,0.2); border: 1px solid var(--glass-border); border-radius: 1rem; color: white;">
+                </div>
+            </div>
+
+            <div style="margin-top: 2rem; background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 2rem;">
+                <label style="color: var(--text-muted); font-size: 0.7rem; font-weight: 800;">TOTAL PAYABLE</label>
+                <input type="number" id="pay-amount" value="5000"
+                    style="background: transparent; border: none; font-size: 2rem; color: var(--accent); font-weight: 900; width: 100%; outline: none;">
+            </div>
+
+            <button id="process-trigger" class="shimmer-btn"
+                style="width: 100%; padding: 1.5rem; margin-top: 2rem; font-size: 1.1rem;"
+                onclick="executeRealPayment()">🚀 AUTHORIZE SECURE PAYMENT</button>
+            <button
+                style="width: 100%; background: transparent; color: var(--text-muted); border: none; margin-top: 1rem; cursor: pointer;"
+                onclick="showPaymentModal(false)">Cancel Transaction</button>
+        </div>
+
+        <div id="payment-step-2" style="display: none; text-align: center; padding: 2rem 0;">
+            <div id="payment-status-icon" style="font-size: 5rem; margin-bottom: 2rem;">🌐</div>
+            <h2 id="payment-status-title">Authenticating...</h2>
+            <p id="payment-status-desc" style="color: var(--text-muted); max-width: 300px; margin: 0 auto;">Establishing
+                connection with nodal bank servers.</p>
+            <div
+                style="margin-top: 2rem; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+                <div id="payment-progress"
+                    style="width: 0%; height: 100%; background: var(--accent); transition: width 4s linear;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showPaymentModal(show = true) {
+        document.getElementById('payment-modal').style.display = show ? 'flex' : 'none';
+        if (show) {
+            document.getElementById('payment-step-1').style.display = 'block';
+            document.getElementById('payment-step-2').style.display = 'none';
+            document.getElementById('payment-progress').style.width = '0%';
+        }
+    }
+
+    function togglePayView(mode) {
+        document.getElementById('card-form').style.display = mode === 'card' ? 'block' : 'none';
+        document.querySelectorAll('.payment-node').forEach(n => n.style.borderColor = 'var(--glass-border)');
+        event.currentTarget.style.borderColor = 'var(--primary)';
+    }
+
+    function executeRealPayment() {
+        const amount = document.getElementById('pay-amount').value;
+
+        // Transition to Step 2: Processing
+        document.getElementById('payment-step-1').style.display = 'none';
+        document.getElementById('payment-step-2').style.display = 'block';
+
+        // Start Progress Bar Simulation
+        setTimeout(() => {
+            document.getElementById('payment-progress').style.width = '100%';
+        }, 100);
+
+        const statusIcon = document.getElementById('payment-status-icon');
+        const statusTitle = document.getElementById('payment-status-title');
+        const statusDesc = document.getElementById('payment-status-desc');
+
+        // Sequence of "Real" events
+        setTimeout(() => {
+            statusTitle.innerText = "Verifying Credentials...";
+            statusDesc.innerText = "Securing 256-bit AES tunnel with Payment Gateway.";
+        }, 1500);
+
+        setTimeout(() => {
+            statusTitle.innerText = "Contacting Bank...";
+            statusDesc.innerText = "Waiting for authorization from issuing bank cluster.";
+        }, 3000);
+
+        // Finalize API Call
+        setTimeout(() => {
+            fetch('/api/pay-process', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    amount: amount,
+                    method: 'Secure Checkout',
+                    purpose: 'Premium Equipment Purchase'
+                })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    statusIcon.innerText = "✅";
+                    statusIcon.style.animation = "popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)";
+                    statusTitle.innerText = "PAYMENT SUCCESSFUL";
+                    statusTitle.style.color = "var(--accent)";
+                    statusDesc.innerText = "Transaction ID: TX-" + Math.random().toString(16).substr(2, 8).toUpperCase();
+
+                    setTimeout(() => {
+                        location.reload();
+                    }, 2000);
+                });
+        }, 4500);
+    }
+    function exportCSV() {
+        const btn = event.currentTarget;
+        const originalText = btn.innerText;
+        btn.innerText = "⌛ GENERATING...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            btn.innerText = "✅ DOWNLOADED";
+            btn.style.background = "var(--accent)";
+            btn.style.color = "black";
+
+            // Mock download
+            const link = document.createElement('a');
+            link.href = 'data:text/csv;charset=utf-8,ID,Method,Purpose,Amount,Status\nTX101,PhonePe,Supplies,5000,Success';
+            link.download = 'aquasphere_transactions.csv';
+            link.click();
+
+            setTimeout(() => {
+                btn.innerText = originalText;
+                btn.disabled = false;
+                btn.style.background = "rgba(0,255,136,0.1)";
+                btn.style.color = "var(--accent)";
+            }, 3000);
+        }, 1500);
+    }
+</script>
+{% endblock %}

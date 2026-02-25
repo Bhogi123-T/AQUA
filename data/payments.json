@@ -1,0 +1,84 @@
+[
+    {
+        "id": "PAY-1",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "order_id": "AQ-20260220-1001",
+        "description": "Order: 1T Vannamei",
+        "amount": "517090",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-20 00:13",
+        "icon": "\ud83d\uded2"
+    },
+    {
+        "id": "PAY-2",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "order_id": "AQ-20260220-1002",
+        "description": "Order: 1T Vannamei",
+        "amount": "545310",
+        "method": "PHONEPE",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-20 00:14",
+        "icon": "\ud83d\uded2"
+    },
+    {
+        "id": "PAY-3",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "order_id": "AQ-20260220-1003",
+        "description": "Order: 1T Vannamei",
+        "amount": "545310",
+        "method": "PHONEPE",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-20 00:14",
+        "icon": "\ud83d\uded2"
+    },
+    {
+        "id": "PAY-4",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "order_id": "AQ-20260220-1004",
+        "description": "Order: 1T Freshwater Prawn",
+        "amount": "668150",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-20 01:13",
+        "icon": "\ud83d\uded2"
+    },
+    {
+        "id": "PAY-5",
+        "user_id": "local-tester@aqua-ecosystem.io",
+        "description": "Consult: Dr. Anil Sharma - Video Call (30 min)",
+        "amount": "800",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-20 01:15",
+        "icon": "\ud83d\udd2c"
+    },
+    {
+        "id": "PAY-6",
+        "user_id": "bhogi@gmail.com",
+        "order_id": "AQ-20260221-1005",
+        "description": "Order: 1T Whiteleg Shrimp",
+        "amount": "586810",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-21 21:46",
+        "icon": "\ud83d\uded2"
+    },
+    {
+        "id": "PAY-7",
+        "user_id": "admin@aquasphere.com",
+        "description": "Consult: Dr. Anil Sharma - Farm Visit (physical)",
+        "amount": "800",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-02-25 10:44",
+        "icon": "\ud83d\udd2c"
+    }
+]

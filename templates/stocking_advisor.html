@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card">
+    <span class="app-emoji">🏠</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['stock_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); margin-bottom: 3.5rem; font-size: 1.2rem;">{{ trans['stock_desc'] }}</p>
+
+    <form action="/predict_stocking" method="POST" class="app-form">
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['species'] }}</span>
+            <select name="species" class="app-input">
+                {% for spec in species_list %}
+                <option value="{{ spec.id }}">{{ spec.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['pond_area'] }} ({{ trans['unit_hectares'] }})</span>
+            <input type="number" step="0.01" name="area" class="app-input" placeholder="e.g. 1.2" required>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['soil_type'] }}</span>
+            <select name="soil" class="app-input">
+                <option value="Clay">{{ trans['soil_clay'] }}</option>
+                <option value="Loamy">{{ trans['soil_loamy'] }}</option>
+                <option value="Sandy">{{ trans['soil_sandy'] }}</option>
+            </select>
+        </div>
+
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['water_source'] }}</span>
+            <select name="water" class="app-input">
+                <option value="Canal">{{ trans['water_canal'] }}</option>
+                <option value="River">{{ trans['water_river'] }}</option>
+                <option value="Borewell">{{ trans['water_borewell'] }}</option>
+            </select>
+        </div>
+
+        <input type="hidden" name="season" value="Monsoon">
+        <button class="app-btn-large">🏠 {{ trans['btn_stock'] }}</button>
+    </form>
+
+    <div style="margin-top: 4rem;">
+        <a href="/farmer?lang={{ lang }}"
+            style="color: var(--text-muted); text-decoration: none; font-weight: 800; font-size: 1.4rem; transition: color 0.3s;">
+            🔙 {{ trans['back'] }}
+        </a>
+    </div>
+</div>
+{% endblock %}

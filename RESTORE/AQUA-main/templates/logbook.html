@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">🧾</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['digital_logbook'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['secure_history'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 900px; text-align: left; align-items: flex-start;">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 2rem; color: white;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--glass-border); text-align: left;">
+                <th style="padding: 1.5rem;">{{ trans['th_date'] }}</th>
+                <th style="padding: 1.5rem;">pH</th>
+                <th style="padding: 1.5rem;">{{ trans['do'] }} (mg/L)</th>
+                <th style="padding: 1.5rem;">{{ trans['feed_title'] | safe }}</th>
+                <th style="padding: 1.5rem;">{{ trans['th_notes'] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <td style="padding: 1.5rem;">{{ log.date }}</td>
+                <td style="padding: 1.5rem;">{{ log.ph }}</td>
+                <td style="padding: 1.5rem;">{{ log.do }}</td>
+                <td style="padding: 1.5rem;">{{ log.feed }}</td>
+                <td style="padding: 1.5rem; color: var(--text-muted);">{{ log.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 3rem; width: 100%;">
+        <button class="app-btn-large" style="width: 100%; opacity: 0.5; cursor: not-allowed;">{{ trans['add_log']
+            }}</button>
+    </div>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

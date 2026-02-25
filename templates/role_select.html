@@ -1,0 +1,277 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .role-hero {
+        text-align: center;
+        padding: 2rem 0 3rem;
+    }
+
+    .role-hero h1 {
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        background: linear-gradient(135deg, #00d2ff, #00ff88, #7b61ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+    }
+
+    .role-hero p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .role-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.5rem;
+        max-width: 1100px;
+        margin: 0 auto 3rem;
+    }
+
+    .role-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid var(--glass-border);
+        border-radius: 2rem;
+        padding: 2.5rem 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .role-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.4s;
+        border-radius: 2rem;
+    }
+
+    .role-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        border-color: transparent;
+    }
+
+    .role-card:hover::before {
+        opacity: 1;
+    }
+
+    .role-card.farmer::before {
+        background: linear-gradient(135deg, rgba(0, 210, 255, 0.15), rgba(0, 255, 136, 0.1));
+    }
+
+    .role-card.farmer:hover {
+        border-color: #00d2ff;
+        box-shadow: 0 20px 60px rgba(0, 210, 255, 0.3);
+    }
+
+    .role-card.business::before {
+        background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 107, 53, 0.1));
+    }
+
+    .role-card.business:hover {
+        border-color: #ffa500;
+        box-shadow: 0 20px 60px rgba(255, 165, 0, 0.3);
+    }
+
+    .role-card.expert::before {
+        background: linear-gradient(135deg, rgba(123, 97, 255, 0.15), rgba(200, 120, 255, 0.1));
+    }
+
+    .role-card.expert:hover {
+        border-color: #7b61ff;
+        box-shadow: 0 20px 60px rgba(123, 97, 255, 0.3);
+    }
+
+    .role-card.admin::before {
+        background: linear-gradient(135deg, rgba(255, 0, 85, 0.15), rgba(255, 107, 53, 0.1));
+    }
+
+    .role-card.admin:hover {
+        border-color: #ff0055;
+        box-shadow: 0 20px 60px rgba(255, 0, 85, 0.3);
+    }
+
+    .role-icon {
+        font-size: 4rem;
+        display: block;
+    }
+
+    .role-title {
+        font-size: 1.5rem;
+        font-weight: 800;
+    }
+
+    .role-desc {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+
+    .role-badge {
+        background: rgba(0, 210, 255, 0.15);
+        border: 1px solid rgba(0, 210, 255, 0.3);
+        border-radius: 2rem;
+        padding: 4px 14px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+    }
+
+    .role-card.business .role-badge {
+        background: rgba(255, 165, 0, 0.15);
+        border-color: rgba(255, 165, 0, 0.3);
+        color: #ffa500;
+    }
+
+    .role-card.expert .role-badge {
+        background: rgba(123, 97, 255, 0.15);
+        border-color: rgba(123, 97, 255, 0.3);
+        color: #a78bfa;
+    }
+
+    .role-card.admin .role-badge {
+        background: rgba(255, 0, 85, 0.15);
+        border-color: rgba(255, 0, 85, 0.3);
+        color: #ff4d7d;
+    }
+
+    .role-features {
+        list-style: none;
+        text-align: left;
+        width: 100%;
+    }
+
+    .role-features li {
+        padding: 6px 0;
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .role-features li:last-child {
+        border: none;
+    }
+
+    .current-role-banner {
+        background: rgba(0, 210, 255, 0.08);
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        border-radius: 1.5rem;
+        padding: 1.25rem 2rem;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+</style>
+
+<div class="role-hero">
+    <h1>🌊 Choose Your Portal</h1>
+    <p>AquaSphere has a dedicated dashboard for every role in the aquaculture ecosystem</p>
+</div>
+
+{% if user and user.get('role') %}
+<div class="current-role-banner">
+    <span style="font-size:1.5rem">✅</span>
+    <div>
+        <p style="margin:0; font-weight:700; color:var(--primary)">Currently registered as: <strong>{{
+                user.role|capitalize }}</strong></p>
+        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-muted)">You can switch to any portal. Your role
+            can be updated in settings.</p>
+    </div>
+</div>
+{% endif %}
+
+<div class="role-grid">
+    {% set role = session.get('role', 'farmer') %}
+
+    <!-- FARMER PORTAL -->
+    {% if role == 'admin' or role == 'farmer' %}
+    <a href="/home?lang={{ lang }}" class="role-card farmer">
+        <span class="role-icon">🌾</span>
+        <span class="role-title">Farmer Portal</span>
+        <span class="role-badge">CORE</span>
+        <p class="role-desc">AI-powered tools for pond management, disease prediction, yield forecasting & more</p>
+        <ul class="role-features">
+            <li>🤖 AI Disease Prediction</li>
+            <li>📊 Real-time IoT Monitoring</li>
+            <li>🌾 Yield & Feed Forecasting</li>
+            <li>🌤️ Seasonal Advisory</li>
+            <li>🏘️ Community Hub</li>
+        </ul>
+        <div class="app-btn-large"
+            style="width:100%; text-align:center; padding:0.75rem; text-decoration:none; border-radius:1rem;">Enter
+            Farmer Portal →</div>
+    </a>
+    {% endif %}
+
+    <!-- BUSINESS PORTAL -->
+    {% if role == 'admin' or role == 'business' %}
+    <a href="/business?lang={{ lang }}" class="role-card business">
+        <span class="role-icon">💼</span>
+        <span class="role-title">Business Portal</span>
+        <span class="role-badge" style="color:#ffa500">TRADER</span>
+        <p class="role-desc">Market analytics, bulk orders, price negotiation, export compliance & payment tracking</p>
+        <ul class="role-features">
+            <li>📈 Live Market Prices</li>
+            <li>🛒 Bulk Order Management</li>
+            <li>💳 UPI / Banking Payments</li>
+            <li>📦 Order Tracking</li>
+            <li>📋 Export Compliance</li>
+        </ul>
+        <div
+            style="background:linear-gradient(135deg,#ffa500,#ff6b35); color:#000; width:100%; text-align:center; padding:0.75rem; font-weight:800; border-radius:1rem;">
+            Enter Business Portal →</div>
+    </a>
+    {% endif %}
+
+    <!-- EXPERT PORTAL -->
+    {% if role == 'admin' or role == 'expert' %}
+    <a href="/expert?lang={{ lang }}" class="role-card expert">
+        <span class="role-icon">🔬</span>
+        <span class="role-title">Expert Portal</span>
+        <span class="role-badge" style="color:#a78bfa">CONSULTANT</span>
+        <p class="role-desc">Offer consultations, share knowledge, earn from farmers & build your reputation</p>
+        <ul class="role-features">
+            <li>👨‍🔬 Consultation Sessions</li>
+            <li>💰 Earn via UPI Payments</li>
+            <li>📚 Publish Knowledge</li>
+            <li>🏅 Expert Rating System</li>
+            <li>📡 Live Farm Monitoring</li>
+        </ul>
+        <div
+            style="background:linear-gradient(135deg,#7b61ff,#c878ff); color:#fff; width:100%; text-align:center; padding:0.75rem; font-weight:800; border-radius:1rem;">
+            Enter Expert Portal →</div>
+    </a>
+    {% endif %}
+
+    <!-- ADMIN PORTAL (Only shown to admin users) -->
+    {% if role == 'admin' %}
+    <a href="/admin?lang={{ lang }}" class="role-card admin">
+        <span class="role-icon">🛡️</span>
+        <span class="role-title">Admin Control</span>
+        <span class="role-badge" style="color:#ff4d7d">ADMIN ONLY</span>
+        <p class="role-desc">Full control over users, payments, content, system health & startup analytics</p>
+        <ul class="role-features">
+            <li>👥 User Management</li>
+            <li>💰 Revenue Analytics</li>
+            <li>⚙️ System Configuration</li>
+            <li>📊 Platform Insights</li>
+            <li>🚨 Alert Management</li>
+        </ul>
+        <div
+            style="background:linear-gradient(135deg,#ff0055,#ff6b35); color:#fff; width:100%; text-align:center; padding:0.75rem; font-weight:800; border-radius:1rem;">
+            Open Admin Panel →</div>
+    </a>
+    {% endif %}
+</div>
+{% endblock %}

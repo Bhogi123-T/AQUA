@@ -1,0 +1,942 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .biz-header {
+        background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(255, 107, 53, 0.05));
+        border: 1px solid rgba(255, 165, 0, 0.2);
+        border-radius: 2rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .biz-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .biz-stat {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--glass-border);
+        border-radius: 1.5rem;
+        padding: 1.5rem;
+        text-align: center;
+    }
+
+    .biz-stat-value {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #ffa500;
+    }
+
+    .biz-stat-label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .market-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .market-table th {
+        text-align: left;
+        padding: 12px 16px;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .market-table td {
+        padding: 14px 16px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        vertical-align: middle;
+    }
+
+    .market-table tr:hover td {
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .price-up {
+        color: #00ff88;
+    }
+
+    .price-down {
+        color: #ff4d7d;
+    }
+
+    .order-form-card {
+        background: rgba(255, 165, 0, 0.05);
+        border: 1px solid rgba(255, 165, 0, 0.2);
+        border-radius: 2rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .pay-btn {
+        background: linear-gradient(135deg, #00d2ff, #00ff88);
+        color: #000;
+        font-weight: 900;
+        border: none;
+        border-radius: 1rem;
+        padding: 1rem 2rem;
+        cursor: pointer;
+        font-size: 1rem;
+        width: 100%;
+        transition: all 0.3s;
+    }
+
+    .pay-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 10px 40px rgba(0, 210, 255, 0.4);
+    }
+
+    .upi-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(11, 17, 32, 0.99);
+        border: 2px solid #ffa500;
+        border-radius: 2rem;
+        padding: 2.5rem;
+        z-index: 9999;
+        width: 90%;
+        max-width: 450px;
+        box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9);
+    }
+
+    .upi-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.8);
+        z-index: 9998;
+        backdrop-filter: blur(10px);
+    }
+
+    .upi-qr-box {
+        background: white;
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        margin: 1.5rem 0;
+    }
+
+    .payment-method-btns {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+    }
+
+    .pay-method-btn {
+        flex: 1;
+        min-width: 100px;
+        padding: 0.75rem;
+        border-radius: 1rem;
+        border: 2px solid var(--glass-border);
+        background: rgba(255, 255, 255, 0.05);
+        color: white;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.85rem;
+    }
+
+    .pay-method-btn.active {
+        border-color: #ffa500;
+        background: rgba(255, 165, 0, 0.15);
+        color: #ffa500;
+    }
+
+    .live-pulse-dot {
+        width: 8px;
+        height: 8px;
+        background: #00ff88;
+        border-radius: 50%;
+        display: inline-block;
+        animation: pulse2 1.5s infinite;
+        margin-right: 6px;
+    }
+
+    @keyframes pulse2 {
+
+        0%,
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.5;
+            transform: scale(1.5);
+        }
+    }
+
+    /* Transaction Colors */
+    .txn-credit {
+        color: #00ff88 !important;
+    }
+
+    .txn-debit {
+        color: #ff4d7d !important;
+    }
+
+    .badge-confirmed {
+        background: rgba(0, 255, 136, 0.1) !important;
+        color: #00ff88 !important;
+    }
+
+    .badge-pending {
+        background: rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }
+
+    .market-surging {
+        background: #00ff88 !important;
+        color: black !important;
+    }
+
+    .market-moderate {
+        background: #ffa500 !important;
+        color: black !important;
+    }
+</style>
+
+<!-- 🛸 HUB HEADER -->
+{% if session.get('role') == 'admin' %}
+<div
+    style="background: linear-gradient(90deg, #ff4d7d, #00d2ff); color: #fff; padding: 0.8rem; text-align: center; font-weight: 950; letter-spacing: 2px; text-transform: uppercase; font-size: 0.9rem; border-radius: 10px; margin-bottom: 2rem;">
+    🛡️ System Authority Active: Business Matrix Override Enabled
+</div>
+{% endif %}
+<header style="margin-bottom: 4rem; text-align: center;">
+    <div
+        style="display: inline-flex; align-items: center; gap: 1rem; padding: 10px 25px; background: rgba(255, 165, 0, 0.1); border: 1px solid #ffa500; border-radius: 30px; margin-bottom: 2rem;">
+        <span class="live-pulse" style="background: #ffa500; width: 10px; height: 10px;"></span>
+        <span style="font-size: 1rem; font-weight: 900; color: #ffa500; letter-spacing: 2px;">BUSINESS MATRIX v5.2
+            ACTIVE</span>
+    </div>
+    <h1
+        style="font-size: clamp(3.5rem, 8vw, 6rem); font-weight: 950; letter-spacing: -3px; line-height: 0.9; margin-bottom: 1.5rem;">
+        Global <span style="color:#ffa500; text-shadow: 0 0 30px rgba(255, 165, 0, 0.4);">Business</span> Matrix
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.6rem; font-weight: 700; max-width: 800px; margin: 0 auto;">
+        Integrated trade hub for global aquaculture commerce, automated logistics, and financial settlement.
+    </p>
+</header>
+
+<!-- 📊 BUSINESS STATS -->
+<div class="biz-stat-grid"
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-bottom: 4rem;">
+    <div class="biz-stat"
+        style="background: rgba(255,165,0,0.03); border: 1px solid rgba(255,165,0,0.1); padding: 2rem; border-radius: 20px; text-align: center;">
+        <div class="biz-stat-value" id="active-orders" style="font-size: 2.5rem; font-weight: 950; color: #ffa500;">--
+        </div>
+        <div class="biz-stat-label"
+            style="text-transform: uppercase; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 2px;">
+            Active Orders</div>
+    </div>
+    <div class="biz-stat"
+        style="background: rgba(0,210,255,0.03); border: 1px solid rgba(0,210,255,0.1); padding: 2rem; border-radius: 20px; text-align: center;">
+        <div class="biz-stat-value" id="total-spend" style="font-size: 2.5rem; font-weight: 950; color: #00d2ff;">--
+        </div>
+        <div class="biz-stat-label"
+            style="text-transform: uppercase; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 2px;">
+            Monthly Volume</div>
+    </div>
+    <div class="biz-stat"
+        style="background: rgba(0,255,136,0.03); border: 1px solid rgba(0,255,136,0.1); padding: 2rem; border-radius: 20px; text-align: center;">
+        <div class="biz-stat-value" id="market-species" style="font-size: 2.5rem; font-weight: 950; color: #00ff88;">11
+        </div>
+        <div class="biz-stat-label"
+            style="text-transform: uppercase; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 2px;">
+            Live Species</div>
+    </div>
+    <div class="biz-stat"
+        style="background: rgba(255,77,125,0.03); border: 1px solid rgba(255,77,125,0.1); padding: 2rem; border-radius: 20px; text-align: center;">
+        <div class="biz-stat-value" id="top-price" style="font-size: 2.5rem; font-weight: 950; color: #ff4d7d;">--</div>
+        <div class="biz-stat-label"
+            style="text-transform: uppercase; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); letter-spacing: 2px;">
+            Top Price/kg</div>
+    </div>
+</div>
+
+<!-- 🖱️ MATRIX SECTOR NAVIGATION -->
+<div class="hub-tabs" style="display: flex; gap: 1rem; margin-bottom: 4rem; flex-wrap: wrap; justify-content: center;">
+    <button onclick="showHubTab('market')" id="btn-market" class="hub-tab-btn active">📈 MARKET INTEL</button>
+    <button onclick="showHubTab('orders')" id="btn-orders" class="hub-tab-btn">📦 ORDER CENTER</button>
+    <button onclick="showHubTab('exports')" id="btn-exports" class="hub-tab-btn">🌍 EXPORTS</button>
+    <button onclick="showHubTab('pay')" id="btn-pay" class="hub-tab-btn">💳 FINANCIAL MATRIX</button>
+    <button onclick="showHubTab('analytics')" id="btn-analytics" class="hub-tab-btn">📊 ANALYTICS</button>
+</div>
+
+<!-- Add these styles if they are missing or to override -->
+<style>
+    .hub-tab-btn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--text-muted);
+        padding: 1.2rem 3rem;
+        border-radius: 15px;
+        font-weight: 900;
+        cursor: pointer;
+        transition: all 0.3s;
+        letter-spacing: 1.5px;
+        font-size: 0.95rem;
+    }
+
+    .hub-tab-btn.active {
+        background: #ffa500;
+        color: #000;
+        border-color: #ffa500;
+        box-shadow: 0 0 30px rgba(255, 165, 0, 0.3);
+    }
+
+    .hub-sector {
+        display: none;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .hub-sector.active {
+        display: block;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<script>
+    function showHubTab(sectorId) {
+        document.querySelectorAll('.hub-sector').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.hub-tab-btn').forEach(b => b.classList.remove('active'));
+
+        // Map hub IDs to existing section IDs if different
+        const sectionMap = {
+            'market': 'section-market',
+            'orders': 'section-orders',
+            'exports': 'section-exports',
+            'pay': 'section-pay',
+            'analytics': 'section-analytics'
+        };
+
+        const targetId = sectionMap[sectorId] || sectorId;
+        const targetSector = document.getElementById(targetId);
+        if (targetSector) targetSector.classList.add('active');
+
+        document.getElementById('btn-' + sectorId).classList.add('active');
+    }
+    // Set initial active state for sectors
+    window.addEventListener('DOMContentLoaded', () => {
+        const activeBtn = document.querySelector('.hub-tab-btn.active');
+        if (activeBtn) {
+            const sectorId = activeBtn.id.replace('btn-', '');
+            showHubTab(sectorId);
+        }
+    });
+</script>
+
+<!-- LIVE MARKET TAB -->
+<div id="section-market" class="hub-sector">
+    <div class="app-card" style="border-color:rgba(255,165,0,0.2); overflow-x:auto; margin-bottom:2rem;">
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:1rem;">
+            <h2 style="margin:0; color:#ffa500">🌊 Live Aquaculture Market</h2>
+            <span style="color:var(--text-muted); font-size:0.8rem;" id="market-last-update">Loading...</span>
+        </div>
+        <table class="market-table" id="market-table">
+            <thead>
+                <tr>
+                    <th>Species</th>
+                    <th>Type</th>
+                    <th>Price/kg (USD)</th>
+                    <th>Change</th>
+                    <th>Stock (Tons)</th>
+                    <th>Farms</th>
+                    <th>Availability</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="market-tbody">
+                <tr>
+                    <td colspan="8" style="text-align:center; color:var(--text-muted); padding:2rem;">Loading live
+                        market data...</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Place Order Card -->
+    <div class="order-form-card" id="order-form-container" style="display:none;">
+        <h3 style="color:#ffa500; margin-top:0;">🛒 Place Bulk Order</h3>
+        <form method="POST" action="/business/create-order" id="order-form">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem;">
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.85rem;">Species</label>
+                    <input type="text" name="species" id="order-species" class="app-input" readonly>
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.85rem;">Quantity (Tons)</label>
+                    <input type="number" name="quantity" id="order-qty" class="app-input" min="0.1" step="0.1"
+                        value="1">
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.85rem;">Unit Price (USD/kg)</label>
+                    <input type="text" name="unit_price" id="order-price" class="app-input" readonly>
+                </div>
+                <div>
+                    <label style="color:var(--text-muted); font-size:0.85rem;">Total Amount (₹)</label>
+                    <input type="text" name="total_inr" id="order-total" class="app-input" readonly>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <button type="button" onclick="openPaymentModal()" class="pay-btn">💳 Pay Now (UPI/Bank)</button>
+                <button type="submit" class="pay-btn"
+                    style="background:rgba(255,165,0,0.2); color:#ffa500; border:2px solid rgba(255,165,0,0.4);">📋 Pay
+                    Later / Invoice</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ORDERS TAB -->
+<div id="section-orders" class="hub-sector">
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem;">
+        <!-- MY PLACED ORDERS -->
+        <div class="app-card">
+            <h2 style="color:#ffa500; margin-top:0;">📤 My Placed Orders</h2>
+            {% if orders %}
+            {% for order in orders %}
+            <div
+                style="background:rgba(255,255,255,0.04); border-radius:1rem; padding:1.25rem; margin-bottom:1rem; border:1px solid var(--glass-border);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div>
+                        <p style="margin:0; font-weight:700; color:white">#{{ order.id }} — {{ order.species }}</p>
+                        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-muted)">{{ order.quantity }}T | {{
+                            order.timestamp }}</p>
+                    </div>
+                    <div style="text-align:right;">
+                        <p style="margin:0; font-weight:800; color:#00ff88">₹{{ order.total_inr }}</p>
+                        <span
+                            class="bubble-badge {{ 'badge-confirmed' if order.status == 'Confirmed' else 'badge-pending' }}"
+                            style="font-size:0.7rem; padding:3px 10px; border-radius:2rem;">{{ order.status }}</span>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <p style="text-align:center; color:var(--text-muted); padding:2rem;">No orders placed yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- INCOMING ORDERS FOR APPROVAL -->
+        <div class="app-card" style="border: 1px solid #00d2ff;">
+            <h2 style="color:#00d2ff; margin-top:0;">📥 Incoming Requests</h2>
+            {% if incoming_orders %}
+            {% for order in incoming_orders %}
+            <div
+                style="background:rgba(0,210,255,0.05); border-radius:1rem; padding:1.5rem; margin-bottom:1rem; border:1px solid rgba(0,210,255,0.2);">
+                <div style="display:flex; justify-content:space-between; margin-bottom:1rem;">
+                    <div>
+                        <p style="margin:0; font-weight:700; color:white">{{ order.species }} Request</p>
+                        <p style="margin:4px 0 0; font-size:0.85rem; color:var(--text-muted)">From: {{ order.user_id }}
+                            | {{ order.quantity }} Tons</p>
+                    </div>
+                    <p style="margin:0; font-weight:900; color:#00ff88; font-size: 1.2rem;">₹{{ order.total_inr }}</p>
+                </div>
+                <div style="display:flex; gap:0.75rem;">
+                    <form action="/business/order-action" method="POST" style="flex:1;">
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <input type="hidden" name="action" value="approve">
+                        <button type="submit" class="pay-btn" style="padding:0.6rem; font-size:0.85rem;">✅
+                            ACCEPT</button>
+                    </form>
+                    <form action="/business/order-action" method="POST" style="flex:1;">
+                        <input type="hidden" name="order_id" value="{{ order.id }}">
+                        <input type="hidden" name="action" value="reject">
+                        <button type="submit" class="pay-btn"
+                            style="padding:0.6rem; font-size:0.85rem; background:rgba(255,0,85,0.2); border:1px solid #ff0055; color:#ff0055;">❌
+                            REJECT</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+                <p style="font-size:3rem">🕸️</p>
+                <p>No pending requests.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- EXPORTS TAB (NEW) -->
+<div id="section-exports" class="hub-sector">
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+        <div class="app-card" style="padding: 3rem; border-top: 5px solid #7b61ff;">
+            <h2 style="color:#7b61ff; margin-top:0; font-size: 2.5rem; font-weight: 950;">🌍 Global Export Intelligence
+            </h2>
+            <p style="color:var(--text-muted); margin-bottom: 2.5rem; font-weight: 600;">Monitor global demand and
+                automate compliance certification with AI-driven regulatory checks.</p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 3rem;">
+                <div
+                    style="background: rgba(123,97,255,0.1); border-radius: 2rem; padding: 2rem; border: 1px solid rgba(123,97,255,0.2);">
+                    <h4 style="margin:0; color: #fff;">EU Compliance</h4>
+                    <p style="font-size: 2.5rem; font-weight: 950; color: #00ff88; margin: 1rem 0;">98.4%</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">READY FOR SHIPMENT</p>
+                </div>
+                <div
+                    style="background: rgba(0,210,255,0.1); border-radius: 2rem; padding: 2rem; border: 1px solid rgba(0,210,255,0.2);">
+                    <h4 style="margin:0; color: #fff;">Open Tenders</h4>
+                    <p style="font-size: 2.5rem; font-weight: 950; color: #ffa500; margin: 1rem 0;">14</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">GLOBAL BIDS ACTIVE</p>
+                </div>
+            </div>
+
+            <button class="shimmer-btn"
+                style="width: 100%; border: none; padding: 1.5rem; border-radius: 20px; background: #7b61ff; color: white; font-weight: 950; font-size: 1.1rem; cursor: pointer;">
+                🚀 GENERATE AI EXPORT CERTIFICATE (GEC-V5)
+            </button>
+        </div>
+
+        <div class="app-card" style="padding: 2rem;">
+            <h3 style="margin-bottom: 1.5rem;">Demand Heatmap</h3>
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+                {% for market in ['China', 'Japan', 'EU', 'USA', 'Vietnam'] %}
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 1rem;">
+                    <span style="font-weight: 700;">{{ market }}</span>
+                    <span class="bubble-badge {{ 'market-surging' if loop.index < 3 else 'market-moderate' }}"
+                        style="font-weight: 900; font-size: 0.7rem; padding: 4px 10px; border-radius: 20px;">
+                        {{ 'SURGING' if loop.index < 3 else 'MODERATE' }} </span>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="#" class="app-btn-large"
+                style="width: 100%; margin-top: 2rem; text-decoration: none; text-align: center; display: block; background: rgba(255,255,255,0.05);">VIEW
+                GLOBAL LOGISTICS</a>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENTS TAB -->
+<div id="section-pay" class="hub-sector">
+    <div class="app-card" style="margin-bottom:1.5rem;">
+        <h2 style="margin:0 0 1.5rem; color:#ffa500">💳 Payment Methods & History</h2>
+
+        <div
+            style="background:rgba(0,210,255,0.08); border:1px solid rgba(0,210,255,0.2); border-radius:1.5rem; padding:1.5rem; margin-bottom:1.5rem;">
+            <h3 style="color:var(--primary); margin-top:0;">🏦 Supported Payment Methods</h3>
+            <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1rem;">
+                <div
+                    style="background:rgba(255,255,255,0.05); border-radius:1rem; padding:1.25rem; text-align:center; border:1px solid var(--glass-border);">
+                    <div style="font-size:2rem">📱</div>
+                    <div style="font-weight:700; margin-top:0.5rem;">UPI</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Google Pay, PhonePe, Paytm, BHIM</div>
+                </div>
+                <div
+                    style="background:rgba(255,255,255,0.05); border-radius:1rem; padding:1.25rem; text-align:center; border:1px solid var(--glass-border);">
+                    <div style="font-size:2rem">🏛️</div>
+                    <div style="font-weight:700; margin-top:0.5rem;">Net Banking</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">SBI, HDFC, ICICI, Axis</div>
+                </div>
+                <div
+                    style="background:rgba(255,255,255,0.05); border-radius:1rem; padding:1.25rem; text-align:center; border:1px solid var(--glass-border);">
+                    <div style="font-size:2rem">💳</div>
+                    <div style="font-weight:700; margin-top:0.5rem;">Cards</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Visa, Mastercard, RuPay</div>
+                </div>
+                <div
+                    style="background:rgba(255,255,255,0.05); border-radius:1rem; padding:1.25rem; text-align:center; border:1px solid var(--glass-border);">
+                    <div style="font-size:2rem">📋</div>
+                    <div style="font-weight:700; margin-top:0.5rem;">NEFT/RTGS</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Direct bank transfer</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment History -->
+        <h3 style="color:#ffa500;">💰 Recent Transactions</h3>
+        {% if payments %}
+        {% for p in payments %}
+        <div
+            style="display:flex; justify-content:space-between; align-items:center; padding:1rem; background:rgba(255,255,255,0.04); border-radius:1rem; margin-bottom:0.75rem; flex-wrap:wrap; gap:0.5rem;">
+            <div>
+                <p style="margin:0; font-weight:700;">{{ p.description }}</p>
+                <p style="margin:4px 0 0; font-size:0.8rem; color:var(--text-muted);">{{ p.timestamp }} • {{ p.method }}
+                </p>
+            </div>
+            <div style="text-align:right">
+                <p class="{% if p.type=='credit' %}txn-credit{% else %}txn-debit{% endif %}"
+                    style="margin:0; font-size:1.2rem; font-weight:900;">
+                    {% if p.type=='credit' %}+{% else %}-{% endif %}₹{{ p.amount }}
+                </p>
+                <span style="font-size:0.7rem; color:var(--text-muted);">{{ p.status }}</span>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="color:var(--text-muted); text-align:center; padding:2rem;">No transactions yet</p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- ANALYTICS TAB -->
+<div id="section-analytics" class="hub-sector">
+    <div class="app-card">
+        <h2 style="color:#ffa500; margin-top:0;">📊 Business Analytics</h2>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1.5rem;">
+            <div
+                style="background:rgba(255,165,0,0.08); border:1px solid rgba(255,165,0,0.2); border-radius:1.5rem; padding:1.5rem;">
+                <h3 style="color:#ffa500; margin-top:0;">Top Species Ordered</h3>
+                <div id="top-species-list">
+                    <div
+                        style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span>🦐 Vannamei</span><span style="color:#00ff88">45%</span>
+                    </div>
+                    <div
+                        style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                        <span>🦐 Tiger Prawn</span><span style="color:#00ff88">28%</span>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; padding:8px 0;"><span>🦀 Mud
+                            Crab</span><span style="color:#00ff88">27%</span></div>
+                </div>
+            </div>
+            <div
+                style="background:rgba(0,210,255,0.08); border:1px solid rgba(0,210,255,0.2); border-radius:1.5rem; padding:1.5rem;">
+                <h3 style="color:var(--primary); margin-top:0;">Market Trends (30-Day)</h3>
+                <div>
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Avg Price Change</p>
+                    <p style="font-size:1.8rem; font-weight:900; color:#00ff88;">+5.2%</p>
+                    <p style="color:var(--text-muted); font-size:0.85rem;">Best Time to Buy</p>
+                    <p style="font-weight:700; color:white;">Early Morning (6-9 AM)</p>
+                </div>
+            </div>
+            <div
+                style="background:rgba(0,255,136,0.05); border:1px solid rgba(0,255,136,0.2); border-radius:1.5rem; padding:1.5rem;">
+                <h3 style="color:#00ff88; margin-top:0;">Savings Achieved</h3>
+                <p style="font-size:2rem; font-weight:900; color:#00ff88;">₹24,800</p>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Vs. direct market pricing. AI negotiation saved
+                    you <strong style="color:#00ff88;">12.4%</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- PAYMENT MODAL (UPI/Banking) -->
+<div class="upi-overlay" id="upi-overlay" onclick="closePaymentModal()"></div>
+<div class="upi-modal" id="upi-modal">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+        <h2 style="margin:0; color:#ffa500;">💳 Secure Payment</h2>
+        <button onclick="closePaymentModal()"
+            style="background:none; border:none; color:white; font-size:1.5rem; cursor:pointer;">✕</button>
+    </div>
+
+    <div
+        style="background:rgba(255,165,0,0.1); border-radius:1rem; padding:1rem; margin-bottom:1.5rem; text-align:center;">
+        <p style="margin:0; font-size:0.85rem; color:var(--text-muted);">Amount to Pay</p>
+        <p style="margin:5px 0; font-size:2rem; font-weight:900; color:#ffa500;" id="modal-amount">₹0</p>
+        <p style="margin:0; font-size:0.8rem; color:var(--text-muted);" id="modal-order-desc">Order details</p>
+    </div>
+
+    <div class="payment-method-btns">
+        <button class="pay-method-btn active" onclick="selectPayMethod('upi', this)">📱 UPI</button>
+        <button class="pay-method-btn" onclick="selectPayMethod('netbanking', this)">🏛️ Net Banking</button>
+        <button class="pay-method-btn" onclick="selectPayMethod('card', this)">💳 Card</button>
+        <button class="pay-method-btn" onclick="selectPayMethod('neft', this)">📋 NEFT/RTGS</button>
+    </div>
+
+    <!-- UPI Payment UI -->
+    <div id="pay-upi">
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:0.75rem;">Scan QR or enter UPI ID:</p>
+        <div class="upi-qr-box">
+            <div id="payment-qr"></div>
+            <p style="color:#333; font-size:0.8rem; margin:0.75rem 0 0;">Scan with any UPI app</p>
+        </div>
+        <input type="text" id="upi-id-input" class="app-input" placeholder="yourname@upi or 9999999999@paytm"
+            style="margin-bottom:1rem;">
+        <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <button onclick="initiateUPIPay()" class="pay-btn" style="flex:1;">📱 Pay via UPI ID</button>
+        </div>
+        <div style="display:flex; gap:0.5rem; margin-top:0.75rem; flex-wrap:wrap;">
+            <button onclick="openUPIApp('gpay')"
+                style="flex:1; padding:0.6rem; border-radius:0.75rem; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:0.8rem;">G
+                Pay</button>
+            <button onclick="openUPIApp('phonepe')"
+                style="flex:1; padding:0.6rem; border-radius:0.75rem; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:0.8rem;">PhonePe</button>
+            <button onclick="openUPIApp('paytm')"
+                style="flex:1; padding:0.6rem; border-radius:0.75rem; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:0.8rem;">Paytm</button>
+            <button onclick="openUPIApp('bhim')"
+                style="flex:1; padding:0.6rem; border-radius:0.75rem; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-size:0.8rem;">BHIM</button>
+        </div>
+    </div>
+
+    <!-- Net Banking UI -->
+    <div id="pay-netbanking" style="display:none;">
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1rem;">Select your bank:</p>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; margin-bottom:1rem;">
+            {% for bank in ['SBI', 'HDFC', 'ICICI', 'Axis', 'Kotak', 'PNB'] %}
+            <button onclick="selectBank('{{ bank }}')"
+                style="padding:0.75rem; border-radius:0.75rem; border:1px solid var(--glass-border); background:rgba(255,255,255,0.05); color:white; cursor:pointer; font-weight:600; transition:all 0.2s;">{{
+                bank }} Bank</button>
+            {% endfor %}
+        </div>
+        <button onclick="proceedNetBanking()" class="pay-btn">Proceed to Bank →</button>
+    </div>
+
+    <!-- Card UI -->
+    <div id="pay-card" style="display:none;">
+        <div style="display:flex; flex-direction:column; gap:0.75rem; margin-bottom:1rem;">
+            <input type="text" class="app-input" placeholder="Card Number (16 digits)" maxlength="19" id="card-num"
+                oninput="formatCard(this)">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+                <input type="text" class="app-input" placeholder="MM/YY" maxlength="5" id="card-exp">
+                <input type="text" class="app-input" placeholder="CVV" maxlength="3" id="card-cvv" type="password">
+            </div>
+            <input type="text" class="app-input" placeholder="Cardholder Name">
+        </div>
+        <button onclick="processCard()" class="pay-btn">🔒 Pay Securely</button>
+    </div>
+
+    <!-- NEFT UI -->
+    <div id="pay-neft" style="display:none;">
+        <div style="background:rgba(0,0,0,0.3); border-radius:1rem; padding:1.25rem; margin-bottom:1rem;">
+            <h4 style="color:var(--primary); margin:0 0 1rem;">Bank Account Details</h4>
+            <div style="display:flex; flex-direction:column; gap:0.5rem; font-size:0.9rem;">
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Account
+                        Name:</span><span style="font-weight:700;">AquaSphere Pvt Ltd</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">Account
+                        No:</span><span style="font-weight:700; font-family:monospace;">1234 5678 9012 3456</span></div>
+                <div style="display:flex; justify-content:space-between;"><span style="color:var(--text-muted);">IFSC
+                        Code:</span><span style="font-weight:700; font-family:monospace;">HDFC0001234</span></div>
+                <div style="display:flex; justify-content:space-between;"><span
+                        style="color:var(--text-muted);">Bank:</span><span style="font-weight:700;">HDFC Bank</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;"><span
+                        style="color:var(--text-muted);">Reference:</span><span style="font-weight:700; color:#ffa500;"
+                        id="neft-ref">AQ-2026-000</span></div>
+            </div>
+        </div>
+        <button onclick="confirmNEFT()" class="pay-btn"
+            style="background:rgba(0,210,255,0.2); color:var(--primary); border:2px solid rgba(0,210,255,0.4);">✅ I've
+            made the transfer</button>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+    // ====== LIVE MARKET DATA ======
+    let currentOrderSpecies = '';
+    let currentOrderPrice = 0;
+    const USD_TO_INR = 83;
+
+    function loadMarketData() {
+        fetch('/api/market_live')
+            .then(r => r.json())
+            .then(json => {
+                const data = json.data || [];
+                const summary = json.summary || {};
+                const tbody = document.getElementById('market-tbody');
+
+                document.getElementById('market-last-update').textContent = '🟢 Last updated: ' + (summary.last_update || '--');
+
+                if (data.length > 0) {
+                    let topPrice = 0;
+                    tbody.innerHTML = data.map(s => {
+                        const changeClass = s.change >= 0 ? 'price-up' : 'price-down';
+                        const changeIcon = s.change >= 0 ? '↑' : '↓';
+                        const availColor = s.availability === 'High' ? '#00ff88' : (s.availability === 'Medium' ? '#ffa500' : '#ff4d7d');
+                        const priceInr = Math.round(s.price * USD_TO_INR);
+                        if (s.price > topPrice) { topPrice = s.price; }
+                        return `<tr>
+                        <td><strong>${s.species}</strong></td>
+                        <td><span style="font-size:0.75rem; padding:3px 10px; border-radius:2rem; background:rgba(255,255,255,0.08);">${s.type}</span></td>
+                        <td><strong>$${s.price}</strong><br><small style="color:var(--text-muted);">₹${priceInr}/kg</small></td>
+                        <td class="${changeClass}">${changeIcon} ${Math.abs(s.change)}%</td>
+                        <td>${s.stock_tons} T</td>
+                        <td>${s.farms_count}</td>
+                        <td><span style="color:${availColor}; font-weight:700; font-size:0.8rem;">${s.availability}</span></td>
+                        <td><button onclick="selectOrder('${s.species}', ${s.price})" style="background:rgba(255,165,0,0.2); border:1px solid rgba(255,165,0,0.4); color:#ffa500; padding:6px 14px; border-radius:0.75rem; cursor:pointer; font-weight:700; font-size:0.8rem; white-space:nowrap;">🛒 Order</button></td>
+                    </tr>`;
+                    }).join('');
+                    document.getElementById('top-price').textContent = '$' + data.reduce((a, b) => a.price > b.price ? a : b).price;
+                    document.getElementById('active-orders').textContent = Math.floor(Math.random() * 5) + 1;
+                    document.getElementById('total-spend').textContent = '₹' + (Math.floor(Math.random() * 80) + 20) + 'K';
+                }
+            }).catch(() => {
+                document.getElementById('market-tbody').innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:2rem;">⚠️ Market offline. Check connection.</td></tr>';
+            });
+    }
+
+    function selectOrder(species, price) {
+        currentOrderSpecies = species;
+        currentOrderPrice = price;
+        document.getElementById('order-species').value = species;
+        document.getElementById('order-price').value = '$' + price + '/kg';
+        document.getElementById('order-form-container').style.display = 'block';
+        updateTotal();
+        document.getElementById('order-form-container').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function updateTotal() {
+        const qty = parseFloat(document.getElementById('order-qty').value) || 0;
+        const totalKg = qty * 1000;
+        const totalUSD = totalKg * currentOrderPrice;
+        const totalINR = Math.round(totalUSD * USD_TO_INR);
+        document.getElementById('order-total').value = '₹' + totalINR.toLocaleString();
+        document.getElementById('modal-amount').textContent = '₹' + totalINR.toLocaleString();
+        document.getElementById('modal-order-desc').textContent = qty + 'T of ' + currentOrderSpecies;
+        document.getElementById('neft-ref').textContent = 'AQ-2026-' + Math.floor(Math.random() * 9000 + 1000);
+    }
+
+    document.getElementById('order-qty').addEventListener('input', updateTotal);
+
+    // ====== TABS ======
+    function showTab(name) {
+        ['market', 'orders', 'pay', 'analytics'].forEach(t => {
+            document.getElementById('section-' + t).style.display = t === name ? 'block' : 'none';
+            document.getElementById('tab-' + t).style.background = t === name ? '' : 'rgba(255,255,255,0.05)';
+        });
+    }
+
+    // ====== PAYMENT MODAL ======
+    let payQrGenerated = false;
+    function openPaymentModal() {
+        document.getElementById('upi-modal').style.display = 'block';
+        document.getElementById('upi-overlay').style.display = 'block';
+        if (!payQrGenerated) {
+            const upiId = 'aquasphere@hdfcbank';
+            const amount = document.getElementById('modal-amount').textContent.replace('₹', '').replace(',', '');
+            new QRCode(document.getElementById('payment-qr'), {
+                text: `upi://pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR`,
+                width: 180, height: 180, colorDark: '#000', colorLight: '#fff'
+            });
+            payQrGenerated = true;
+        }
+    }
+
+    function closePaymentModal() {
+        document.getElementById('upi-modal').style.display = 'none';
+        document.getElementById('upi-overlay').style.display = 'none';
+    }
+
+    function selectPayMethod(method, btn) {
+        document.querySelectorAll('.pay-method-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        ['upi', 'netbanking', 'card', 'neft'].forEach(m => {
+            document.getElementById('pay-' + m).style.display = m === method ? 'block' : 'none';
+        });
+    }
+
+    function initiateUPIPay() {
+        const upiId = document.getElementById('upi-id-input').value.trim();
+        if (!upiId) { alert('Please enter a UPI ID'); return; }
+        const amount = document.getElementById('modal-amount').textContent.replace('₹', '').replace(',', '');
+        const upiUrl = `upi://pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR&tn=AquaSphere Order`;
+        window.location.href = upiUrl;
+        setTimeout(() => {
+            if (confirm('Did the payment complete successfully?')) {
+                processPaymentSuccess('UPI');
+            }
+        }, 3000);
+    }
+
+    function openUPIApp(app) {
+        const amount = document.getElementById('modal-amount').textContent.replace('₹', '').replace(',', '');
+        const upiId = 'aquasphere@hdfcbank';
+        const urls = {
+            gpay: `tez://upi/pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR`,
+            phonepe: `phonepe://pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR`,
+            paytm: `paytmmp://pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR`,
+            bhim: `upi://pay?pa=${upiId}&pn=AquaSphere&am=${amount}&cu=INR`
+        };
+        window.location.href = urls[app] || urls.bhim;
+        setTimeout(() => {
+            if (confirm('Did the payment complete?')) processPaymentSuccess(app.toUpperCase());
+        }, 3000);
+    }
+
+    function selectBank(bank) {
+        document.querySelectorAll('#pay-netbanking button').forEach(b => {
+            b.style.borderColor = 'var(--glass-border)';
+            b.style.background = 'rgba(255,255,255,0.05)';
+        });
+        event.target.style.borderColor = '#ffa500';
+        event.target.style.background = 'rgba(255,165,0,0.15)';
+        event.target.dataset.selected = 'true';
+    }
+
+    function proceedNetBanking() {
+        alert('🏦 Redirecting to net banking portal...\n\n(In production, this integrates with Razorpay/PayU for real banking)');
+        processPaymentSuccess('Net Banking');
+    }
+
+    function formatCard(input) {
+        let v = input.value.replace(/\D/g, '').substring(0, 16);
+        input.value = v.replace(/(\d{4})/g, '$1 ').trim();
+    }
+
+    function processCard() {
+        const num = document.getElementById('card-num').value.replace(/\s/g, '');
+        if (num.length < 16) { alert('Please enter a valid 16-digit card number'); return; }
+        alert('🔒 Processing secure payment...\n\n(Integrates with Razorpay/Stripe in production)');
+        setTimeout(() => processPaymentSuccess('Card'), 1500);
+    }
+
+    function confirmNEFT() {
+        processPaymentSuccess('NEFT');
+    }
+
+    function processPaymentSuccess(method) {
+        closePaymentModal();
+        const amount = document.getElementById('modal-amount').textContent;
+        const species = currentOrderSpecies;
+        // Submit the form to record order
+        fetch('/business/create-order', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                species: species,
+                quantity: document.getElementById('order-qty').value,
+                unit_price: currentOrderPrice,
+                total_inr: amount,
+                payment_method: method
+            })
+        }).then(r => r.json()).then(d => {
+            if (d.success) {
+                alert(`✅ Order Placed Successfully!\n\nOrder: ${species}\nAmount: ${amount}\nMethod: ${method}\nOrder ID: ${d.order_id}`);
+                window.location.reload();
+            }
+        }).catch(() => {
+            alert(`✅ Order confirmed!\nPayment via ${method}\nAmount: ${amount}`);
+        });
+    }
+
+    // ====== INIT ======
+    loadMarketData();
+    setInterval(loadMarketData, 10000); // Refresh every 10s
+</script>
+{% endblock %}

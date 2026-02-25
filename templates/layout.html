@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AquaSphere | Smart Aquaculture</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0b1120">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <!-- 🚀 Early flag: allow live data if browser is online. main.js will refine this. -->
+    <script>window.ALLOW_LIVE_DATA = navigator.onLine;</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Outfit:wght@400;600;800;900&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <!-- 🌈 Twemoji: Core Engine -->
+    <script src="https://unpkg.com/twemoji@14.0.2/dist/twemoji.min.js" crossorigin="anonymous"></script>
+    <style>
+        img.emoji {
+            height: 1em;
+            width: 1em;
+            margin: 0 .05em 0 .1em;
+            vertical-align: -0.1em;
+            display: inline-block;
+        }
+
+        @keyframes pulse-glow {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 210, 255, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 210, 255, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
+            }
+        }
+    </style>
+    <script src="{{ url_for('static', filename='offline-manager.js') }}"></script>
+    <script id="aqua-trans-data" type="application/json">{{ trans | tojson | safe }}</script>
+    <script>
+        window.AQUA_TRANS = JSON.parse(document.getElementById('aqua-trans-data').textContent);
+    </script>
+</head>
+
+<body class="{% if session.get('user') %}logged-in{% endif %}" style="overflow-x:hidden;">
+    <!-- 💎 Premium Scroll Progress Bar -->
+    <div id="scroll-progress-container"
+        style="position:fixed; top:0; left:0; width:100%; height:4px; z-index:9999; background:rgba(255,255,255,0.05);">
+        <div id="scroll-progress-bar"
+            style="height:100%; width:0%; background:linear-gradient(90deg, var(--primary), var(--accent)); box-shadow:0 0 15px var(--primary); transition: width 0.1s ease-out;">
+        </div>
+    </div>
+
+    <!-- ⚡ Page Transition Overlay -->
+    <div id="page-transition"
+        style="position:fixed; inset:0; background:var(--dark-bg); z-index:10000; display:flex; align-items:center; justify-content:center; transition:opacity 0.6s ease; pointer-events:none;">
+        <div class="logo" style="font-size:3rem; animation: pulse-glow 1.5s infinite;">AquaSphere</div>
+    </div>
+
+    <!-- Background Decoration -->
+    <div class="swimmer" style="--d: 25s; --top: 15%; --size: 4rem; opacity: 0.05;">🐟</div>
+    <div class="swimmer" style="--d: 35s; --top: 45%; --size: 3rem; opacity: 0.05; animation-delay: -5s;">🦐</div>
+    <div class="swimmer" style="--d: 45s; --top: 75%; --size: 5rem; opacity: 0.05; animation-delay: -10s;">🦀</div>
+
+    <!-- Navigation Header -->
+    <nav
+        style="display: flex; align-items: center; justify-content: space-between; padding: 1.25rem 2rem; background: rgba(11, 17, 32, 0.8); backdrop-filter: blur(20px); border-bottom: 1px solid var(--glass-border); position: sticky; top: 0; z-index: 2000;">
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <!-- Fixed Position Toggle Trigger -->
+            <button id="hamburger"
+                style="position: fixed; top: 1.25rem; left: 1.5rem; background:rgba(0,210,255,0.25); border:1.5px solid var(--primary); padding:12px; border-radius:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; box-shadow:0 0 25px rgba(0,210,255,0.3); transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); z-index: 3000;">
+                <div style="display:flex; flex-direction:row; gap:5px;">
+                    <span
+                        style="display:block; width:4px; height:24px; background:var(--primary); border-radius:5px;"></span>
+                    <span
+                        style="display:block; width:4px; height:24px; background:var(--primary); border-radius:5px;"></span>
+                    <span
+                        style="display:block; width:4px; height:24px; background:var(--primary); border-radius:5px;"></span>
+                </div>
+            </button>
+            <div class="logo-portal">
+                <a href="/" class="logo glow-text"
+                    style="font-family: 'Outfit', sans-serif; font-weight: 900; letter-spacing: -1px; text-decoration:none; font-size:2.2rem; color:white; text-shadow: 0 0 15px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.2);">AquaSphere</a>
+            </div>
+        </div>
+
+        <div style="display:flex; align-items:center; gap:1.5rem;">
+            <div id="connection-badge" class="{{ 'online' if app_online else 'offline' }}"
+                style="padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; background: rgba(0,255,136,0.1); border: 1px solid var(--accent); color: var(--accent); min-width: 100px; justify-content: center;">
+                <span id="conn-dot"
+                    style="width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 10px currentColor;"></span>
+                <span id="conn-text">{{ 'LIVE' if app_online else 'OFFLINE' }}</span>
+            </div>
+
+            {% if not session.get('user') %}
+            <a href="/login" style="color: white; text-decoration: none; font-weight: 700;">Login</a>
+            <a href="/signup" class="app-btn-large"
+                style="padding: 0.5rem 1.2rem; border-radius: 1rem; font-size: 0.9rem;">Join Now</a>
+            {% else %}
+            <div style="display:flex; align-items:center; gap:1rem;">
+                <span style="color: var(--text-muted); font-size: 0.95rem;">Welcome, <strong style="color:white;">{{
+                        session.get('user_name', 'Partner') }}</strong></span>
+                <a href="/logout"
+                    style="color: #ff4d7d; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,77,125,0.2); padding: 0.5rem 1rem; border-radius: 1rem;">Logout</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Sidebar Navigation -->
+    <div id="sidebar" class="sidebar">
+        <div class="nav-links">
+            <div class="nav-category">{{ trans['reg_analysis']|upper|safe if trans else 'REGIONAL ANALYSIS' }}</div>
+            <a href="/" class="nav-item {{ 'active' if request.path == '/' }}">
+                <span class="emo">🏠</span> <span>{{ trans['home']|safe if trans else 'Home' }}</span>
+            </a>
+            <a href="/location" class="nav-item {{ 'active' if request.path == '/location' }}">
+                <span class="emo">📍</span> <span>{{ trans['nav_loc']|safe if trans else 'Location' }}</span>
+            </a>
+            <a href="/districts" class="nav-item {{ 'active' if request.path == '/districts' }}">
+                <span class="emo">🏘️</span> <span>District Hub</span>
+            </a>
+
+            {% if session.get('user') %}
+            <div class="nav-category">INTEGRATED HUBS</div>
+            <a href="/farmer" class="nav-item {{ 'active' if request.path == '/farmer' }}">
+                <span class="emo">👨‍🌾</span> <span>Farmer Hub</span>
+            </a>
+            <a href="/business" class="nav-item {{ 'active' if request.path == '/business' }}">
+                <span class="emo">💼</span> <span>Market Panel</span>
+            </a>
+            <a href="/expert" class="nav-item {{ 'active' if request.path == '/expert' }}">
+                <span class="emo">👨‍🔧</span> <span>Expert Console</span>
+            </a>
+            <a href="/ai-vision" class="nav-item {{ 'active' if request.path == '/ai-vision' }}">
+                <span class="emo">👁️</span> <span>AI Neural Vision</span>
+            </a>
+            <a href="/ledger" class="nav-item {{ 'active' if request.path == '/ledger' }}">
+                <span class="emo">⛓️</span> <span>Blockchain Ledger</span>
+            </a>
+            {% endif %}
+
+            <!-- 🌍 NEW: AI Global Language Hub (Google Integration) -->
+            <div class="nav-category" style="margin-top:2rem;">LANGUAGE OS</div>
+            <div id="google_translate_element"
+                style="padding: 1rem; border-radius: 15px; background: rgba(255,255,255,0.05); margin: 0 1rem;"></div>
+            <script type="text/javascript">
+                function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({
+                        pageLanguage: 'en',
+                        includedLanguages: 'en,hi,te,ta,vi,th,id,bn',
+                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                        autoDisplay: false
+                    }, 'google_translate_element');
+                }
+            </script>
+            <script type="text/javascript"
+                src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+            <div class="nav-category" style="margin-top:2rem;">SYSTEM</div>
+            <a href="javascript:void(0)" class="nav-item" id="sidebar-close-btn"
+                style="border: 1px solid var(--rose); background: rgba(255, 77, 125, 0.05);">
+                <span class="emo">❌</span> <span style="color: var(--rose); font-weight: 800;">Close Sidebar</span>
+            </a>
+            {% if config.FEATURES.PAYMENT_TRANSFERS %}
+            <a href="/payments" class="nav-item {{ 'active' if request.path == '/payments' }}"><span
+                    class="emo">💳</span> <span>Payments</span></a>
+            {% endif %}
+            <a href="/expert" class="nav-item {{ 'active' if request.path == '/expert' }}">
+                <span class="emo">🔬</span> <span>Expert Ecosystem</span>
+            </a>
+            <a href="/knowledge" class="nav-item"><span class="emo">💬</span> <span>Library</span></a>
+            <a href="/settings" class="nav-item {{ 'active' if request.path == '/settings' }}"><span
+                    class="emo">⚙️</span> <span>Settings</span></a>
+            <a href="/profile" class="nav-item {{ 'active' if request.path == '/profile' }}"><span class="emo">👤</span>
+                <span>Profile</span></a>
+
+            <div class="language-hub" style="margin-top: auto; padding-top: 1rem; padding-inline: 1.5rem;">
+                <p
+                    style="font-size: 0.7rem; color: var(--text-muted); font-weight: 900; margin-bottom: 0.5rem; letter-spacing: 1px;">
+                    LANGUAGE OS</p>
+                <select onchange="window.location.href='?lang='+this.value"
+                    style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; outline: none; cursor: pointer;">
+                    <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
+                    <option value="hi" {% if lang=='hi' %}selected{% endif %}>Hindi (हिन्दी)</option>
+                    <option value="te" {% if lang=='te' %}selected{% endif %}>Telugu (తెలుగు)</option>
+                    <option value="ta" {% if lang=='ta' %}selected{% endif %}>Tamil (தமிழ்)</option>
+                    <option value="es" {% if lang=='es' %}selected{% endif %}>Spanish</option>
+                    <option value="zh" {% if lang=='zh' %}selected{% endif %}>Chinese</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    {% if config.FEATURES.NEURAL_TICKER %}
+    {% if request.path != '/login' and request.path != '/signup' %}
+    <div class="live-ticker">
+        <div class="ticker-content"
+            style="display:flex; align-items:center; gap:2rem; white-space:nowrap; animation: scroll-ticker 40s linear infinite;">
+            <span class="ticker-item"><span class="live-pulse"></span> <strong
+                    style="color:var(--primary);">LIVE:</strong></span>
+            <span class="ticker-item" id="user-location" style="cursor:pointer;" onclick="requestUserLocation()">📍
+                Syncing Satellite...</span>
+            <span class="ticker-item">🦐 {{ trans['vannamei'] or 'Vannamei' }}: $6.3/kg <span
+                    style="color:#00ff88;">(+0.5%)</span></span>
+            <span class="ticker-item">🌡️ {{ trans['water_temp'] or 'Water' }}: 28.6°C</span>
+            <span class="ticker-item">🚛 Logistics: TR-441 Tracking Active</span>
+            <span class="ticker-item">👨‍🔧 8 Experts Online</span>
+            <!-- Duplicate for infinite loop -->
+            <span class="ticker-item"><span class="live-pulse"></span> <strong
+                    style="color:var(--primary);">LIVE:</strong></span>
+            <span class="ticker-item">📍 {{ trans['zone_protected'] or 'Protected Zone' }}</span>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+
+    <!-- 🧠 Precision Telemetry Script -->
+    <script>
+        function requestUserLocation() {
+            if (navigator.geolocation) {
+                const locEl = document.getElementById('user-location');
+                locEl.innerHTML = '📍 Syncing...';
+                navigator.geolocation.getCurrentPosition(pos => {
+                    locEl.innerHTML = `📍 Zone: ${pos.coords.latitude.toFixed(2)}, ${pos.coords.longitude.toFixed(2)}`;
+                    locEl.style.color = '#00ff88';
+                }, () => {
+                    locEl.innerHTML = '📍 Location Offline';
+                });
+            }
+        }
+    </script>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-messages">
+            {% for category, message in messages %}
+            <div class="app-card-flash {{ category }}">
+                <p class="flash-text">{{ message }}</p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer
+        style="text-align: center; padding: 4rem 0; opacity: 0.5; font-size: 0.9rem; font-weight: 800; letter-spacing: 2px;">
+        © 2026 AQUASPHERE | SMART AQUACULTURE PLATFORM
+    </footer>
+
+    {% if config.FEATURES.AI_CHATBOT %}
+    <!-- AI Chatbot (Feature 12) -->
+    <div id="aquabot-launcher"
+        style="position: fixed; bottom: 85px; right: 2rem; width: 4rem; height: 4rem; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4); z-index: 3000;"
+        onclick="toggleBot()">
+        🤖
+    </div>
+
+    <div id="aquabot-window"
+        style="display: none; position: fixed; bottom: 170px; right: 2rem; width: 320px; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(30px); border: 1px solid var(--primary); border-radius: 2rem; padding: 2rem; z-index: 3000; box-shadow: 0 20px 80px rgba(0,0,0,0.8);">
+        <h3 style="margin-top:0; color: var(--primary); font-family: 'Outfit', sans-serif;">{{ trans['bot_title'] }}
+        </h3>
+        <div id="bot-chat"
+            style="height: 200px; overflow-y: auto; margin-bottom: 1rem; font-size: 0.9rem; color: var(--text-muted);">
+            <p><strong>{{ trans['bot_title'] }}:</strong> {{ trans['bot_hello'] }}</p>
+        </div>
+        <input type="text" id="bot-input" class="app-input" placeholder="{{ trans['bot_placeholder'] }}"
+            style="margin-bottom: 1rem;" onkeypress="if(event.key==='Enter') sendBotMessage()">
+        <button onclick="sendBotMessage()" class="app-btn-large" style="padding: 0.5rem; font-size: 0.9rem;">{{
+            trans['bot_send'] }}</button>
+    </div>
+    {% endif %}
+
+    <!-- Mobile Connect Launcher -->
+    <div id="mobile-launcher"
+        style="position: fixed; bottom: 20px; right: 2rem; width: 4rem; height: 4rem; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4); z-index: 3000;"
+        onclick="toggleMobileModal()">
+        📱
+    </div>
+
+    <!-- Enhanced Mobile Access Modal -->
+    <div id="mobile-modal"
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90vw; max-width: 450px; max-height: 90vh; overflow-y: auto; background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(25px); border: 1px solid var(--primary); border-radius: 2rem; padding: 2rem; z-index: 2000; box-shadow: 0 30px 100px rgba(0,0,0,0.8);">
+
+        <!-- Header -->
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1.8rem;"><span class="emo">📱</span>
+                Mobile Access Hub</h2>
+            <p style="color: var(--text-muted); font-size: 0.85rem;">Complete mobile access and management tools</p>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div
+            style="display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 2px solid var(--glass-border); padding-bottom: 0.5rem;">
+            <button onclick="switchMobileTab('qr')" id="tab-qr" class="mobile-tab"
+                style="flex: 1; padding: 0.75rem; background: var(--primary); color: #000; border: none; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 0.85rem;">📷
+                QR Codes</button>
+            <button onclick="switchMobileTab('scanner')" id="tab-scanner" class="mobile-tab"
+                style="flex: 1; padding: 0.75rem; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 0.85rem;">📱
+                Scanner</button>
+            <button onclick="switchMobileTab('data')" id="tab-data" class="mobile-tab"
+                style="flex: 1; padding: 0.75rem; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 0.75rem; font-weight: 700; cursor: pointer; transition: all 0.3s; font-size: 0.85rem;">🗑️
+                Data</button>
+        </div>
+
+        <!-- QR Codes Tab -->
+        <div id="mobile-tab-qr" class="mobile-tab-content">
+            <!-- Local Network QR -->
+            <div
+                style="background: rgba(0,210,255,0.05); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(0,210,255,0.2);">
+                <h3 style="color: var(--primary); font-size: 1.1rem; margin-bottom: 1rem; text-align: center;"><span
+                        class="emo">🏠</span> Local
+                    Network Access</h3>
+                <div id="qrcode-container"
+                    style="background: white; padding: 1rem; border-radius: 1rem; display: inline-block; margin: 0 auto 1rem; display: block; width: fit-content;">
+                    <div id="qrcode"></div>
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: center; justify-content: center;">
+                    <a href="{{ local_url }}" target="_blank" id="mobile-link"
+                        style="color: var(--accent); font-weight: 700; text-decoration: none; word-break: break-all; font-size: 0.8rem; background: rgba(0,255,136,0.1); padding: 8px 15px; border-radius: 0.75rem; border: 1px solid rgba(0,255,136,0.2); flex: 1; text-align: center;">
+                        🔗 <span id="share-url-text">{{ local_url }}</span>
+                    </a>
+                    <button onclick="copyShareLink()" id="copy-btn"
+                        style="background: var(--primary); border: none; padding: 8px 12px; border-radius: 0.75rem; cursor: pointer; transition: all 0.3s; font-size: 1.2rem;">
+                        📋
+                    </button>
+                </div>
+            </div>
+
+            <!-- AQUA Platform QR -->
+            <div
+                style="background: rgba(0,255,136,0.05); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(0,255,136,0.2);">
+                <h3 style="color: var(--accent); font-size: 1.1rem; margin-bottom: 1rem; text-align: center;"><span
+                        class="emo">🌐</span> AQUA
+                    Platform (Global)</h3>
+                <div id="qrcode-aqua-container"
+                    style="background: white; padding: 1rem; border-radius: 1rem; display: inline-block; margin: 0 auto 1rem; display: block; width: fit-content;">
+                    <div id="qrcode-aqua"></div>
+                </div>
+                <a href="https://aqua-ttiu.onrender.com/" target="_blank"
+                    style="display: block; color: white; font-weight: 700; text-decoration: none; font-size: 0.9rem; background: linear-gradient(135deg, var(--accent), #00cc6a); padding: 12px 20px; border-radius: 1rem; text-align: center; box-shadow: 0 4px 15px rgba(0,255,136,0.3); margin-bottom: 1rem;">
+                    🚀 Open AQUA Platform
+                </a>
+                <p style="font-size: 0.75rem; color: var(--text-muted); text-align: center; line-height: 1.5;">Scan the
+                    QR code or tap the button to access the global AQUA platform at<br><strong
+                        style="color: var(--accent);">aqua-ttiu.onrender.com</strong></p>
+            </div>
+        </div>
+
+        <!-- Scanner Tab -->
+        <div id="mobile-tab-scanner" class="mobile-tab-content" style="display: none;">
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1.5rem;">Scan any QR code to open
+                    URLs instantly</p>
+                <div id="qr-reader-modal"
+                    style="width: 100%; border-radius: 12px; overflow: hidden; background: #000; min-height: 250px; margin-bottom: 1rem;">
+                </div>
+                <div id="scanner-status-modal"
+                    style="display: none; padding: 1rem; background: rgba(0, 210, 255, 0.1); border-radius: 0.75rem; margin-bottom: 1rem; border-left: 4px solid var(--primary);">
+                    <p style="margin: 0; color: var(--primary); font-weight: 600; font-size: 0.85rem;"></p>
+                </div>
+                <button id="start-scan-btn-modal" onclick="startScannerModal()"
+                    style="width: 100%; padding: 1rem; font-size: 1rem; border-radius: 12px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border: none; color: white; font-weight: 700; cursor: pointer; margin-bottom: 0.75rem;">
+                    📷 Start Scanning
+                </button>
+                <button id="stop-scan-btn-modal" onclick="stopScannerModal()"
+                    style="display: none; width: 100%; padding: 1rem; font-size: 1rem; border-radius: 12px; background: rgba(255, 0, 85, 0.2); border: 2px solid #ff0055; color: #ff0055; font-weight: 700; cursor: pointer;">
+                    ⏹️ Stop Scanning
+                </button>
+            </div>
+        </div>
+
+        <!-- Data Management Tab -->
+        <div id="mobile-tab-data" class="mobile-tab-content" style="display: none;">
+            <div
+                style="background: rgba(255,107,53,0.05); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(255,107,53,0.2);">
+                <h3 style="color: #ff6b35; font-size: 1.1rem; margin-bottom: 1.5rem; text-align: center;"><span
+                        class="emo">🗑️</span> Data
+                    Management</h3>
+
+                <!-- Cache Info -->
+                <div
+                    style="background: rgba(0, 0, 0, 0.3); padding: 1.25rem; border-radius: 1rem; margin-bottom: 1.5rem;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                        <div style="text-align: center;">
+                            <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.5rem;">📦 Cached
+                                Items</p>
+                            <p id="cache-count-modal"
+                                style="color: white; font-size: 1.5rem; font-weight: 800; margin: 0;">--</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <p style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 0.5rem;">💾 Storage
+                                Used</p>
+                            <p id="storage-size-modal"
+                                style="color: white; font-size: 1.5rem; font-weight: 800; margin: 0;">--</p>
+                        </div>
+                    </div>
+                    <button onclick="refreshCacheInfoModal()"
+                        style="width: 100%; padding: 0.75rem; background: rgba(0, 210, 255, 0.2); border: 1px solid var(--primary); color: var(--primary); border-radius: 0.75rem; cursor: pointer; font-weight: 600; font-size: 0.85rem;">
+                        🔄 Refresh Info
+                    </button>
+                </div>
+
+                <!-- Clear Data Button -->
+                <button onclick="clearAllDataModal()"
+                    style="width: 100%; padding: 1.25rem; background: linear-gradient(135deg, #ff0055, #ff6b35); border: none; color: white; border-radius: 12px; font-size: 1.05rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 0, 85, 0.3); margin-bottom: 1rem;">
+                    🗑️ Clear All Data
+                </button>
+            </div>
+        </div>
+
+        <button onclick="toggleMobileModal()" class="app-btn-large"
+            style="margin-top: 1.5rem; padding: 1rem; font-size: 1rem; background: rgba(255,255,255,0.1); border: 2px solid var(--glass-border);">
+            Close
+        </button>
+    </div>
+
+    <!-- Include html5-qrcode library for scanner -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const hamburger = document.getElementById('hamburger');
+            const body = document.body;
+            const sidebar = document.getElementById('sidebar');
+
+            // 💎 Connectivity Telemetry Logic
+            function updateOnlineStatus() {
+                const badge = document.getElementById('connection-badge');
+                const dot = document.getElementById('conn-dot');
+                const text = document.getElementById('conn-text');
+
+                if (navigator.onLine) {
+                    badge.style.background = 'rgba(0, 255, 136, 0.1)';
+                    badge.style.borderColor = '#00ff88';
+                    badge.style.color = '#00ff88';
+                    text.innerText = 'LIVE';
+                } else {
+                    badge.style.background = 'rgba(255, 77, 125, 0.1)';
+                    badge.style.borderColor = '#ff4d7d';
+                    badge.style.color = '#ff4d7d';
+                    text.innerText = 'OFFLINE';
+                }
+            }
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+
+            // 💎 Sidebar Toggle Logic
+            if (hamburger) {
+                hamburger.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    body.classList.toggle('sidebar-open');
+                });
+            }
+
+            const closeBtn = document.getElementById('sidebar-close-btn');
+            if (closeBtn) {
+                closeBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    body.classList.remove('sidebar-open');
+                    body.classList.remove('sidebar-hover');
+                });
+            }
+
+            // 💎 Click Outside to Close
+            document.addEventListener('click', function (e) {
+                if (body.classList.contains('sidebar-open') && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    body.classList.remove('sidebar-open');
+                }
+            });
+
+            // 💎 Scroll Progress
+            window.addEventListener('scroll', () => {
+                const scrolled = (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100;
+                document.getElementById('scroll-progress-bar').style.width = scrolled + '%';
+            });
+
+            // 💎 Page Transition Fadeout
+            setTimeout(() => {
+                const pt = document.getElementById('page-transition');
+                pt.style.opacity = '0';
+                setTimeout(() => pt.style.display = 'none', 600);
+            }, 800);
+
+            // 🌈 Twemoji Parsing
+            twemoji.parse(document.body, {
+                folder: 'svg',
+                ext: '.svg',
+                base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
+            });
+        });
+
+        let qrGenerated = false;
+        let qrAquaGenerated = false;
+        let html5QrCodeModal = null;
+        let isScanningModal = false;
+
+        function toggleBot() {
+            const win = document.getElementById('aquabot-window');
+            win.style.display = win.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function sendBotMessage() {
+            const input = document.getElementById('bot-input');
+            const chat = document.getElementById('bot-chat');
+            if (!input.value) return;
+
+            const userMsg = input.value;
+            chat.innerHTML += `<p style="color:white; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 10px;"><strong>You:</strong> ${userMsg}</p>`;
+            input.value = '';
+            chat.innerHTML += `<p id="bot-loading"><strong>AquaBot:</strong> Thinking...</p>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            fetch('/chatbot', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userMsg })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('bot-loading').remove();
+                    chat.innerHTML += `<p style="color:var(--primary); background: rgba(0,210,255,0.05); padding: 10px; border-radius: 10px;"><strong>AquaBot:</strong> ${data.reply}</p>`;
+                    chat.scrollTop = chat.scrollHeight;
+                });
+        }
+
+        function toggleMobileModal() {
+            const modal = document.getElementById('mobile-modal');
+            const overlay = document.getElementById('modal-overlay');
+            const isVisible = modal.style.display === 'block';
+
+            modal.style.display = isVisible ? 'none' : 'block';
+            if (overlay) overlay.style.display = isVisible ? 'none' : 'block';
+
+            if (!isVisible) {
+                if (!qrGenerated) {
+                    new QRCode(document.getElementById("qrcode"), {
+                        text: "{{ local_url }}",
+                        width: 200, height: 200,
+                        colorDark: "#0f172a", colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    qrGenerated = true;
+                }
+                if (!qrAquaGenerated) {
+                    new QRCode(document.getElementById("qrcode-aqua"), {
+                        text: "https://aqua-ttiu.onrender.com/",
+                        width: 200, height: 200,
+                        colorDark: "#0f172a", colorLight: "#ffffff",
+                        correctLevel: QRCode.CorrectLevel.H
+                    });
+                    qrAquaGenerated = true;
+                }
+                switchMobileTab('qr');
+                refreshCacheInfoModal();
+            } else if (isScanningModal) {
+                stopScannerModal();
+            }
+        }
+
+        function switchMobileTab(tabName) {
+            document.querySelectorAll('.mobile-tab-content').forEach(tab => tab.style.display = 'none');
+            document.querySelectorAll('.mobile-tab').forEach(btn => {
+                btn.style.background = 'rgba(255,255,255,0.1)';
+                btn.style.color = 'white';
+            });
+            document.getElementById(`mobile-tab-${tabName}`).style.display = 'block';
+            const selectedBtn = document.getElementById(`tab-${tabName}`);
+            selectedBtn.style.background = 'var(--primary)';
+            selectedBtn.style.color = '#000';
+            if (tabName !== 'scanner' && isScanningModal) stopScannerModal();
+            if (tabName === 'data') refreshCacheInfoModal();
+        }
+
+        function copyShareLink() {
+            const url = document.getElementById('share-url-text').innerText;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('copy-btn');
+                btn.innerHTML = '✅';
+                setTimeout(() => btn.innerHTML = '📋', 2000);
+            });
+        }
+
+        async function startScannerModal() {
+            try {
+                if (!html5QrCodeModal) html5QrCodeModal = new Html5Qrcode("qr-reader-modal");
+                await html5QrCodeModal.start({ facingMode: "environment" }, { fps: 10, qrbox: 200 }, (text) => {
+                    window.location.href = text;
+                });
+                isScanningModal = true;
+                document.getElementById('start-scan-btn-modal').style.display = 'none';
+                document.getElementById('stop-scan-btn-modal').style.display = 'block';
+            } catch (err) { alert('Camera Error'); }
+        }
+
+        function stopScannerModal() {
+            if (html5QrCodeModal && isScanningModal) {
+                html5QrCodeModal.stop().then(() => {
+                    isScanningModal = false;
+                    document.getElementById('start-scan-btn-modal').style.display = 'block';
+                    document.getElementById('stop-scan-btn-modal').style.display = 'none';
+                });
+            }
+        }
+
+        async function refreshCacheInfoModal() {
+            const cacheCount = document.getElementById('cache-count-modal');
+            const storageSize = document.getElementById('storage-size-modal');
+            let size = 0;
+            for (let key in localStorage) size += (localStorage[key].length || 0);
+            storageSize.textContent = (size / 1024).toFixed(2) + ' KB';
+            cacheCount.textContent = localStorage.length;
+        }
+
+        async function clearAllDataModal() {
+            if (confirm('Clear all data?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+    </script>
+    <script src="{{ url_for('static', filename='main.js') }}"></script>
+</body>
+
+</html>

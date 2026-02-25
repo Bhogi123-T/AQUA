@@ -1,0 +1,175 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 3rem;">
+    <span class="app-emoji">🏘️</span>
+    <h2 style="font-size: 3rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['dist_title'] | safe }}</h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['dist_desc'] }}</p>
+</div>
+
+<div style="width: 100%; max-width: 900px; margin: 0 auto;">
+    <div class="app-card" style="margin-bottom: 3rem; max-width: 100%;">
+        <div style="display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; width: 100%;">
+            <div class="app-input-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                <span class="app-label">{{ trans['country'] }}</span>
+                <select id="country-select" class="app-input" onchange="updateStates()">
+                    <option value="">{{ trans['select_country'] }}</option>
+                    {% for country in region_db.keys() %}
+                    <option value="{{ country }}">{{ trans['country_' + country.lower()] or country }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="app-input-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                <span class="app-label">{{ trans['state'] }}</span>
+                <select id="state-select" class="app-input" onchange="updateDistricts()">
+                    <option value="">{{ trans['select_state'] }}</option>
+                </select>
+            </div>
+            <div class="app-input-group" style="flex: 1; min-width: 250px; margin-bottom: 0;">
+                <span class="app-label">{{ trans['dist_title'] | safe }}</span>
+                <select id="district-select" class="app-input" onchange="updateDistrictData()">
+                    <option value="">{{ trans['select_district'] }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid">
+        <!-- Local Condition -->
+        <div class="app-card" id="local-status" style="padding: 2.5rem;">
+            <h3 style="color: var(--primary); margin-bottom: 1.5rem;">{{ trans['local_water'] }}</h3>
+            <div
+                style="width: 100%; text-align: left; font-size: 1.1rem; display: flex; flex-direction: column; gap: 0.8rem;">
+                <div style="display: flex; justify-content: space-between;"><span>🌡️ {{ trans['water_temp'] }}:</span>
+                    <strong id="dist-temp">--</strong>°C
+                </div>
+                <div style="display: flex; justify-content: space-between;"><span>🧪 pH:</span> <strong
+                        id="dist-ph">--</strong></div>
+                <div style="display: flex; justify-content: space-between;"><span>💨 DO:</span> <strong
+                        id="dist-do">--</strong> mg/L</div>
+                <div style="display: flex; justify-content: space-between;"><span>🧂 Salinity:</span> <strong
+                        id="dist-sal">--</strong> ppt</div>
+            </div>
+            <div id="status-badge"
+                style="margin-top: 2rem; padding: 8px 16px; border-radius: 12px; font-weight: 800; font-size: 0.9rem; background: rgba(255,255,255,0.05); color: var(--text-muted);">
+                {{ trans['status_waiting'] }}</div>
+        </div>
+
+        <!-- Local Experts -->
+        <div class="app-card" style="padding: 2.5rem;">
+            <h3 style="color: var(--accent); margin-bottom: 1.5rem;">{{ trans['local_experts'] }}</h3>
+            <div id="expert-list"
+                style="width: 100%; text-align: left; display: flex; flex-direction: column; gap: 1.5rem;">
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 1rem; border-left: 4px solid var(--accent);">
+                    <p style="font-weight: 800;">👨‍🔧 Dr. Rajesh Kumar</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Disease Management
+                    </p>
+                    <a href="/technicians?lang={{ lang }}"
+                        style="color: var(--accent); font-size: 0.85rem; text-decoration: none; font-weight: 700;">View
+                        Profile →</a>
+                </div>
+                <div
+                    style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 1rem; border-left: 4px solid var(--accent);">
+                    <p style="font-weight: 800;">👨‍🔬 Amit Shah</p>
+                    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Feed & Biofloc</p>
+                    <a href="/technicians?lang={{ lang }}"
+                        style="color: var(--accent); font-size: 0.85rem; text-decoration: none; font-weight: 700;">View
+                        Profile →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nearby Stock -->
+        <div class="app-card" style="grid-column: span 2; padding: 2.5rem;">
+            <h3 style="margin-bottom: 2rem;"><span class="emo">📦</span> {{ trans['nearby_stock'] }}</h3>
+            <div id="stock-grid"
+                style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; width: 100%;">
+                <div
+                    style="background: rgba(0,210,255,0.05); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(0,210,255,0.2);">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">🐟 Rohu / Catla</p>
+                    <p id="rohu-stock" style="font-size: 1.5rem; color: var(--primary); font-weight: 900;">--</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">{{ trans['available_locally'] }}</p>
+                </div>
+                <div
+                    style="background: rgba(0,255,136,0.05); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(0,255,136,0.2);">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">🦐 {{ trans['species_vannamei'] }}</p>
+                    <p id="vannamei-stock" style="font-size: 1.5rem; color: var(--accent); font-weight: 900;">--</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">{{ trans['ready_to_harvest'] }}</p>
+                </div>
+                <div
+                    style="background: rgba(255,0,85,0.05); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(255,0,85,0.2);">
+                    <p style="font-weight: 700; margin-bottom: 0.5rem;">🦀 {{ trans['species_mud_crab'] }}</p>
+                    <p id="crab-stock" style="font-size: 1.5rem; color: #ff0055; font-weight: 900;">--</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">{{ trans['premium_grade'] }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-card" style="margin-top: 3rem; max-width: 100%; padding: 2rem;">
+        <h3 style="margin-bottom: 1rem;"><span class="emo">📢</span> {{ trans['regional_updates'] }}</h3>
+        <p id="dist-news" style="color: var(--text-primary); font-size: 1.1rem; opacity: 0.8;">{{ trans['select_dist']
+            }}</p>
+    </div>
+</div>
+
+<script>
+    const db = JSON.parse('{{ region_db | tojson | safe }}');
+
+    function updateStates() {
+        const country = document.getElementById('country-select').value;
+        const stateSelect = document.getElementById('state-select');
+        const distSelect = document.getElementById('district-select');
+        stateSelect.innerHTML = `<option value="">${"{{ trans['select_state'] }}"}</option>`;
+        distSelect.innerHTML = `<option value="">${"{{ trans['select_district'] }}"}</option>`;
+        if (country && db[country]) {
+            Object.keys(db[country]).forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function updateDistricts() {
+        const country = document.getElementById('country-select').value;
+        const state = document.getElementById('state-select').value;
+        const distSelect = document.getElementById('district-select');
+        distSelect.innerHTML = '<option value="">-- District --</option>';
+        if (country && state && db[country][state]) {
+            db[country][state].forEach(d => {
+                const opt = document.createElement('option');
+                opt.value = d;
+                opt.textContent = d;
+                distSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function updateDistrictData() {
+        const dist = document.getElementById('district-select').value;
+        if (!dist) return;
+        const hash = dist.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        document.getElementById('dist-temp').innerText = (25 + (hash % 10)).toFixed(1);
+        document.getElementById('dist-ph').innerText = (7 + (hash % 20) / 10).toFixed(1);
+        document.getElementById('dist-do').innerText = (5 + (hash % 15) / 10).toFixed(1);
+        document.getElementById('dist-sal').innerText = (hash % 35);
+        document.getElementById('rohu-stock').innerText = ((hash * 123) % 1000) + 'T';
+        document.getElementById('vannamei-stock').innerText = ((hash * 456) % 2500) + 'T';
+        document.getElementById('crab-stock').innerText = ((hash * 789) % 300) + 'T';
+        const insightsTemplate = "{{ trans['dist_insight'] }}";
+        document.getElementById('dist-news').innerText = insightsTemplate.replace('{dist}', dist);
+        document.getElementById('status-badge').innerText = "{{ trans['status_safe'] }}";
+        document.getElementById('status-badge').style.background = 'rgba(0,255,136,0.1)';
+        document.getElementById('status-badge').style.color = 'var(--accent)';
+    }
+</script>
+
+<div style="text-align: center; margin-top: 4rem; margin-bottom: 4rem;">
+    <a href="/farmer?lang={{ lang }}" class="app-btn-large"
+        style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); text-decoration: none; padding: 1.2rem 3rem;">🔙
+        {{ trans['back'] }}</a>
+</div>
+{% endblock %}

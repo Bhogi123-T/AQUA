@@ -1,0 +1,236 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .advisor-container {
+        width: 100%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .advisor-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .advisor-header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        background: linear-gradient(135deg, #fff, var(--primary));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .selection-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        width: 100%;
+        margin-bottom: 3rem;
+        background: rgba(15, 23, 42, 0.8);
+        padding: 2.5rem;
+        border-radius: 2rem;
+        border: 1px solid var(--glass-border);
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+    }
+
+    .form-group label {
+        color: var(--primary);
+        font-weight: 800;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+    }
+
+    /* VISIBILITY FIX: Forced high-contrast select */
+    .big-select {
+        background: #1e293b !important;
+        color: white !important;
+        border: 2px solid var(--primary) !important;
+        border-radius: 12px !important;
+        padding: 1.2rem !important;
+        font-size: 1.1rem !important;
+        width: 100% !important;
+        cursor: pointer;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    .big-select option {
+        background: #0f172a !important;
+        color: white !important;
+        padding: 15px !important;
+    }
+
+    .season-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 2rem;
+        width: 100%;
+        margin-bottom: 3rem;
+    }
+
+    .season-card {
+        background: rgba(30, 41, 59, 0.6);
+        border: 2px solid var(--glass-border);
+        border-radius: 2rem;
+        padding: 3rem 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .season-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--primary);
+    }
+
+    .season-card.active {
+        background: rgba(0, 210, 255, 0.15);
+        border-color: var(--primary);
+        box-shadow: 0 0 30px rgba(0, 210, 255, 0.2);
+    }
+
+    .season-card .emoji {
+        font-size: 5rem;
+        margin-bottom: 1.5rem;
+        display: block;
+    }
+
+    .season-card .name {
+        font-size: 1.8rem;
+        font-weight: 900;
+        color: white;
+    }
+
+    .get-advice-btn {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 1.5rem 4rem;
+        font-size: 1.4rem;
+        font-weight: 900;
+        text-transform: uppercase;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+    }
+
+    .get-advice-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+    }
+
+    @media (max-width: 768px) {
+        .advisor-header h1 {
+            font-size: 2.5rem !important;
+        }
+
+        .selection-grid {
+            padding: 1.5rem;
+        }
+    }
+</style>
+
+<div class="advisor-container">
+    <div class="advisor-header">
+        <span class="app-emoji" style="font-size: 4rem;">🌤️</span>
+        <h1>{{ trans['seasonal_title'] }}</h1>
+        <p style="color: var(--text-muted);">{{ trans['seasonal_desc'] }}</p>
+    </div>
+
+    <form action="/predict_seasonal" method="POST"
+        style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+        <input type="hidden" name="season" id="input-season" value="">
+        <input type="hidden" name="lang" value="{{ lang }}">
+
+        <div class="selection-grid">
+            <div class="form-group">
+                <label>{{ trans['country'] or 'Country' }}</label>
+                <select name="country" id="country-select" class="big-select" onchange="updateStates()" required>
+                    <option value="">{{ trans['sel_country'] or '-- Select Country --' }}</option>
+                    {% for country in regions.keys() %}
+                    <option value="{{ country }}">{{ trans['country_' + country.lower()] or country }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>{{ trans['state'] or 'State' }}</label>
+                <select name="state" id="state-select" class="big-select" required>
+                    <option value="">{{ trans['sel_state'] or '-- Select State --' }}</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>{{ trans['sel_water'] or 'Water Type' }}</label>
+                <select name="water_type" class="big-select">
+                    <option value="Freshwater" selected>{{ trans['water_fresh'] or 'Freshwater' }}</option>
+                    <option value="Brackish">{{ trans['water_brackish'] or 'Brackish/Saline' }}</option>
+                </select>
+            </div>
+        </div>
+
+        <h2
+            style="margin-bottom: 2rem; color: var(--text-muted); font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px;">
+            {{ trans['select_season'] or 'Select Season' }}</h2>
+
+        <div class="season-grid">
+            <div class="season-card" id="card-Summer" onclick="setSeason('Summer')">
+                <span class="emoji">☀️</span>
+                <div class="name">{{ trans['season_summer'] or 'Summer' }}</div>
+            </div>
+            <div class="season-card" id="card-Monsoon" onclick="setSeason('Monsoon')">
+                <span class="emoji">🌧️</span>
+                <div class="name">{{ trans['season_monsoon'] or 'Monsoon' }}</div>
+            </div>
+            <div class="season-card" id="card-Winter" onclick="setSeason('Winter')">
+                <span class="emoji">❄️</span>
+                <div class="name">{{ trans['season_winter'] or 'Winter' }}</div>
+            </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="get-advice-btn" disabled>
+            {{ trans['btn_check_season'] or 'Get Advice' }}
+        </button>
+    </form>
+</div>
+
+<script>
+    const regionsData = JSON.parse('{{ regions | tojson | safe }}');
+    const statePlaceholder = "{{ trans['sel_state'] or '-- Select State --' }}";
+
+    function updateStates() {
+        const country = document.getElementById('country-select').value;
+        const stateSelect = document.getElementById('state-select');
+
+        stateSelect.innerHTML = `<option value="">${statePlaceholder}</option>`;
+
+        if (country && regionsData[country]) {
+            Object.keys(regionsData[country]).forEach(state => {
+                const opt = document.createElement('option');
+                opt.value = state;
+                opt.textContent = state;
+                stateSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function setSeason(s) {
+        document.querySelectorAll('.season-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('card-' + s).classList.add('active');
+        document.getElementById('input-season').value = s;
+        document.getElementById('submit-btn').disabled = false;
+    }
+</script>
+{% endblock %}

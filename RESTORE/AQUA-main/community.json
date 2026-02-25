@@ -1,0 +1,61 @@
+{
+    "posts": [
+        {
+            "id": 1,
+            "author": "Ravi Kumar",
+            "author_id": "ravi@example.com",
+            "content": "Just harvested 5 tons of Vannamei! ABW 28g. Very happy with the yield this season. used Probiotics from day 30.",
+            "type": "yield",
+            "timestamp": "2 hours ago",
+            "likes": 15,
+            "replies": []
+        },
+        {
+            "id": 2,
+            "author": "Nguyen Van",
+            "author_id": "nguyen@example.com",
+            "content": "Has anyone faced sudden pH drop after heavy rain? My pond dropped from 8.2 to 7.4 overnight.",
+            "type": "disease",
+            "timestamp": "5 hours ago",
+            "likes": 8,
+            "replies": []
+        },
+        {
+            "id": 3,
+            "author": "Sarah Chen",
+            "author_id": "sarah@example.com",
+            "content": "Market price for Tiger Prawn is up by 10% in the export market. Good time to harvest if your ABW is above 30g.",
+            "type": "profit",
+            "timestamp": "1 day ago",
+            "likes": 42,
+            "replies": []
+        },
+        {
+            "id": 4,
+            "author": "bhogi",
+            "author_id": "bhogeswararaothirumalasetti@gmail.com",
+            "content": "hi",
+            "type": "general",
+            "timestamp": "Just now",
+            "likes": 0,
+            "replies": []
+        },
+        {
+            "id": 5,
+            "author": "bhogi",
+            "author_id": "bhogeswararaothirumalasetti@gmail.com",
+            "content": "hlo\r\n",
+            "type": "yield",
+            "timestamp": "Just now",
+            "likes": 0,
+            "replies": []
+        }
+    ],
+    "groups": [
+        "General",
+        "Disease Management",
+        "Market Trends",
+        "Yield Optimization"
+    ],
+    "user_groups": {}
+}

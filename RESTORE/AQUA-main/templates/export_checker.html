@@ -1,0 +1,41 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">📦</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['export_compliance'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['intl_markets'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 600px; text-align: left; align-items: flex-start;">
+    <form action="/check_export?lang={{ lang }}" method="POST" class="app-form" style="width: 100%;">
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['target_region'] }}</span>
+            <select name="region" class="app-input" required>
+                <option value="EU">{{ trans['country_eu'] }}</option>
+                <option value="USA">{{ trans['country_usa'] }}</option>
+                <option value="Japan">{{ trans['country_japan'] }}</option>
+            </select>
+        </div>
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['avg_weight'] }}</span>
+            <input type="number" name="abw" class="app-input" placeholder="e.g., 25" required>
+        </div>
+        <div class="app-input-group">
+            <span class="app-label">{{ trans['species'] }}</span>
+            <select name="species" class="app-input" required>
+                {% for s in species_list %}
+                <option value="{{ s.id }}">{{ s.display }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="app-btn-large" style="width: 100%;">{{ trans['check_eligibility'] }}</button>
+    </form>
+</div>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="app-card" style="padding: 4rem; max-width: 1000px; margin: 0 auto; background: rgba(15, 23, 42, 0.8);">
+    <h1 style="font-size: 3.5rem; font-weight: 900; color: #ff0055; margin-bottom: 2rem;"><span class="emo">🦐</span>
+        Vannamei Shrimp Management
+    </h1>
+    <p style="font-size: 1.2rem; line-height: 1.8; color: var(--text-muted); margin-bottom: 3rem;">
+        Litopenaeus vannamei, also known as Pacific White Shrimp, is the most popular species globally due to its fast
+        growth and high survival rates.
+    </p>
+
+    <div style="background: rgba(255,255,255,0.03); padding: 2.5rem; border-radius: 2rem; margin-bottom: 3rem;">
+        <h3 style="color: var(--primary); font-size: 1.8rem; margin-bottom: 1.5rem;">Optimal Parameters</h3>
+        <ul style="list-style: none; padding: 0; font-size: 1.1rem; line-height: 2;">
+            <li>🌡️ <strong>Temperature:</strong> 28°C - 32°C</li>
+            <li>⚖️ <strong>pH:</strong> 7.5 - 8.5</li>
+            <li>🧂 <strong>Salinity:</strong> 15 - 25 ppt</li>
+            <li>🌬️ <strong>Dissolved Oxygen:</strong> > 4.0 mg/L</li>
+            <li>🧪 <strong>Ammonia:</strong>
+                < 0.1 mg/L</li>
+        </ul>
+    </div>
+
+    <h3 style="color: var(--accent); font-size: 1.8rem; margin-bottom: 1.5rem;">Key Success Factors</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Bio-Security</h4>
+            <p style="font-size: 0.9rem;">Maintain strict entry controls to prevent viral outbreaks like WSSV.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Aeration</h4>
+            <p style="font-size: 0.9rem;">Run aerators 24/7 after day 60 of stocking to support high biomass.</p>
+        </div>
+        <div class="app-card" style="padding: 2rem; margin:0;">
+            <h4 style="color: white; margin-bottom: 1rem;">Probiotics</h4>
+            <p style="font-size: 0.9rem;">Regularly apply water and soil probiotics to maintain a healthy microbial
+                balance.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

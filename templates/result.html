@@ -1,0 +1,208 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .result-card-wide {
+        background: var(--card-bg);
+        backdrop-filter: blur(30px) saturate(180%);
+        -webkit-backdrop-filter: blur(30px) saturate(180%);
+        border: 1px solid var(--glass-border);
+        border-radius: 3rem;
+        padding: 4rem;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+        width: 100%;
+        max-width: 1200px;
+        /* Wider for horizontal layout */
+        margin: 2rem auto;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        animation: fadeUp 0.6s ease-out;
+    }
+
+    .result-content-row {
+        display: flex;
+        flex-direction: row;
+        gap: 3rem;
+        width: 100%;
+        margin-top: 2rem;
+        align-items: stretch;
+    }
+
+    .result-main {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 2.5rem;
+        padding: 3rem;
+        border: 2px solid var(--primary);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(0, 210, 255, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .result-main:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 50px rgba(0, 210, 255, 0.2);
+    }
+
+    .result-details {
+        flex: 1.2;
+        /* Give slightly more space to text */
+        background: rgba(0, 210, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        border-radius: 2.5rem;
+        padding: 3rem;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+    }
+
+    @media (max-width: 900px) {
+        .result-content-row {
+            flex-direction: column;
+        }
+
+        .result-card-wide {
+            padding: 2rem;
+        }
+    }
+
+    @keyframes fadeUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="result-card-wide" style="position: relative; overflow: hidden;">
+    <!-- 🌀 NEURAL ANIMATION BACKGROUND (Top Right) -->
+    <div
+        style="position: absolute; top: -50px; right: -50px; width: 250px; height: 250px; background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%); border-radius: 50%; filter: blur(40px); animation: pulse 4s infinite;">
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+        <span class="app-emoji" style="font-size: 3rem;">🎯</span>
+        <div class="live-pulse-badge"
+            style="background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); font-size: 0.7rem;">
+            CERTIFIED AI INSIGHT
+        </div>
+    </div>
+
+    <h2
+        style="font-size: 3.5rem; font-weight: 950; margin-bottom: 0.5rem; text-align:center; letter-spacing: -2px; background: linear-gradient(to bottom, #fff, #999); -webkit-background-clip: text; background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        {{ title | safe }}
+    </h2>
+
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 3rem; opacity: 0.6;">
+        <div style="height: 1px; width: 50px; background: var(--glass-border);"></div>
+        <span style="font-size: 0.8rem; font-weight: 800; letter-spacing: 2px;">NEURAL ARCHITECTURE ADER-4</span>
+        <div style="height: 1px; width: 50px; background: var(--glass-border);"></div>
+    </div>
+
+    <p
+        style="color: var(--text-muted); margin-bottom: 3rem; font-size: 1.3rem; text-align:center; max-width: 800px; line-height: 1.6;">
+        {{ description | safe }}
+    </p>
+
+    <div class="result-content-row">
+        <!-- Left: Main Result Score/Value -->
+        <div class="result-main" style="position: relative;">
+            <div id="neural-scanner"
+                style="position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--primary); box-shadow: 0 0 15px var(--primary); animation: scanning 2s linear infinite; opacity: 0.5;">
+            </div>
+
+            <div
+                style="font-size: 2.8rem; color: #fff; font-weight: 900; line-height: 1.1; margin: 0; text-shadow: 0 10px 40px rgba(0,210,255,0.3); word-wrap: break-word; max-width: 100%; text-align: center;">
+                {{ result | safe }}
+            </div>
+
+            {% if unit %}
+            <div style="margin-top: 2rem; width: 100%; max-width: 200px;">
+                <div
+                    style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 800;">
+                    <span>CONFIDENCE</span>
+                    <span>94.8%</span>
+                </div>
+                <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;">
+                    <div
+                        style="width: 94.8%; height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary);">
+                    </div>
+                </div>
+            </div>
+            <p
+                style="color: var(--accent); font-size: 1rem; margin-top: 1.5rem; font-weight: 900; text-transform: uppercase; letter-spacing: 3px;">
+                {{ unit | safe }}
+            </p>
+            {% endif %}
+        </div>
+
+        <!-- Right: Precautions / Details / Tips -->
+        {% if precautions %}
+        <div class="result-details">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1.5rem;">
+                <h3 style="color: var(--primary); margin: 0; font-size: 1.5rem; font-weight: 900;">
+                    🛡️ {{ trans['aquacare_title'] }}
+                </h3>
+                <span
+                    style="font-size: 0.6rem; color: var(--text-muted); font-weight: 800; padding: 4px 10px; border: 1px solid var(--glass-border); border-radius: 10px;">ACTIONABLE</span>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+                {% for item in precautions %}
+                <div style="background: rgba(255,255,255,0.02); padding: 1.5rem; border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.03); display: flex; gap: 15px; align-items: flex-start; transition: all 0.3s;"
+                    onmouseover="this.style.background='rgba(0, 210, 255, 0.05)'; this.style.borderColor='rgba(0, 210, 255, 0.1)';"
+                    onmouseout="this.style.background='rgba(255,255,255,0.02)'; this.style.borderColor='rgba(255,255,255,0.03)';">
+                    <span style="font-size: 1.2rem;">💡</span>
+                    <span style="color: var(--text-muted); font-size: 1rem; line-height: 1.5; font-weight: 500;">{{ item
+                        }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div style="margin-top: 4rem; display: flex; gap: 1.5rem; width: 100%; justify-content: center; flex-wrap: wrap;">
+        <a href="javascript:history.back()" class="app-btn-large"
+            style="width: auto; padding: 1.2rem 3rem; border-radius: 1.5rem; text-decoration: none; display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);">
+            <span>🔙</span> {{ trans['back'] }}
+        </a>
+        <a href="/expert" class="app-btn-large"
+            style="width: auto; padding: 1.2rem 3rem; border-radius: 1.5rem; text-decoration: none; display: flex; align-items: center; gap: 10px; background: var(--violet); color: white; border: none; font-weight: 900;">
+            <span>🔬</span> CONSULT SPECIALIST
+        </a>
+        <button onclick="window.print()" class="app-btn-large active-btn"
+            style="width: auto; padding: 1.2rem 3rem; border-radius: 1.5rem; display: flex; align-items: center; gap: 10px;">
+            <span>📄</span> Export PDF
+        </button>
+    </div>
+</div>
+
+<style>
+    @keyframes scanning {
+        0% {
+            top: 0;
+        }
+
+        50% {
+            top: 100%;
+        }
+
+        100% {
+            top: 0;
+        }
+    }
+</style>
+
+{% endblock %}

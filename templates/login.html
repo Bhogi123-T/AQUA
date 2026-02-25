@@ -1,0 +1,257 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
+    <div class="app-card"
+        style="margin: 0; max-width: 450px; width: 100%; padding: 3rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div
+                style="width: 80px; height: 80px; background: rgba(0, 210, 255, 0.1); border-radius: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid rgba(0, 210, 255, 0.2); animation: float 3s ease-in-out infinite;">
+                <span style="font-size: 2.5rem;">🔐</span>
+            </div>
+            <h2
+                style="font-size: 2.5rem; font-weight: 950; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #00d2ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">
+                {{ trans['login'] }}</h2>
+            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 500;">{{ trans['access_dash'] }}</p>
+        </div>
+
+        {% if error %}
+        <div
+            style="background: rgba(255, 0, 85, 0.1); border: 1px solid rgba(255, 0, 85, 0.2); color: #ff0055; padding: 1.2rem; border-radius: 1.2rem; margin-bottom: 2.5rem; font-size: 0.95rem; font-weight: 600; text-align: center; backdrop-filter: blur(10px);">
+            ⚠️ {{ error }}
+        </div>
+        {% endif %}
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        {% if "OTP" in message or "Dev Mode" in message %}
+        <div
+            style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: #00ff88; padding: 1.2rem; border-radius: 1.2rem; margin-bottom: 2.5rem; font-size: 0.95rem; font-weight: 700; text-align: center; animation: pulse 2s infinite; backdrop-filter: blur(10px);">
+            🚀 {{ message }}
+        </div>
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- PRIMARY OAUTH SECTION -->
+        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem;">
+            <a href="/login/google" class="google-login-btn"
+                style="height: 65px; font-size: 1.15rem; background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);">
+                <div class="google-icon-wrapper"
+                    style="background: white; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <svg viewBox="0 0 24 24" width="28" height="28">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                </div>
+                <span style="font-weight: 800; color: #1e293b;">Sign in with Google</span>
+            </a>
+            <p
+                style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem;">
+                <span class="emo">⚡</span> Fast, secure, and one-tap access
+            </p>
+        </div>
+
+        <!-- OR DIVIDER -->
+        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem;">
+            <div
+                style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);">
+            </div>
+            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;">OR SECURE
+                LOGIN</span>
+            <div
+                style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, rgba(255,255,255,0.1), transparent);">
+            </div>
+        </div>
+
+        <form action="/login" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div class="app-input-group">
+                <span class="app-label"
+                    style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;">{{
+                    trans['phone_email'] }}</span>
+                <input type="email" name="email" class="app-input" placeholder="name@company.com"
+                    style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 1.3rem; border-radius: 1.2rem; font-size: 1rem; color: white; transition: all 0.3s;"
+                    required autofocus>
+            </div>
+
+            <div class="app-input-group">
+                <span class="app-label"
+                    style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;">Password</span>
+                <input type="password" name="password" class="app-input" placeholder="••••••••"
+                    style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 1.3rem; border-radius: 1.2rem; font-size: 1rem; color: white; transition: all 0.3s;"
+                    required>
+            </div>
+
+            <button class="auth-submit-btn">
+                {{ trans['login'] }}
+            </button>
+        </form>
+
+        <div
+            style="margin-top: 3.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2.5rem;">
+
+            {% if not service_status.env_file or not (service_status.google and service_status.email) %}
+            <div
+                style="background: rgba(255, 230, 0, 0.05); border: 1px dashed rgba(255, 230, 0, 0.3); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; text-align: left;">
+                <h4 style="color: #ffe600; margin: 0 0 0.5rem; font-size: 0.9rem;"><span class="emo">🛠️</span> How to
+                    Enable Real OTP & Google
+                    Login:</h4>
+                <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; margin: 0;">
+                    1. Create a file named <strong>.env</strong> in your project folder.<br>
+                    2. Copy contents from <strong>.env.example</strong> into it.<br>
+                    3. Fill in your <strong>Google Client ID</strong> and <strong>Email credentials</strong>.<br>
+                    <span style="color: #00ff88; font-weight: 700;">Until then, the system will use "Dev Mode" with
+                        on-screen codes.</span>
+                </p>
+            </div>
+            {% endif %}
+
+            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+                {{ trans['no_account'] }}
+            </p>
+            <a href="/signup?lang={{ lang }}" class="secondary-auth-btn">
+                ✨ {{ trans['create_account'] or 'Create New Account' }}
+            </a>
+            <!-- Forgot credentials note (no hints, no credentials shown) -->
+            <div
+                style="margin-top:1.5rem; padding:1.2rem 1.5rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem; text-align:left;">
+                <p style="margin:0; font-size:0.82rem; color:var(--text-muted); line-height:1.6;">
+                    <span class="emo">🔑</span> <strong style="color:#fff;">Forgot your password?</strong><br>
+                    Contact your platform administrator or use <strong style="color:var(--primary);">Sign in with
+                        Google</strong> if your account was created via Google.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes float {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .google-login-btn {
+        width: 100%;
+        padding: 1rem;
+        border-radius: 1.2rem;
+        background: white;
+        color: #1f2937;
+        border: none;
+        font-weight: 750;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        text-decoration: none;
+        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .google-login-btn:hover {
+        transform: translateY(-3px) scale(1.02);
+        box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+    }
+
+    .google-login-btn:active {
+        transform: translateY(-1px) scale(0.98);
+    }
+
+    .auth-submit-btn {
+        width: 100%;
+        padding: 1.3rem;
+        border-radius: 1.2rem;
+        font-weight: 900;
+        font-size: 1.1rem;
+        letter-spacing: 1px;
+        background: var(--primary);
+        color: black;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+    }
+
+    .auth-submit-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px rgba(0, 210, 255, 0.5);
+        filter: brightness(1.1);
+    }
+
+    .secondary-auth-btn {
+        display: block;
+        width: 100%;
+        padding: 1.2rem;
+        border-radius: 1.2rem;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        color: white;
+        font-weight: 800;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .secondary-auth-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+    }
+
+    .app-input:focus {
+        background: rgba(0, 0, 0, 0.6) !important;
+        border-color: var(--primary) !important;
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+        outline: none;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
+        }
+    }
+
+    .active-btn {
+        background: var(--primary);
+        color: black;
+        box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+    }
+
+    .active-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
+        filter: brightness(1.1);
+    }
+</style>
+{% endblock %}

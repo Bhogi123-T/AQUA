@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container hero-section" style="padding-top: 5rem;">
+    <div style="text-align: center; margin-bottom: 4rem;">
+        <div class="app-emoji">⛓️</div>
+        <h1 class="glow-text">Supply Chain <span style="color: var(--violet);">Blockchain Ledger</span></h1>
+        <p class="hero-description">
+            End-to-end traceability for your aquaculture yield. Every harvest, transport, and sale is recorded on
+            an immutable decentralized ledger for global market trust.
+        </p>
+    </div>
+
+    <!-- 🧬 LIVE LEDGER STREAM -->
+    <div class="app-card" style="margin-bottom: 4rem; background: rgba(0,0,0,0.4); border: 1px solid var(--violet);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <div class="live-pulse-badge" style="background: var(--violet);">🔴 LIVE GENESIS STREAM</div>
+            <div style="font-family: monospace; color: var(--text-muted);">NETWORK_STATUS: ENCRYPTED_STABLE</div>
+        </div>
+
+        <div id="ledger-container" style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <!-- Seed Block (Initial) -->
+            <div class="sub-panel" style="border-left: 4px solid var(--accent); animation: slideInLeft 0.5s ease-out;">
+                <div
+                    style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                    <span>BLOCK #08124</span>
+                    <span>HASH: 0x82f...a1c</span>
+                </div>
+                <p style="margin: 0; font-weight: 800;">🛰️ Seed Origin: Andhra Pradesh Hatchery #04</p>
+                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Stocking 50,000 Vannamei
+                    Post-Larvae // Temp: 28.2°C</p>
+            </div>
+
+            <!-- Transport Block -->
+            <div class="sub-panel" style="border-left: 4px solid var(--primary); animation: slideInLeft 0.8s ease-out;">
+                <div
+                    style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                    <span>BLOCK #08125</span>
+                    <span>HASH: 0x41e...b92</span>
+                </div>
+                <p style="margin: 0; font-weight: 800;">🚚 Cold Chain Transport: Smart Truck #TX9</p>
+                <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Route: Vizag -> Bhimavaram
+                    // Humidity: 84% // GPS: Verified</p>
+            </div>
+        </div>
+
+        <div id="new-block-trigger" style="margin-top: 2rem; text-align: center;">
+            <button class="shimmer-btn" style="background: linear-gradient(135deg, var(--violet), var(--secondary));"
+                onclick="generateNewBlock()">
+                ⛓️ MINT NEW TRANSACTION BLOCK
+            </button>
+        </div>
+    </div>
+
+    <div class="grid">
+        <div class="app-card">
+            <h4>Node Distribution</h4>
+            <div style="height: 200px; display: flex; align-items: flex-end; gap: 10px; padding: 20px;">
+                <div style="flex: 1; background: var(--primary); height: 40%; border-radius: 5px;"></div>
+                <div style="flex: 1; background: var(--violet); height: 85%; border-radius: 5px;"></div>
+                <div style="flex: 1; background: var(--accent); height: 60%; border-radius: 5px;"></div>
+                <div style="flex: 1; background: var(--rose); height: 30%; border-radius: 5px;"></div>
+            </div>
+            <p style="font-size: 1rem; text-align: center;">V-Node Global Validation Performance</p>
+        </div>
+        <div class="app-card">
+            <h4>Smart Contracts</h4>
+            <ul style="list-style: none; padding: 0; text-align: left;">
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">✅ AUTO_PAYMENT_ON_DELIVERY
+                </li>
+                <li style="padding: 1rem 0; border-bottom: 1px solid var(--glass-border);">✅ QUALITY_THRESHOLD_LOCK</li>
+                <li style="padding: 1rem 0;">✅ CARBON_FOOTPRINT_VERIFY</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    function generateNewBlock() {
+        const container = document.getElementById('ledger-container');
+        const num = Math.floor(Math.random() * 90000) + 10000;
+        const hash = '0x' + Math.random().toString(16).substr(2, 8);
+
+        const newBlock = document.createElement('div');
+        newBlock.className = 'sub-panel';
+        newBlock.style.cssText = 'border-left: 4px solid var(--violet); animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-top: 1rem;';
+
+        newBlock.innerHTML = `
+            <div style="display: flex; justify-content: space-between; font-family: monospace; font-size: 0.8rem; margin-bottom: 0.5rem;">
+                <span>BLOCK #${num}</span>
+                <span>HASH: ${hash}...fff</span>
+            </div>
+            <p style="margin: 0; font-weight: 800;">💰 Smart Transaction: Direct Trade Sale</p>
+            <p style="margin: 0.5rem 0 0; font-size: 0.9rem; color: var(--text-muted);">Buyer: Global Marine Foods // Quantity: 4.5 Tons // Price: $31,500</p>
+        `;
+
+        container.prepend(newBlock);
+        showNotification('⛓️ New block successfully mined and added to ledger!', 'success');
+    }
+</script>
+{% endblock %}

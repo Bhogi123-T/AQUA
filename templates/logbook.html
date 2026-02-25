@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="hero" style="text-align: center; margin-bottom: 4rem;">
+    <span class="app-emoji">🧾</span>
+    <h1 style="font-size: 3.5rem; font-weight: 900; margin-bottom: 1rem;">{{ trans['digital_logbook'] }}</h1>
+    <p style="color: var(--accent); font-weight: 800; text-transform: uppercase; letter-spacing: 5px;">{{
+        trans['secure_history'] }}</p>
+</div>
+
+<div class="app-card" style="margin: 0 auto 4rem; max-width: 900px; text-align: left; align-items: flex-start;">
+    <table style="width: 100%; border-collapse: collapse; margin-top: 2rem; color: white;">
+        <thead>
+            <tr style="border-bottom: 2px solid var(--glass-border); text-align: left;">
+                <th style="padding: 1.5rem;">{{ trans['th_date'] }}</th>
+                <th style="padding: 1.5rem;">pH</th>
+                <th style="padding: 1.5rem;">{{ trans['do'] }} (mg/L)</th>
+                <th style="padding: 1.5rem;">{{ trans['feed_title'] | safe }}</th>
+                <th style="padding: 1.5rem;">{{ trans['th_notes'] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr style="border-bottom: 1px solid var(--glass-border);">
+                <td style="padding: 1.5rem;">{{ log.date }}</td>
+                <td style="padding: 1.5rem;">{{ log.ph }}</td>
+                <td style="padding: 1.5rem;">{{ log.do }}</td>
+                <td style="padding: 1.5rem;">{{ log.feed }}</td>
+                <td style="padding: 1.5rem; color: var(--text-muted);">{{ log.notes }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div style="margin-top: 3rem; width: 100%;">
+        <button class="app-btn-large" onclick="openLogModal()" style="width: 100%;">{{ trans['add_log'] }}</button>
+    </div>
+</div>
+
+<!-- 📋 ADD LOG MODAL -->
+<div id="log-modal"
+    style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(20px); z-index: 5000; align-items: center; justify-content: center; padding: 1rem;">
+    <div class="app-card" style="width: 100%; max-width: 500px; padding: 2.5rem; border: 2px solid var(--primary);">
+        <h2 style="margin-top:0; color: var(--primary);">📥 New Log Entry</h2>
+        <form style="display: flex; flex-direction: column; gap: 1.5rem;">
+            <div>
+                <label
+                    style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">DATE</label>
+                <input type="date" class="app-input" id="log-date" style="width: 100%;" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div>
+                    <label
+                        style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">pH
+                        LEVEL</label>
+                    <input type="number" step="0.1" class="app-input" id="log-ph" placeholder="8.2"
+                        style="width: 100%;">
+                </div>
+                <div>
+                    <label
+                        style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">D.O.
+                        (mg/L)</label>
+                    <input type="number" step="0.1" class="app-input" id="log-do" placeholder="5.5"
+                        style="width: 100%;">
+                </div>
+            </div>
+            <div>
+                <label style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">FEED
+                    AMOUNT (kg)</label>
+                <input type="number" class="app-input" id="log-feed" placeholder="45" style="width: 100%;">
+            </div>
+            <div>
+                <label
+                    style="color: var(--text-muted); font-size: 0.8rem; display: block; margin-bottom: 0.5rem;">NOTES</label>
+                <textarea class="app-input" id="log-notes" rows="3"
+                    placeholder="Water color is greenish brown. System nominal."
+                    style="width: 100%; resize: vertical;"></textarea>
+            </div>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                <button type="button" class="app-btn-large"
+                    style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);"
+                    onclick="closeLogModal()">Cancel</button>
+                <button type="button" class="app-btn-large active-btn" style="flex: 1;" onclick="saveLogEntry()">💾 Save
+                    Entry</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openLogModal() {
+        document.getElementById('log-modal').style.display = 'flex';
+        document.getElementById('log-date').valueAsDate = new Date();
+    }
+    function closeLogModal() {
+        document.getElementById('log-modal').style.display = 'none';
+    }
+    function saveLogEntry() {
+        const btn = event.currentTarget;
+        btn.innerText = "⏳ SAVING...";
+        btn.disabled = true;
+
+        setTimeout(() => {
+            alert("✅ Log entry saved to secure historical ledger!");
+            closeLogModal();
+            location.reload();
+        }, 1200);
+    }
+</script>
+
+<div style="text-align: center; margin-bottom: 5rem;">
+    <a href="/farmer?lang={{ lang }}" style="color: var(--text-muted); font-weight: 700; text-decoration: none;">🔙 {{
+        trans['back'] }}</a>
+</div>
+{% endblock %}

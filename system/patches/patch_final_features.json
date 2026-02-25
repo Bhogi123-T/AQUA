@@ -1,0 +1,69 @@
+{
+    "en": {
+        "grade_a": "Grade A (Premium)",
+        "grade_b": "Grade B (Standard)",
+        "grade_c": "Grade C (Low)",
+        "pond_area_acres": "Pond Area (Acres)",
+        "avg_depth_feet": "Avg Water Depth (Feet)",
+        "eco_tracker_title": "Sustainability Tracker"
+    },
+    "id": {
+        "seasonal_title": "🌤️ Penasihat Musiman",
+        "seasonal_desc": "Dapatkan rekomendasi AI tentang apa yang harus dibudidayakan musim ini.",
+        "select_season": "Pilih Musim",
+        "season_summer": "Musim Panas",
+        "season_monsoon": "Musim Hujan",
+        "season_winter": "Musim Dingin",
+        "btn_check_season": "Dapatkan Saran",
+        "seasonal_res_title": "Saran Musiman",
+        "seasonal_reason": "Alasan",
+        "cultivate": "Disarankan untuk Budidaya",
+        "avoid": "Hindari",
+        "grade_a": "Kelas A (Premium)",
+        "grade_b": "Kelas B (Standar)",
+        "grade_c": "Kelas C (Rendah)",
+        "pond_area_acres": "Luas Kolam (Hektar/Acres)",
+        "avg_depth_feet": "Rata-rata Kedalaman (Kaki)"
+    },
+    "sw": {
+        "seasonal_title": "🌤️ Mshauri wa Msimu",
+        "seasonal_desc": "Pata mapendekezo ya AI juu ya nini cha kulima msimu huu.",
+        "select_season": "Chagua Msimu",
+        "season_summer": "Majira ya Joto",
+        "season_monsoon": "Masika",
+        "season_winter": "Majira ya Baridi",
+        "btn_check_season": "Pata Ushauri",
+        "seasonal_res_title": "Ushauri wa Msimu",
+        "seasonal_reason": "Sababu",
+        "cultivate": "Inapendekezwa Kulima",
+        "avoid": "Epuka",
+        "grade_a": "Daraja A (Premium)",
+        "grade_b": "Daraja B (Kawaida)",
+        "grade_c": "Daraja C (Chini)",
+        "pond_area_acres": "Ukubwa wa Bwawa (Ekari)",
+        "avg_depth_feet": "Kina cha wastani (Futi)"
+    },
+    "vi": {
+        "grade_a": "Loại A (Cao cấp)",
+        "grade_b": "Loại B (Tiêu chuẩn)",
+        "grade_c": "Loại C (Thấp)",
+        "pond_area_acres": "Diện tích ao (Mẫu/Acres)",
+        "avg_depth_feet": "Độ sâu trung bình (Feet)",
+        "seasonal_title": "🌤️ Cố Vấn Theo Mùa",
+        "seasonal_desc": "Nhận đề xuất AI về những gì nên nuôi trồng trong mùa này."
+    },
+    "pt": {
+        "grade_a": "Grau A (Premium)",
+        "grade_b": "Grau B (Padrão)",
+        "grade_c": "Grau C (Baixo)",
+        "pond_area_acres": "Área do Viveiro (Acres)",
+        "avg_depth_feet": "Profundidade Média (Pés)"
+    },
+    "hi": {
+        "grade_a": "ग्रेड ए (प्रीमियम)",
+        "grade_b": "ग्रेड बी (मानक)",
+        "grade_c": "ग्रेड सी (कम)",
+        "pond_area_acres": "तालाब का क्षेत्र (एकड़)",
+        "avg_depth_feet": "औसत पानी की गहराई (फीट)"
+    }
+}
