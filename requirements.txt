@@ -1,9 +1,7 @@
 flask
 flask-mail
-flask-socketio
 python-dotenv
 pandas
-numpy
 scikit-learn
 joblib
 faker
@@ -12,4 +10,3 @@ twilio
 requests
 authlib
 supabase
-eventlet

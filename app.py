@@ -29,14 +29,13 @@ This application uses proprietary hybrid algorithms developed specifically for a
 For detailed algorithm documentation, see: ALGORITHMS_DOCUMENTATION.md
 """
 
-from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash, send_file
+from flask import Flask, render_template, request, session, redirect, url_for, jsonify, flash
 from functools import wraps
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from twilio.rest import Client
 from authlib.integrations.flask_client import OAuth
 import joblib
-import numpy as np
 import os
 import random
 import json
@@ -363,7 +362,7 @@ def send_otp(identifier, otp):
             return True, f"Dev Mode: The OTP for testing is {otp}"
 
 # Load Models (Organized in ml_core/Models)
-MODEL_DIR = os.path.join(os.path.dirname(__file__), "ml_core", "Models")
+MODEL_DIR = os.path.join(os.path.dirname(__file__), "ml_core", "models")
 def _load_model(fname):
     path = os.path.join(MODEL_DIR, fname)
     if not os.path.exists(path):
@@ -2165,7 +2164,7 @@ def get_dataset(dataset_name):
     """Endpoint to serve datasets for offline caching"""
     try:
         import csv
-        filepath = f"ml_core/dataset/{dataset_name}.csv"
+        filepath = f"ml_core/datasets/{dataset_name}.csv"
         if not os.path.exists(filepath):
             return jsonify({"error": "Dataset not found"}), 404
         
@@ -2212,7 +2211,7 @@ def offline_status():
     # Check which datasets are available
     datasets = []
     for dataset in ["disease", "location", "feed", "yield", "buyer", "stocking", "seed"]:
-        path = f"ml_core/dataset/{dataset}.csv"
+        path = f"ml_core/datasets/{dataset}.csv"
         datasets.append({
             "name": dataset,
             "available": os.path.exists(path),
