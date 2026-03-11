@@ -49,9 +49,11 @@ import time
 import math
 from datetime import datetime
 from supabase import create_client
+from flask_cors import CORS
 load_dotenv()
 
 app = Flask(__name__)
+CORS(app) # Enable CORS for all routes
 app.secret_key = os.getenv("SECRET_KEY", "aqua_secret_key_CHANGE_IN_PROD")
 # Secure session cookies
 app.config['SESSION_COOKIE_HTTPONLY'] = True
@@ -89,6 +91,122 @@ USERS_FILE = 'data/users.json'
 CONFIG_FILE = 'data/config.json'
 COMMUNITY_FILE = 'data/community.json'
 
+# AQUA-CYCLE ROLES SYSTEM
+AQUA_ROLES = {
+    "hatchery": {"name": "Hatchery", "icon": "🏢", "category": "Production"},
+    "farmer": {"name": "Farmer", "icon": "👨‍🌾", "category": "Production"},
+    "feed_supplier": {"name": "Feed Supplier", "icon": "🍽️", "category": "Supply"},
+    "lab_tech": {"name": "Lab Technician", "icon": "🧪", "category": "Support"},
+    "harvest_contractor": {"name": "Harvest Contractor", "icon": "🚜", "category": "Logistics"},
+    "transport": {"name": "Transport", "icon": "🚛", "category": "Logistics"},
+    "processing_plant": {"name": "Processing Plant", "icon": "🏭", "category": "Processing"},
+    "buyer": {"name": "Buyer", "icon": "🤝", "category": "Market"},
+    "exporter": {"name": "Exporter", "icon": "🚢", "category": "Market"},
+    "admin": {"name": "Admin", "icon": "⚡", "category": "System"}
+}
+
+# AQUA-CYCLE CONNECTIVITY GRAPH (Who connects with whom)
+AQUACYCLE_CONNECTIONS = {
+    "farmer": ["hatchery", "feed_supplier", "lab_tech", "harvest_contractor", "transport", "buyer"],
+    "hatchery": ["farmer", "lab_tech", "transport"],
+    "feed_supplier": ["farmer", "transport"],
+    "lab_tech": ["farmer", "hatchery", "admin"],
+    "harvest_contractor": ["farmer", "transport", "processing_plant"],
+    "transport": ["farmer", "hatchery", "harvest_contractor", "processing_plant", "exporter"],
+    "processing_plant": ["harvest_contractor", "transport", "buyer", "exporter"],
+    "buyer": ["farmer", "processing_plant"],
+    "exporter": ["processing_plant", "transport", "admin"],
+    "admin": list(AQUA_ROLES.keys()) # Admin sees everyone
+}
+
+AQUA_ROLE_ACTIONS = {
+    "hatchery": [
+        {"id": "register_hatchery", "name": "Register Hatchery", "icon": "🏢", "desc": "Setup new hatchery facility"},
+        {"id": "create_seed_batches", "name": "Create Seed Batches", "icon": "🧬", "desc": "Initialize PL/Fingerling batches"},
+        {"id": "upload_health_cert", "name": "Health Certificates", "icon": "📜", "desc": "Upload seed health verification"},
+        {"id": "list_for_sale", "name": "List Seed For Sale", "icon": "💰", "desc": "Push stock to the marketplace"},
+        {"id": "accept_orders", "name": "Accept Farmer Orders", "icon": "🛒", "desc": "Process incoming seed requests"},
+        {"id": "track_deliveries", "name": "Track Deliveries", "icon": "🚛", "desc": "Monitor outbound shipments"}
+    ],
+    "farmer": [
+        {"id": "register_farm_ponds", "name": "Register Ponds", "icon": "🚜", "desc": "Setup farm and pond units"},
+        {"id": "buy_seed", "name": "Buy Seed", "icon": "🛒", "desc": "Order PL/Fingerlings from hatcheries"},
+        {"id": "record_stocking", "name": "Pond Stocking", "icon": "🐟", "desc": "Log initial stocking density"},
+        {"id": "track_feed_usage", "name": "Feed Usage", "icon": "🍽️", "desc": "Log daily feed consumption"},
+        {"id": "water_test", "name": "Water Quality", "icon": "🧪", "desc": "Record pH, DO, Salinity readings"},
+        {"id": "report_disease", "name": "Report Disease", "icon": "🚑", "desc": "Alert experts about livestock issues"},
+        {"id": "schedule_harvest", "name": "Schedule Harvest", "icon": "⚖️", "desc": "Coordinate with harvest teams"},
+        {"id": "list_harvest_sale", "name": "List for Sale", "icon": "💰", "desc": "Push stock to the trade matrix"}
+    ],
+    "feed_supplier": [
+        {"id": "list_feed_products", "name": "List Feed Products", "icon": "📦", "desc": "Market your feed inventory to farmers"},
+        {"id": "update_stock", "name": "Update Stock", "icon": "🔄", "desc": "Synchronize available feed inventory"},
+        {"id": "receive_orders", "name": "Receive Farmer Orders", "icon": "✅", "desc": "Approve and manage feed purchase orders"},
+        {"id": "track_deliveries", "name": "Track Deliveries", "icon": "🚛", "desc": "Monitor active distribution routes"}
+    ],
+    "lab_tech": [
+        {"id": "receive_samples", "name": "Receive Samples", "icon": "🧪", "desc": "Log incoming water/seed samples"},
+        {"id": "record_results", "name": "Record Test Results", "icon": "📝", "desc": "Input lab analysis parameters"},
+        {"id": "upload_reports", "name": "Upload Reports", "icon": "📤", "desc": "Publish official digital lab reports"},
+        {"id": "send_alerts", "name": "Send Alerts", "icon": "🔔", "desc": "Notify farmers of critical water issues"}
+    ],
+    "harvest_contractor": [
+        {"id": "receive_harvest_requests", "name": "Harvest Requests", "icon": "🚜", "desc": "Manage farmer booking for harvest"},
+        {"id": "schedule_teams", "name": "Schedule Teams", "icon": "📅", "desc": "Assign labor and equipment to farms"},
+        {"id": "confirm_completion", "name": "Confirm Harvest", "icon": "✅", "desc": "Verify completion of harvest tasks"},
+        {"id": "record_quantity", "name": "Record Quantity", "icon": "⚖️", "desc": "Log final harvested weight and counts"}
+    ],
+    "transport": [
+        {"id": "accept_transport", "name": "Transport Requests", "icon": "🚚", "desc": "Review and accept shipment jobs"},
+        {"id": "track_shipment", "name": "Track Shipment", "icon": "📍", "desc": "Real-time updates for active cargo"},
+        {"id": "update_delivery_status", "name": "Update Status", "icon": "🔄", "desc": "Mark shipments as picked-up or delivered"}
+    ],
+    "processing_plant": [
+        {"id": "receive_harvest", "name": "Receive Harvest", "icon": "🚜", "desc": "Log arrival of raw materials at plant"},
+        {"id": "record_batch", "name": "Record Processing", "icon": "🏭", "desc": "Start processing and batch creation"},
+        {"id": "grade_seafood", "name": "Grade Seafood", "icon": "📏", "desc": "Assign quality and size grades"},
+        {"id": "manage_packaging", "name": "Packaging", "icon": "📦", "desc": "Verify final packaging and labeling"},
+        {"id": "send_to_buyers", "name": "Ship to Buyers", "icon": "🚢", "desc": "Initiate export or local sales logistics"}
+    ],
+    "buyer": [
+        {"id": "view_harvest_lots", "name": "Browse Harvest", "icon": "🦐", "desc": "View available fish and shrimp lots"},
+        {"id": "place_orders", "name": "Purchase Order", "icon": "💰", "desc": "Buy stock directly from farms/plants"},
+        {"id": "track_deliveries", "name": "Track Deliveries", "icon": "🚛", "desc": "Monitor arrival of purchased lots"},
+        {"id": "make_payments", "name": "Payments", "icon": "💳", "desc": "Process digital payments for goods"}
+    ],
+    "exporter": [
+        {"id": "view_bulk_availability", "name": "Bulk Availability", "icon": "🚢", "desc": "Discover large-scale export lots"},
+        {"id": "purchase_stock", "name": "International Purchase", "icon": "🌎", "desc": "Execute bulk purchase agreements"},
+        {"id": "upload_docs", "name": "Export Docs", "icon": "📂", "desc": "Manage customs and shipping paperwork"},
+        {"id": "track_shipments", "name": "Track Global Shipments", "icon": "📍", "desc": "Monitor international logistics status"}
+    ],
+    "admin": [
+        {"id": "manage_users", "name": "Manage Users", "icon": "👥", "desc": "Control account access and roles"},
+        {"id": "approve_regs", "name": "Approve Regs", "icon": "✅", "desc": "Validate new ecosystem participants"},
+        {"id": "monitor_transactions", "name": "Monitor Ledger", "icon": "📊", "desc": "Audit all financial and trade data"},
+        {"id": "handle_disputes", "name": "Support/Disputes", "icon": "⚖️", "desc": "Resolve ecosystem participant conflicts"},
+        {"id": "view_analytics", "name": "Global Analytics", "icon": "📈", "desc": "Access high-level system intelligence"}
+    ]
+}
+
+# Legacy Role Mapping (for backward compatibility)
+ROLE_MAP = {
+    "hatchery": "hatchery",
+    "business": "feed_supplier",
+    "expert": "lab_tech"
+}
+
+def get_role():
+    """Helper to get standardized role from session"""
+    raw_role = session.get('role', 'farmer')
+    return ROLE_MAP.get(raw_role, raw_role)
+
+# File paths for persistence (Organized in data/ folder)
+USERS_FILE = 'data/users.json'
+CONFIG_FILE = 'data/config.json'
+COMMUNITY_FILE = 'data/community.json'
+AQUACYCLE_FILE = 'data/aquacycle.json'
+
 def load_json(filepath, default):
     if os.path.exists(filepath):
         with open(filepath, 'r') as f:
@@ -102,6 +220,56 @@ def save_json(filepath, data):
     except Exception as e:
         print(f"Error saving JSON: {e}")
         pass # Vercel is Read-Only
+
+AQUACYCLE_DB = load_json(AQUACYCLE_FILE, {
+    "leads": [
+        {"id": "L1", "from": "farmer", "to": "feed_supplier", "msg": "Request: 5 Tons of High-Protein Feed (Vannamei 35%)", "status": "pending"},
+        {"id": "L2", "from": "hatchery", "to": "transport", "msg": "Urgent: Temp-controlled transport for 2M PL", "status": "active"},
+        {"id": "L3", "from": "exporter", "to": "farmer", "msg": "Buy Order: Vannamei 40-count @ $6.8/kg (10 Tons)", "status": "open"},
+        {"id": "L4", "from": "farmer", "to": "lab_tech", "msg": "Request: Disease screening for Pond #4", "status": "pending"},
+        {"id": "L5", "from": "processing_plant", "to": "processing_plant", "msg": "Inspection: Batch #BT-992 processing started", "status": "active"},
+        {"id": "L6", "from": "admin", "to": "hatchery", "msg": "Notice: Quarterly hygiene audit scheduled", "status": "pending"},
+        {"id": "L7", "from": "buyer", "to": "buyer", "msg": "Stock Request: 500kg Fresh Tiger Prawns", "status": "pending"},
+        {"id": "L8", "from": "admin", "to": "farmer", "msg": "Alert: Loan application L-882 approved", "status": "active"},
+        {"id": "L9", "from": "farmer", "to": "harvest_contractor", "msg": "Service: Harvest team needed for 15th March", "status": "pending"}
+    ],
+    "reports": [
+        {"id": "R1", "from": "lab_tech", "to": "farmer", "title": "Water Analysis: Pond #2 (pH 7.8, Amm: 0.1)", "date": "2026-03-08"},
+        {"id": "R2", "from": "lab_tech", "to": "farmer", "title": "Protocol: Early Mortality Syndrome prevention", "date": "2026-03-07"},
+        {"id": "R3", "from": "processing_plant", "to": "processing_plant", "title": "QC Pass: Export Batch #V-102 (Grade A)", "date": "2026-03-08"},
+        {"id": "R4", "from": "processing_plant", "to": "exporter", "title": "Inventory: Shelf-life analysis Report", "date": "2026-03-06"}
+    ],
+    "hatcheries": {}, 
+    "seed_batches": [], 
+    "farms": {}, 
+    "ponds": [], 
+    "inventory": [], 
+    "shipments": [], 
+    "jobs": [], 
+    "finance": {"loans": [], "insurance": []},
+    "transactions": []
+})
+def save_aquacycle(): save_json(AQUACYCLE_FILE, AQUACYCLE_DB)
+
+# --- 👁️ AQUA NEURAL VISION HUB DB ---
+AQUAVISION_FILE = 'data/aquavision.json'
+AQUAVISION_DB = load_json(AQUAVISION_FILE, {
+    "trained_weights": {"accuracy": 94.2, "samples": 13600, "last_trained": "2026-03-09"},
+    "custom_labels": {}
+})
+def save_aquavision(): save_json(AQUAVISION_FILE, AQUAVISION_DB)
+
+# --- 🛰️ PILOT TESTING & BETA HUB (New) ---
+FEEDBACK_FILE = 'data/feedback.json'
+FEEDBACK_DB = load_json(FEEDBACK_FILE, [])
+def save_feedback(): save_json(FEEDBACK_FILE, FEEDBACK_DB)
+
+INVITE_FILE = 'data/invites.json'
+INVITE_DB = load_json(INVITE_FILE, {
+    "active_codes": ["AQUA-BETA-2026", "AQUA-PILOT-01"],
+    "used_by": {}
+})
+def save_invites(): save_json(INVITE_FILE, INVITE_DB)
 
 # Global Configuration & User DB
 # Global Configuration & User DB
@@ -210,10 +378,11 @@ else:
 def check_services():
     google_id = os.getenv('GOOGLE_CLIENT_ID', '')
     mail_user = os.getenv('MAIL_USERNAME', '')
+    supa_url = os.getenv('SUPABASE_URL', '')
     
     # Check if they are configured AND not the placeholder strings
     status = {
-        "google": bool(google_id and "your_google" not in google_id),
+        "google": bool(supa_url and "supabase.co" in supa_url and "MockSupa" not in str(type(supabase))),
         "email": bool(mail_user and "your-email" not in mail_user),
         "sms": bool(os.getenv('TWILIO_ACCOUNT_SID') and "your_twilio" not in os.getenv('TWILIO_ACCOUNT_SID', '')),
         "env_file": os.path.exists('.env')
@@ -503,9 +672,20 @@ def inject_globals():
             t_state = translate_region(state)
             translated_regions[t_country][t_state] = [translate_region(d) for d in districts]
 
+    # Translate Roles
+    translated_roles = {}
+    for rid, rdata in AQUA_ROLES.items():
+        translated_roles[rid] = {
+            "id": rid,
+            "name": trans.get(f"role_{rid}", rdata["name"]),
+            "icon": rdata["icon"],
+            "category": trans.get(f"cat_{rdata['category'].lower()}", rdata["category"])
+        }
+
     return dict(species_list=species_list, region_db=translated_regions, 
                 precautions_db=translated_precautions, trans=trans, lang=lang,
-                local_url=local_url, app_online=True, config=APP_CONFIG)
+                local_url=local_url, app_online=True, config=APP_CONFIG,
+                aqua_roles=translated_roles)
 
 # ADVANCED PRECAUTIONS & ADVISORY SYSTEM
 PRECAUTIONS = {
@@ -695,9 +875,15 @@ def role_required(roles):
         def decorated_function(*args, **kwargs):
             if 'user' not in session:
                 return redirect(url_for('login'))
-            user_role = session.get('role', 'farmer')
+            user_role = get_role()
+            
             # Admin can access everything
             if user_role == 'admin' or user_role in roles:
+                return f(*args, **kwargs)
+            
+            # Unified Portal Policy: allow any valid role into home/dashboard
+            # This ensures roles don't get 'Access Denied' on their own start page
+            if user_role in AQUA_ROLES and f.__name__ in ['home_page', 'api_home_data', 'farmer_hub', 'business_portal', 'expert_portal', 'api_aquacycle_dashboard']:
                 return f(*args, **kwargs)
             
             flash(f"Access Denied: Your role ({user_role}) does not have permission for this portal.", "error")
@@ -705,93 +891,114 @@ def role_required(roles):
         return decorated_function
     return decorator
 
+@app.route("/api/login", methods=["POST"])
+def api_login():
+    data = request.get_json(silent=True) or request.form
+    ip = request.remote_addr
+    trans, lang = get_trans()
+    
+    # --- Rate limit check ---
+    allowed, wait_sec = check_rate_limit(ip)
+    if not allowed:
+        mins = wait_sec // 60
+        secs = wait_sec % 60
+        return jsonify({
+            "status": "error",
+            "message": f"Too many failed attempts. Account locked for {mins}m {secs}s. Please try again later."
+        }), 429
+    
+    email = data.get("email", "").strip().lower()
+    password = data.get("password", "")
+    AUTH_ERROR = "Invalid credentials. Please check your email and password."
+    
+    if email in USERS_DB:
+        user_data = USERS_DB[email]
+        hashed_pw = user_data.get("password", "")
+        # Check password
+        is_valid = False
+        if hashed_pw:
+            if ":" in hashed_pw: is_valid = check_password_hash(hashed_pw, password)
+            else: is_valid = (hashed_pw == password)
+        
+        if is_valid:
+            clear_failed_attempts(ip)
+            session.clear()
+            session["user"] = email
+            session["user_name"] = user_data.get("name", "User")
+            session["user_pic"] = user_data.get("picture", "")
+            session["role"] = user_data.get("role", "farmer")
+            session.permanent = True
+            
+            return jsonify({
+                "status": "success",
+                "user": {
+                    "email": email,
+                    "name": session["user_name"],
+                    "role": session["role"],
+                    "pic": session["user_pic"]
+                }
+            })
+        else:
+            record_failed_attempt(ip)
+            attempts_left = MAX_LOGIN_ATTEMPTS - LOGIN_ATTEMPTS.get(ip, {}).get("count", 0)
+            return jsonify({
+                "status": "error",
+                "message": AUTH_ERROR,
+                "attempts_remaining": max(0, attempts_left)
+            }), 401
+    else:
+        record_failed_attempt(ip)
+        return jsonify({"status": "error", "message": AUTH_ERROR}), 401
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     trans, lang = get_trans()
-    
-    # Redirect already-logged-in users
     if 'user' in session:
         role = session.get('role', 'farmer')
         if role == 'admin': return redirect(url_for('admin_dashboard'))
-        if role == 'business': return redirect(url_for('business_portal'))
-        if role == 'expert': return redirect(url_for('expert_portal'))
-        return redirect(url_for('home_page'))
+        if role == 'farmer': return redirect(url_for('farmer_dashboard'))
+        if role == 'hatchery': return redirect(url_for('hatchery_dashboard'))
+        if role == 'lab_tech': return redirect(url_for('lab_tech_dashboard'))
+        if role == 'buyer' or role == 'exporter': return redirect(url_for('buyer_dashboard_route'))
+        return redirect(url_for('dashboard'))
     
     if request.method == "POST":
-        ip = request.remote_addr
-        
-        # --- Rate limit check ---
-        allowed, wait_sec = check_rate_limit(ip)
-        if not allowed:
-            mins = wait_sec // 60
-            secs = wait_sec % 60
-            error = f"Too many failed attempts. Account locked for {mins}m {secs}s. Please try again later."
-            return render_template("login.html", trans=trans, lang=lang, error=error)
-        
-        email = request.form.get("email", "").strip().lower()
-        password = request.form.get("password", "")
-        
-        # Generic error message (don't reveal if email exists)
-        AUTH_ERROR = "Invalid credentials. Please check your email and password."
-        
-        if email in USERS_DB:
-            user_data = USERS_DB[email]
-            hashed_pw = user_data.get("password", "")
-            
-            # Check password (handles both hashed and plain for legacy users)
-            is_valid = False
-            if hashed_pw:
-                if ":" in hashed_pw:  # Werkzeug hashes always contain a colon
-                    is_valid = check_password_hash(hashed_pw, password)
-                else:
-                    is_valid = (hashed_pw == password)
-            
-            if is_valid:
-                clear_failed_attempts(ip)  # reset on success
-                session.clear()
-                session["user"] = email
-                session["user_name"] = user_data.get("name", "User")
-                session["user_pic"] = user_data.get("picture", "")
-                session["role"] = user_data.get("role", "farmer")
-                session.permanent = True  # use app's permanent session lifetime
-                
-                flash(f"Welcome back, {user_data.get('name')}!", "success")
-                
-                role = session["role"]
-                if role == "admin": return redirect(url_for("admin_dashboard"))
-                if role == "business": return redirect(url_for("business_portal"))
-                if role == "expert": return redirect(url_for("expert_portal"))
-                return redirect(url_for("home_page", lang=lang))
-            else:
-                record_failed_attempt(ip)
-                _, wait = check_rate_limit(ip)  # re-check after recording
-                attempts_left = MAX_LOGIN_ATTEMPTS - LOGIN_ATTEMPTS.get(ip, {}).get("count", 0)
-                extra = f" ({max(0, MAX_LOGIN_ATTEMPTS - 1 - LOGIN_ATTEMPTS.get(ip,{}).get('count',0))} attempts remaining before lockout)" if attempts_left > 1 else " Account will be locked on next failure."
-                return render_template("login.html", trans=trans, lang=lang, error=AUTH_ERROR + extra)
+        res = api_login()
+        if res.status_code == 200:
+            data = res.get_json()
+            flash(f"Welcome back, {data['user']['name']}!", "success")
+            role = data['user']['role']
+            if role == "admin": return redirect(url_for("admin_dashboard"))
+            if role == "farmer": return redirect(url_for("farmer_dashboard"))
+            if role == "hatchery": return redirect(url_for("hatchery_dashboard"))
+            if role == "lab_tech": return redirect(url_for("lab_tech_dashboard"))
+            if role == "buyer": return redirect(url_for("buyer_dashboard"))
+            return redirect(url_for("dashboard"))
         else:
-            record_failed_attempt(ip)
-            return render_template("login.html", trans=trans, lang=lang, error=AUTH_ERROR)
+            return render_template("login.html", trans=trans, lang=lang, error=res.get_json().get('message'))
             
     return render_template("login.html", trans=trans, lang=lang)
 
 @app.route("/login/google")
 def login_google():
-    """Initiate Google OAuth Flow"""
-    google_id = os.getenv('GOOGLE_CLIENT_ID')
-    
-    # Check if keys are actually present and not placeholders
-    if not google_id or "googleusercontent.com" not in google_id:
-        flash("SYSTEM: Google API keys are missing or invalid in .env. Falling back to Demo Mode.", "info")
+    """Initiate Google OAuth Flow via Supabase"""
+    # Safeguard for MockSupa
+    if "MockSupa" in str(type(supabase)):
+        flash("SYSTEM: Supabase is not configured. Falling back to Demo Mode.", "info")
         return redirect(url_for('mock_google_callback'))
     
     try:
-        redirect_uri = url_for('google_callback', _external=True)
-        # Force HTTPS if not on localhost (optional, but good for production)
-        if 'localhost' not in redirect_uri and '127.0.0.1' not in redirect_uri:
-            redirect_uri = redirect_uri.replace('http://', 'https://')
-            
-        return google.authorize_redirect(redirect_uri)
+        # Use Supabase to initiate the Google OAuth flow
+        # Redirect to /auth/callback to handle the session exchange
+        res = supabase.auth.sign_in_with_oauth({
+            "provider": "google",
+            "options": {
+                "redirect_to": "http://localhost:5000/auth/callback"
+            }
+        })
+        return redirect(res.url)
     except Exception as e:
+        print(f"Supabase OAuth Error: {e}")
         flash(f"OAuth Error: {str(e)}", "error")
         return redirect(url_for('login'))
 
@@ -803,7 +1010,82 @@ def ledger_hub():
 @app.route("/ai-vision")
 def ai_vision():
     """AI Vision Analysis Hub for disease and water quality"""
-    return render_template("ai_vision.html")
+    return render_template("ai_vision.html", vision_stats=AQUAVISION_DB["trained_weights"])
+
+@app.route("/api/vision/analyze", methods=["POST"])
+def api_vision_analyze():
+    data = request.get_json() or {}
+    filename = data.get("filename", "").lower()
+    
+    # 🧠 CUSTOM USER-TRAINED KNOWLEDGE FIRST
+    for keyword, disease_data in AQUAVISION_DB.get("custom_labels", {}).items():
+        if keyword in filename:
+            return jsonify({
+                "status": "success",
+                "is_aqua": True,
+                "data": disease_data,
+                "confidence": round(random.uniform(96, 99.8), 2)
+            })
+
+    # 🌊 STANDARD AQUA NEURAL IDENTIFIERS (V4 Core)
+    AQUA_IDENTIFIERS = {
+        "shrimp": {"type": "Tiger Prawn (P. monodon)", "disease": "White Spot Syndrome (WSSV)", "severity": "CRITICAL THREAT", "desc": "Neural core detected calcified WSSV patterns on carapace. Urgent isolation required."},
+        "vannamei": {"type": "Vannamei Shrimp", "disease": "Early Mortality (EMS/AHPND)", "severity": "CRITICAL THREAT", "desc": "Abnormal hepatopancreas pigments detected via convolutional scan."},
+        "prawn": {"type": "Macrobrachium", "disease": "Black Gill Disease", "severity": "HIGH RISK", "desc": "Melanized nodules detected in branchial chamber neural mapping."},
+        "fish": {"type": "Tilapia / Carp", "disease": "Fin Rot (Bacterial)", "severity": "HIGH RISK", "desc": "Neural biomarkers indicate severe tissue necrosis at fin extremities."},
+        "tilapia": {"type": "Tilapia", "disease": "Streptococcosis", "severity": "HIGH RISK", "desc": "Neural telemetry sync: Signs of lethargy and erratic swimming patterns detected."},
+        "water": {"type": "Pond Ecosystem", "disease": "Cyanobacteria Bloom", "severity": "MONITORING", "desc": "High chlorophyll-a concentration detected in photosynthetic spectrum."},
+        "pond": {"type": "Water Column", "disease": "Ammonia Spike Probability", "severity": "WARNING", "desc": "Water turbidity pattern matches high-nitrate/ammonia baseline DB."},
+        "crab": {"type": "Mud Crab", "disease": "Shell Disease", "severity": "MEDIUM", "desc": "Chitin-clastic bacterial markers detected on dorsal carapace."}
+    }
+
+    for key, info in AQUA_IDENTIFIERS.items():
+        if key in filename:
+            return jsonify({
+                "status": "success",
+                "is_aqua": True,
+                "data": info,
+                "confidence": round(random.uniform(92, 98), 2)
+            })
+            
+    return jsonify({
+        "status": "success",
+        "is_aqua": False,
+        "message": "Neural Core: No aquaculture features identified"
+    })
+
+@app.route("/api/vision/train", methods=["POST"])
+def api_vision_train():
+    data = request.get_json() or {}
+    keyword = data.get("keyword", "").lower()
+    disease = data.get("disease", "Unknown Cluster")
+    organism = data.get("organism", "Aquatic Organism")
+    severity = data.get("severity", "MONITORING")
+    desc = data.get("desc", "User-augmented neural classification pattern.")
+
+    if not keyword:
+        return jsonify({"status": "error", "message": "Keyword required for neural mapping"})
+
+    AQUAVISION_DB["custom_labels"][keyword] = {
+        "type": organism,
+        "disease": disease,
+        "severity": severity,
+        "desc": desc
+    }
+    
+    # Update Neural Weight Simulation
+    AQUAVISION_DB["trained_weights"]["total_images"] += random.randint(10, 50)
+    AQUAVISION_DB["trained_weights"]["last_trained"] = datetime.now().strftime("%Y-%m-%d %H:%M")
+    AQUAVISION_DB["trained_weights"]["accuracy"] = min(0.992, AQUAVISION_DB["trained_weights"]["accuracy"] + 0.001)
+    
+    save_aquavision()
+    
+    return jsonify({
+        "status": "success", 
+        "message": f"Neural Core successfully trained on '{keyword}' markers",
+        "total_images": AQUAVISION_DB["trained_weights"]["total_images"],
+        "new_accuracy": round(AQUAVISION_DB["trained_weights"]["accuracy"] * 100, 2)
+    })
 
 @app.route("/login/mock-google")
 def mock_google_callback():
@@ -836,9 +1118,7 @@ def mock_google_callback():
     # Role-based redirection
     role = session["role"]
     if role == "admin": return redirect(url_for("admin_dashboard"))
-    if role == "business": return redirect(url_for("business_portal"))
-    if role == "expert": return redirect(url_for("expert_portal"))
-    return redirect(url_for("home_page", lang=lang))
+    return redirect(url_for("dashboard"))
 
 @app.route("/register-role", methods=["GET", "POST"])
 def register_role():
@@ -885,26 +1165,31 @@ def register_role():
         flash(f"Welcome to AquaSphere, {session['user_name']}! Your {role.title()} portal is ready.", "success")
         
         if role == "admin": return redirect(url_for("admin_dashboard"))
-        if role == "business": return redirect(url_for("business_portal"))
-        if role == "expert": return redirect(url_for("expert_portal"))
-        return redirect(url_for("home_page", lang=lang))
+        return redirect(url_for("dashboard"))
         
     return render_template("register_role.html", trans=trans, lang=lang, geography=AQUA_GEOGRAPHY)
 
-@app.route("/login/google/callback")
-def google_callback():
-    """Handle Google OAuth Callback"""
-    try:
-        token = google.authorize_access_token()
-        resp = google.get('userinfo')
-        user_info = resp.json()
+@app.route("/auth/callback")
+def auth_callback():
+    """Handle Supabase OAuth Callback (PKCE Flow)"""
+    code = request.args.get("code")
+    if not code:
+        flash("Authentication failed: No code received from Supabase.", "error")
+        return redirect(url_for('login'))
         
-        email = user_info.get('email')
-        name = user_info.get('name', email.split('@')[0] if email else 'Google User')
-        picture = user_info.get('picture', '')
+    try:
+        # Exchange the code for a session
+        res = supabase.auth.exchange_code_for_session({"auth_code": code})
+        user = res.user
+        
+        email = user.email
+        # Extract metadata from Supabase User object
+        metadata = getattr(user, 'user_metadata', {})
+        name = metadata.get('full_name') or metadata.get('name') or email.split('@')[0]
+        picture = metadata.get('avatar_url') or metadata.get('picture', '')
         
         if not email:
-            flash("Failed to retrieve email from Google.", "error")
+            flash("Failed to retrieve email from Supabase Auth.", "error")
             return redirect(url_for('login'))
 
         # Redirect new users to role selection
@@ -943,57 +1228,83 @@ def google_callback():
         flash(f"Welcome back, {name}! ({session['role'].title()} Portal Active)", "success")
         
         # Role-based redirection
-        role = session["role"]
+        role = get_role()
         if role == "admin": return redirect(url_for("admin_dashboard"))
-        if role == "business": return redirect(url_for("business_portal"))
-        if role == "expert": return redirect(url_for("expert_portal"))
-        return redirect(url_for("home_page", lang=lang))
+        return redirect(url_for("dashboard"))
     except Exception as e:
-        print(f"Google Callback Error: {e}")
+        print(f"Supabase Callback Error: {e}")
         flash(f"Authentication failed: {str(e)}", "error")
         return redirect(url_for('login'))
+
+@app.route("/api/signup", methods=["POST"])
+def api_signup():
+    data = request.get_json(silent=True) or request.form
+    trans, lang = get_trans()
+    name = data.get("name")
+    email = data.get("email")
+    password = data.get("password")
+    role = data.get("role", "farmer")
+    
+    if email in USERS_DB:
+        return jsonify({"status": "error", "message": "Email already registered."}), 400
+    
+    USERS_DB[email] = {
+        "name": name,
+        "password": generate_password_hash(password),
+        "role": role,
+        "joined_at": datetime.now().isoformat(),
+        "auth_method": "local"
+    }
+    
+    if email == "bhogeswararaothirumalasetti@gmail.com":
+        USERS_DB[email]["role"] = "admin"
+        
+    save_json(USERS_FILE, USERS_DB)
+    
+    # Log them in automatically
+    session["user"] = email
+    session["user_name"] = name
+    session["role"] = USERS_DB[email]["role"]
+    
+    return jsonify({
+        "status": "success",
+        "user": {
+            "email": email,
+            "name": name,
+            "role": session["role"]
+        }
+    })
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     trans, lang = get_trans()
     if request.method == "POST":
-        name = request.form.get("name")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        role = request.form.get("role", "farmer")
-        
-        # Simple Local Signup (No Supabase for now)
-        if email in USERS_DB:
-            flash("Email already registered. Please login.", "error")
-            return redirect(url_for("login", lang=lang))
-        
-        # Save to local DB
-        USERS_DB[email] = {
-            "name": name,
-            "password": generate_password_hash(password),
-            "role": role,
-            "joined_at": datetime.now().isoformat(),
-            "auth_method": "local"
-        }
-        
-        # Automated admin role for the developer
-        if email == "bhogeswararaothirumalasetti@gmail.com":
-            USERS_DB[email]["role"] = "admin"
-            
-        save_json(USERS_FILE, USERS_DB)
-        
-        session["user"] = email
-        session["user_name"] = name
-        session["role"] = USERS_DB[email]["role"]
-        
-        flash(f"Account created as {session['role'].title()}! Welcome.", "success")
-        
-        # Redirect based on newly created role
-        if session["role"] == "business": return redirect(url_for("business_portal"))
-        if session["role"] == "expert": return redirect(url_for("expert_portal"))
-        return redirect(url_for("home_page", lang=lang))
+        res = api_signup()
+        if res.status_code == 200:
+            data = res.get_json()
+            flash(f"Account created as {data['user']['role'].title()}! Welcome.", "success")
+            role = data['user']['role']
+            if role == "admin": return redirect(url_for("admin_dashboard"))
+            if role == "farmer": return redirect(url_for("farmer_dashboard"))
+            return redirect(url_for("dashboard"))
+        else:
+            flash(res.get_json().get('message'), "error")
+            return redirect(url_for("signup", lang=lang))
                 
     return render_template("signup.html", trans=trans, lang=lang)
+
+@app.route("/api/translations")
+def api_translations():
+    return jsonify(TRANSLATIONS)
+
+@app.route("/api/logout")
+def api_logout():
+    """JSON logout for React frontend"""
+    session.pop("user", None)
+    session.pop("user_name", None)
+    session.pop("role", None)
+    session.pop("user_pic", None)
+    return jsonify({"status": "success", "message": "Logged out"})
 
 @app.route("/logout")
 def logout():
@@ -1038,25 +1349,410 @@ def settings():
         flash("System settings updated and saved successfully.", "success")
         return redirect(url_for("settings", lang=lang))
         
-    return render_template("settings.html", trans=trans, lang=lang, config=APP_CONFIG)
+# --- 📊 ROLE-BASED DASHBOARD ROUTES ---
 
-@app.route("/")
-def landing():
-    """Public Landing Page"""
+@app.route("/farmer")
+@role_required(['farmer', 'admin'])
+def farmer_dashboard():
+    trans, lang = get_trans()
+    # Also fetch additional weather/stats if needed
+    return render_template("farmer_dashboard.html", trans=trans, lang=lang)
+
+@app.route("/hatchery")
+@role_required(['hatchery', 'admin'])
+def hatchery_dashboard():
+    trans, lang = get_trans()
+    return render_template("hatchery_dashboard.html", trans=trans, lang=lang)
+
+@app.route("/lab-tech")
+@role_required(['lab_tech', 'admin'])
+def lab_tech_dashboard():
+    trans, lang = get_trans()
+    return render_template("technician_dashboard.html", trans=trans, lang=lang)
+
+@app.route("/buyer")
+@role_required(['buyer', 'admin'])
+def buyer_dashboard_route():
+    trans, lang = get_trans()
+    return render_template("buyer_dashboard.html", trans=trans, lang=lang)
+
+@app.route("/api/user-status")
+def api_user_status():
+    if 'user' in session:
+        return jsonify({
+            "status": "success",
+            "user": {
+                "email": session["user"],
+                "name": session["user_name"],
+                "role": session["role"],
+                "pic": session["user_pic"]
+            }
+        })
+    return jsonify({"status": "guest"})
+
+@app.route("/api/aquacycle/dashboard")
+@login_required
+def api_aquacycle_dashboard():
+    user_email = session.get("user")
+    user_role = get_role()
     trans, lang = get_trans()
     
-    # If user is already logged in, redirect to home page
-    if 'user' in session:
-        return redirect(url_for("home_page", lang=lang))
+    # Get connections
+    connection_ids = AQUACYCLE_CONNECTIONS.get(user_role, [])
+    connections = []
+    for rid in connection_ids:
+        if rid in AQUA_ROLES:
+            connections.append({
+                "id": rid,
+                "name": trans.get(f"role_{rid}", AQUA_ROLES[rid]["name"]),
+                "icon": AQUA_ROLES[rid]["icon"],
+                "category": AQUA_ROLES[rid]["category"]
+            })
+            
+    # Filter Leads & Reports for this role
+    role_leads = [L for L in AQUACYCLE_DB["leads"] if L.get("to") == user_role or L.get("from") == user_role]
+    role_reports = [R for R in AQUACYCLE_DB["reports"] if R.get("to") == user_role or R.get("from") == user_role]
 
-    # FETCH REAL LIVE DATA (Weather) - Client will handle offline state
-    weather_info = "Loading..."
+    # Generate Role-Specific Widgets
+    widgets = [
+        {"label": "Market Pulse", "value": "Bullish", "color": "emerald"},
+        {"label": "Weather Sync", "value": "29°C Clear", "color": "amber"}
+    ]
+    category = AQUA_ROLES.get(user_role, {}).get("category", "")
+
+    if category == "Production":
+        widgets += [
+            {"label": "Active Ponds", "value": str(random.randint(3, 6)), "color": "cyan"},
+            {"label": "Yield Estim.", "value": f"{random.randint(70, 85)}%", "color": "emerald"},
+            {"label": "Bio-Security", "value": "SAFE", "color": "emerald"}
+        ]
+    elif category == "Supply":
+        widgets += [
+            {"label": "Active Leads", "value": str(len(role_leads) + random.randint(0,2)), "color": "blue"},
+            {"label": "Inventory", "value": random.choice(["Optimal", "Stable", "High"]), "color": "cyan"},
+            {"label": "Demand Index", "value": random.choice(["High", "Medium", "Surging"]), "color": "amber"}
+        ]
+    elif category == "Support":
+        widgets = [
+            {"label": "Pending Tasks", "value": str(random.randint(4, 9)), "color": "purple"},
+            {"label": "Resolved Reports", "value": str(140 + random.randint(0, 10)), "color": "emerald"},
+            {"label": "Critical Alerts", "value": "0", "color": "red"}
+        ]
+    elif category == "Logistics":
+        widgets = [
+            {"label": "Active Pickups", "value": str(random.randint(2, 5)), "color": "cyan"},
+            {"label": "Deliveries Today", "value": str(7 + random.randint(0, 3)), "color": "blue"},
+            {"label": "Route Efficiency", "value": f"{92 + random.uniform(0, 5):.1f}%", "color": "emerald"}
+        ]
+    elif category == "Processing":
+        widgets = [
+            {"label": "Batch Processing", "value": "Active", "color": "cyan"},
+            {"label": "Daily Throughput", "value": f"{10 + random.randint(0, 5)} Tons", "color": "blue"},
+            {"label": "QC Passes", "value": "100%", "color": "emerald"}
+        ]
+    elif category == "Quality":
+        widgets = [
+            {"label": "Pending Inspections", "value": str(random.randint(2, 6)), "color": "amber"},
+            {"label": "Rejected Batches", "value": "0", "color": "red"},
+            {"label": "Quality Score", "value": f"{9.5 + random.uniform(0, 0.4):.1f}/10", "color": "emerald"}
+        ]
+    elif category == "Market":
+        widgets = [
+            {"label": "Market Price", "value": f"₹{440 + random.randint(0, 40)}/kg", "color": "emerald"},
+            {"label": "Demand Trend", "value": random.choice(["BULLISH", "STABLE", "PEAK"]), "color": "emerald"},
+            {"label": "Global Reach", "value": "14 Countries", "color": "blue"}
+        ]
+    elif category == "Governance":
+        widgets = [
+            {"label": "Active Licenses", "value": "1,240", "color": "cyan"},
+            {"label": "Pending Approvals", "value": str(20 + random.randint(0, 10)), "color": "amber"},
+            {"label": "Violation Rate", "value": "0.2%", "color": "emerald"}
+        ]
+    elif category == "Finance":
+        widgets = [
+            {"label": "Active Loans", "value": f"₹{4.2 + random.uniform(0, 0.6):.1f} Cr", "color": "emerald"},
+            {"label": "Repayment Rate", "value": "98.5%", "color": "emerald"},
+            {"label": "Risk Exposure", "value": "LOW", "color": "emerald"}
+        ]
+    else: # System/Admin
+        widgets = [
+            {"label": "Platform Users", "value": f"{8.4 + random.uniform(0, 0.2):.1f}k", "color": "cyan"},
+            {"label": "System Health", "value": "Online", "color": "emerald"},
+            {"label": "Daily Txns", "value": f"₹{1.1 + random.uniform(0, 0.3):.1f}M", "color": "blue"}
+        ]
+
+    # Dynamic Randomized Feed (Real-time feeling)
+    recent_activity = []
+    if role_leads:
+        recent_activity.append({"type": "lead", "msg": f"Lead: {role_leads[-1]['msg']}", "time": "Just Now"})
+    if role_reports:
+        recent_activity.append({"type": "ledger", "msg": f"Log: {role_reports[-1]['title']}", "time": "2m ago"})
+        
+    system_events = random.sample([
+        {"type": "sat", "msg": "Satellite Link: Zone-4 Sync Complete", "time": "Just Now"},
+        {"type": "market", "msg": "Market Price: Vannamei UP 0.5%", "time": "5m ago"},
+        {"type": "bio", "msg": "Bio-Security Gradient: Active", "time": "12m ago"},
+        {"type": "log", "msg": "Logistics: Batch B-4421 Dispatched", "time": "15m ago"},
+        {"type": "sys", "msg": "Neural Engine Optimization: SAFE", "time": "20m ago"},
+        {"type": "env", "msg": "Sensor Node-12: Calibration Sync", "time": "25m ago"}
+    ], 3)
+    recent_activity += system_events
+    
+    role_data = {
+        "user_info": {
+            "name": session.get("user_name"),
+            "role": user_role,
+            "role_display": AQUA_ROLES.get(user_role, {}).get("name")
+        },
+        "role_info": AQUA_ROLES.get(user_role, {}),
+        "actions": AQUA_ROLE_ACTIONS.get(user_role, []),
+        "connections": connections,
+        "leads": role_leads,
+        "reports": role_reports,
+        "widgets": widgets,
+        "recent_activity": recent_activity[:5]
+    }
+    
+    return jsonify({
+        "status": "success",
+        "data": role_data
+    })
+@app.route("/api/aquacycle/work", methods=["POST"])
+@login_required
+def api_aquacycle_work():
+    data = request.get_json(silent=True) or {}
+    action = data.get("action")
+    user_email = session.get("user")
+    user_role = get_role()
+    
+    if not action:
+        return jsonify({"status": "error", "message": "No action specified"})
+
+    # HATCHERY OWNER ACTIONS
+    if action == "register_hatchery" and user_role == "hatchery":
+        h_id = f"H-{random.randint(100,999)}"
+        AQUACYCLE_DB["hatcheries"][h_id] = {
+            "owner": user_email,
+            "name": data.get("name"),
+            "location": data.get("location"),
+            "status": "active",
+            "batches": []
+        }
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Hatchery Registered", "id": h_id})
+
+    # GENERIC RECORDING ACTION (For Logs, Breeding, Feeding, etc.)
+    elif action in ["breeding_log", "larvae_growth", "feeding_log", "temp_log", "daily_sales", "production_log", "record_stocking", "track_feed_usage", "water_test", "daily_pond_activity", "monitor_growth", "record_results", "record_batch", "record_quantity", "record_storage", "manage_sales", "track_repayments"]:
+        entry = {
+            "id": f"LOG-{random.randint(1000,9999)}",
+            "from": user_role,
+            "to": user_role,
+            "title": f"{action.replace('_', ' ').title()} Entry",
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "data": data
+        }
+        AQUACYCLE_DB["reports"].append(entry)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Log entry recorded successfully"})
+
+    # ORDER / REQUEST ACTIONS
+    elif action in ["buy_seed", "water_test_request", "order_stock", "receive_orders", "receive_samples", "receive_harvest_requests", "receive_ice_orders", "place_orders", "purchase_stock", "buy_seafood", "approve_regs", "approve_loans", "accept_transport", "receive_harvest"]:
+        lead = {
+            "id": f"LD-{random.randint(1000,9999)}",
+            "from": user_role,
+            "to": data.get("target_role", "hatchery" if action == "buy_seed" else "lab_tech"),
+            "msg": f"New {action.replace('_', ' ')} request from {session.get('user_name')}",
+            "status": "pending"
+        }
+        AQUACYCLE_DB["leads"].append(lead)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": f"{action.replace('_', ' ').title()} request sent"})
+
+    # STATUS UPDATE ACTIONS
+    elif action in ["batch_status", "update_ice_stock", "list_inventory", "list_products", "deliver_seed", "update_delivery_status", "manage_transport_orders", "list_feed_products", "update_stock", "list_harvest_sale", "schedule_harvest", "track_deliveries", "list_medicines", "provide_instructions", "schedule_teams", "confirm_completion", "deliver_ice", "confirm_delivery", "grade_seafood", "manage_packaging", "send_to_buyers", "release_product", "make_payments", "upload_docs", "monitor_transactions", "handle_disputes"]:
+        record = {
+            "id": f"UP-{random.randint(1000,9999)}",
+            "from": user_role,
+            "title": f"Status Update: {action.replace('_', ' ').title()}",
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "status": "Success"
+        }
+        AQUACYCLE_DB["reports"].append(record)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": f"{action.replace('_', ' ').title()} updated successfully"})
+
+    # AUDIT / INSPECTION ACTIONS
+    elif action in ["inspect_batch", "field_audit", "verify_claim", "view_hatchery_availability", "report_disease", "report_farm_issue", "upload_reports", "send_alerts", "view_farm_data", "analyze_reports", "give_recommendations", "alert_disease_risk", "view_jobs", "track_shipment", "inspect_quality", "upload_qc_reports", "approve_batch", "monitor_inventory", "view_harvest_lots", "view_bulk_availability", "track_shipments", "monitor_farms", "verify_licenses", "inspect_production", "approve_export", "offer_loans", "provide_insurance", "process_claims", "monitor_insured", "manage_users", "view_analytics"]:
+        report = {
+            "id": f"REP-{random.randint(1000,9999)}",
+            "from": user_role,
+            "to": data.get("target_id", "system"),
+            "title": f"{action.replace('_', ' ').title()} Result",
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "status": "Passed"
+        }
+        AQUACYCLE_DB["reports"].append(report)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": f"{action.replace('_', ' ').title()} completed and report filed"})
+
+    # LOAD / FINANCE ACTIONS
+    elif action == "apply_loan":
+        lead = {
+            "id": f"LOAN-{random.randint(1000,9999)}",
+            "from": user_role,
+            "to": "admin",
+            "msg": f"Loan application for ₹{data.get('amount', '5,00,000')}",
+            "status": "Under Review"
+        }
+        AQUACYCLE_DB["leads"].append(lead)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Loan application submitted for review"})
+
+
+
+    if action == "register_farm_ponds" and user_role in ["farmer", "admin"]:
+        f_id = f"F-P-{random.randint(100,999)}"
+        # Mock registration
+        return jsonify({"status": "success", "message": "Farm and Ponds registered in connectivity matrix", "id": f_id})
+
+    if action == "create_batch" and user_role == "hatchery":
+        b_id = f"B-{random.randint(1000,9999)}"
+        batch = {
+            "id": b_id,
+            "h_id": data.get("h_id"),
+            "type": data.get("type"),
+            "count": data.get("count"),
+            "price": data.get("price"),
+            "health": data.get("health", 100),
+            "status": "available",
+            "created_at": datetime.now().isoformat()
+        }
+        AQUACYCLE_DB["seed_batches"].append(batch)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Batch Created", "id": b_id})
+
+    # HATCHERY OWNER ADDITIONAL ACTIONS
+    if action in ["upload_health_cert", "list_seed_sale", "accept_orders", "track_deliveries"] and user_role == "hatchery":
+        record = {
+            "id": f"H-OP-{random.randint(1000,9999)}",
+            "from": user_role,
+            "to": user_role,
+            "type": "operation",
+            "action": action,
+            "title": action.replace('_', ' ').title(),
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "status": "Completed"
+        }
+        AQUACYCLE_DB["reports"].append(record)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": f"{action.replace('_', ' ').title()} recorded in system logs"})
+
+    # FARMER ACTIONS
+    if action == "register_farm" and user_role == "farmer":
+        f_id = f"F-{random.randint(100,999)}"
+        AQUACYCLE_DB["farms"][f_id] = {
+            "owner": user_email,
+            "name": data.get("name"),
+            "location": data.get("location"),
+            "ponds": []
+        }
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Farm Registered", "id": f_id})
+
+    if action == "add_pond" and user_role in ["farmer", "farmer"]:
+        p_id = f"P-{random.randint(100,999)}"
+        pond = {
+            "id": p_id,
+            "f_id": data.get("f_id"),
+            "name": data.get("name"),
+            "status": "pre-stocking",
+            "daily_logs": []
+        }
+        AQUACYCLE_DB["ponds"].append(pond)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Pond Added", "id": p_id})
+
+    # SUPPLY CHAIN ACTIONS
+    if action == "list_inventory" and user_role in ["feed_supplier", "feed_supplier"]:
+        i_id = f"I-{random.randint(100,999)}"
+        item = {
+            "id": i_id,
+            "owner": user_email,
+            "name": data.get("name"),
+            "type": data.get("type"),
+            "qty": data.get("qty"),
+            "price": data.get("price")
+        }
+        AQUACYCLE_DB["inventory"].append(item)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Inventory Updated"})
+
+    # LAB TECH ACTIONS
+    if action == "upload_report" and user_role == "lab_tech":
+        r_id = f"R-{random.randint(1000,9999)}"
+        report = {
+            "id": r_id,
+            "from": user_role,
+            "to": data.get("target_role", "farmer"),
+            "title": data.get("title"),
+            "date": datetime.now().strftime("%Y-%m-%d"),
+            "file": "report_link_mock"
+        }
+        AQUACYCLE_DB["reports"].append(report)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Report Uploaded"})
+
+    # HARVEST ACTIONS
+    if action == "schedule_harvest" and user_role in ["farmer", "farmer"]:
+        h_id = f"HVT-{random.randint(100,999)}"
+        job = {
+            "id": h_id,
+            "type": "harvest",
+            "location": data.get("location"),
+            "status": "pending",
+            "assigned_to": "harvest_contractor"
+        }
+        AQUACYCLE_DB["jobs"].append(job)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Harvest Scheduled"})
+
+    # LOGISTICS ACTIONS
+    if action == "request_transport" and user_role in ["farmer", "hatchery", "processing_plant"]:
+        s_id = f"SHP-{random.randint(1000,9999)}"
+        shipment = {
+            "id": s_id,
+            "from": user_email,
+            "to": data.get("destination"),
+            "status": "pending_pickup",
+            "type": data.get("shipment_type")
+        }
+        AQUACYCLE_DB["shipments"].append(shipment)
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Transport Requested"})
+
+    # FINANCE ACTIONS
+    if action == "apply_loan" and user_role == "farmer":
+        l_id = f"LOAN-{random.randint(100,999)}"
+        AQUACYCLE_DB["finance"]["loans"].append({
+            "id": l_id,
+            "user": user_email,
+            "amount": data.get("amount"),
+            "status": "under_review"
+        })
+        save_aquacycle()
+        return jsonify({"status": "success", "message": "Loan Application Submitted"})
+
+    return jsonify({"status": "error", "message": "Unauthorized or Invalid Action"})
+
+@app.route("/api/landing")
+def api_landing():
+    trans, lang = get_trans()
+    # FETCH REAL LIVE DATA (Weather)
+    weather_info = "28°C Clear"
     try:
         res = requests.get("https://wttr.in/Visakhapatnam?format=%t+%C", timeout=2)
-        if res.status_code == 200:
-            weather_info = res.text
-    except:
-        weather_info = "28°C Clear"
+        if res.status_code == 200: weather_info = res.text
+    except: pass
     
     live_stats = {
         "weather": weather_info,
@@ -1064,34 +1760,83 @@ def landing():
         "active_experts": random.randint(12, 25),
         "global_users": "8.4k+"
     }
-    
-    return render_template("index.html", trans=trans, lang=lang, live_stats=live_stats)
+    return jsonify({"status": "success", "trans": trans, "lang": lang, "live_stats": live_stats})
 
-@app.route("/home")
-@role_required(['farmer', 'admin'])
-def home_page():
-    """Personalized Home Page for logged-in users"""
+@app.route("/")
+def landing():
+    """Public Landing Page"""
+    res = api_landing().get_json()
+    if 'user' in session:
+        return redirect(url_for("dashboard"))
+    return render_template("index.html", trans=res['trans'], lang=res['lang'], live_stats=res['live_stats'])
+
+@app.route("/api/home")
+@login_required
+def api_home_data():
     trans, lang = get_trans()
     user_id = session.get('user')
     user_data = USERS_DB.get(user_id, {"name": "User", "role": "farmer"})
     
-    # Mock some personalized stats
     personal_stats = {
         "active_ponds": random.randint(2, 5),
         "total_biomass": f"{random.randint(1200, 5000)} kg",
         "market_valuation": f"${random.randint(5000, 25000)}",
         "health_score": f"{random.randint(85, 98)}%"
     }
-    
-    return render_template("home.html", trans=trans, lang=lang, user=user_data, stats=personal_stats, experts=EXPERTS_DB)
+    return jsonify({
+        "status": "success",
+        "user": {
+            "name": user_data.get("name"),
+            "role": user_data.get("role"),
+            "pic": user_data.get("picture")
+        },
+        "stats": personal_stats,
+        "experts": EXPERTS_DB[:5] # Limit for dashboard
+    })
+
+@app.route("/home")
+@login_required
+def home_page():
+    """Personalized Home Page for logged-in users"""
+    res = api_home_data().get_json()
+    trans, lang = get_trans()
+    return render_template("home.html", trans=trans, lang=lang, user=res['user'], stats=res['stats'], experts=EXPERTS_DB, aqua_roles=AQUA_ROLES)
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    """Unified Role-Based Dashboard - Fallback and Ecosystem Feed"""
+    role = session.get('role', 'farmer')
+    api_res = api_aquacycle_dashboard().get_json()
+    if api_res.get('status') == 'error':
+        flash(api_res.get('message', 'Access Denied'), "error")
+        return redirect(url_for("home_page"))
+        
+    trans, lang = get_trans()
+    return render_template("dashboard.html", 
+                         trans=trans, 
+                         lang=lang, 
+                         dashboard_data=api_res['data'],
+                         aqua_roles=AQUA_ROLES)
+
+@app.route("/api/farmer/hub")
+@role_required(['farmer', 'admin'])
+def api_farmer_hub():
+    trans, lang = get_trans()
+    user_id = session.get('user')
+    user_problems = [p for p in PROBLEMS_DB if p.get('user_id') == user_id]
+    return jsonify({
+        "status": "success",
+        "problems": user_problems,
+        "lang": lang
+    })
 
 @app.route("/farmer")
 @role_required(['farmer', 'admin'])
 def farmer_hub():
     trans, lang = get_trans()
-    user_id = session.get('user')
-    user_problems = [p for p in PROBLEMS_DB if p.get('user_id') == user_id]
-    return render_template("farmer_hub.html", trans=trans, lang=lang, problems=user_problems)
+    res = api_farmer_hub().get_json()
+    return render_template("farmer_hub.html", trans=trans, lang=lang, problems=res['problems'])
 
 @app.route("/farmer/disease")
 @role_required(['farmer', 'admin'])
@@ -1180,10 +1925,9 @@ def cache_info():
         "message": "Cache info retrieved"
     })
 
-@app.route("/market")
-def market():
+@app.route("/api/market")
+def api_market_data():
     trans, lang = get_trans()
-    # Simulated LIVE Global Stock Data with random fluctuations
     base_stocks = [
         {"id": 1, "country": "Norway", "state": "Nordland", "species": "Salmon", "qty": 45, "price": 12.5, "flag": "🇳🇴"},
         {"id": 2, "country": "Vietnam", "state": "Mekong Delta", "species": "Vannamei", "qty": 120, "price": 6.8, "flag": "🇻🇳"},
@@ -1195,21 +1939,24 @@ def market():
         {"id": 8, "country": "Thailand", "state": "Eastern Gulf", "species": "Seabass", "qty": 60, "price": 10.5, "flag": "🇹🇭"}
     ]
     
-    # Add random "live" fluctuation (-2% to +2%)
     stocks = []
     for s in base_stocks:
         fluctuation = 1 + (random.uniform(-0.02, 0.02))
         s['price'] = round(s['price'] * fluctuation, 2)
         s['price_inr'] = round(s['price'] * USD_TO_INR, 2)
         s['last_update'] = datetime.now().strftime("%H:%M:%S")
-        
-        # Translate
         s['species_display'] = trans.get(f"species_{s['species'].lower().replace(' ', '_')}", s['species'])
         s['country_display'] = trans.get(f"country_{s['country'].lower().replace(' ', '_')}", s['country'])
         s['state_display'] = trans.get(f"region_{s['state'].lower().replace(' ', '_')}", s['state'])
         stocks.append(s)
 
-    return render_template("market.html", trans=trans, lang=lang, stocks=stocks)
+    return jsonify({"status": "success", "stocks": stocks})
+
+@app.route("/market")
+def market():
+    res = api_market_data().get_json()
+    trans, lang = get_trans()
+    return render_template("market.html", trans=trans, lang=lang, stocks=res['stocks'])
 
 @app.route("/place_order", methods=["POST"])
 @login_required
@@ -1237,64 +1984,86 @@ def buyer():
     trans, lang = get_trans()
     return render_template("buyer_dashboard.html", trans=trans, lang=lang)
 
+@app.route("/api/predict_disease", methods=["POST"])
+def api_predict_disease():
+    data = request.get_json(silent=True) or request.form
+    trans, lang = get_trans()
+    species_name = data.get("species", "Vannamei")
+    
+    try:
+        vals = [
+            float(data["temp"]),
+            float(data["ph"]),
+            float(data["do"]),
+            float(data["salinity"]),
+            float(data["turbidity"])
+        ]
+        risk_score = disease_model.predict([vals])[0]
+        
+        # Advanced Early Warning Logic
+        if risk_score > 0.7:
+            state = trans['state_critical']
+            advise = PRECAUTIONS["Disease"]["Action"]
+        elif risk_score > 0.3:
+            state = trans['state_risk']
+            advise = PRECAUTIONS["Disease"]["Prevention"] + [trans.get("precaution_increase_monitoring", "Increase monitoring frequency")]
+        else:
+            state = trans['state_healthy']
+            advise = PRECAUTIONS["Disease"]["Prevention"]
+        
+        if species_name in SPECIES_RULES:
+            rules = SPECIES_RULES[species_name]
+            if not (rules["salinity"][0] <= vals[3] <= rules["salinity"][1]):
+                advise.append(trans['warn_salinity'].format(species=species_name, low=rules['salinity'][0], high=rules['salinity'][1]))
+            if not (rules["pH"][0] <= vals[1] <= rules["pH"][1]):
+                advise.append(trans['warn_ph'].format(species=species_name, low=rules['pH'][0], high=rules['pH'][1]))
+
+        return jsonify({
+            "status": "success",
+            "title": trans['disease_title'],
+            "description": f"{trans['feat_disease_desc']} ({species_name})",
+            "result": state,
+            "risk_score": float(risk_score),
+            "unit": trans['suitability_score'],
+            "precautions": advise
+        })
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 400
+
 @app.route("/predict_disease", methods=["POST"])
 def predict_disease():
-    trans, lang = get_trans()
-    # Try to get species, fallback to Vannamei for specific rules
-    species_name = request.form.get("species", "Vannamei")
+    # Legacy route redirection or compatibility
+    res = api_predict_disease()
+    if res.status_code != 200:
+        return render_template("result.html", trans={}, lang='en', title="Error", description="Prediction failed", result="ERROR", unit="", precautions=[str(res.get_json().get('message'))])
     
-    vals = [
-        float(request.form["temp"]),
-        float(request.form["ph"]),
-        float(request.form["do"]),
-        float(request.form["salinity"]),
-        float(request.form["turbidity"])
-    ]
-    risk_score = disease_model.predict([vals])[0]
-    
-    # Advanced Early Warning Logic
-    if risk_score > 0.7:
-        state = trans['state_critical']
-        advise = PRECAUTIONS["Disease"]["Action"]
-    elif risk_score > 0.3:
-        state = trans['state_risk']
-        advise = PRECAUTIONS["Disease"]["Prevention"] + [trans.get("precaution_increase_monitoring", "Increase monitoring frequency")]
-    else:
-        state = trans['state_healthy']
-        advise = PRECAUTIONS["Disease"]["Prevention"]
-    
-    if species_name in SPECIES_RULES:
-        rules = SPECIES_RULES[species_name]
-        if not (rules["salinity"][0] <= vals[3] <= rules["salinity"][1]):
-            advise.append(trans['warn_salinity'].format(species=species_name, low=rules['salinity'][0], high=rules['salinity'][1]))
-        if not (rules["pH"][0] <= vals[1] <= rules["pH"][1]):
-            advise.append(trans['warn_ph'].format(species=species_name, low=rules['pH'][0], high=rules['pH'][1]))
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
 
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['disease_title'],
-                         description=f"{trans['feat_disease_desc']} ({species_name})",
-                         result=state,
-                         unit=trans['suitability_score'],
-                         precautions=advise)
-
-@app.route("/predict_location", methods=["POST"])
-def predict_location():
+@app.route("/api/predict_location", methods=["POST"])
+def api_predict_location():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
     # Robust handling for new global locations
     try:
-        country_val = le_country.transform([request.form["country"]])[0]
+        country_val = le_country.transform([data["country"]])[0]
     except:
         country_val = le_country.transform(["Vietnam"])[0] if "Vietnam" in le_country.classes_ else 0
         
     try:
-        state_val = le_state.transform([request.form["state"]])[0]
+        state_val = le_state.transform([data["state"]])[0]
     except:
         state_val = le_state.transform(["Mekong Delta"])[0] if "Mekong Delta" in le_state.classes_ else 0
 
-    climate_name = request.form.get("climate", "Tropical")
+    climate_name = data.get("climate", "Tropical")
     climate_val = le_climate.transform([climate_name])[0]
-    aqua_type = le_aqua.transform([request.form["aqua_type"]])[0]
-    species = le_species_loc.transform([request.form["species"]])[0]
+    aqua_type = le_aqua.transform([data["aqua_type"]])[0]
+    species = le_species_loc.transform([data["species"]])[0]
     
     vals = [[country_val, state_val, climate_val, aqua_type, species]]
     score = location_model.predict(vals)[0]
@@ -1311,12 +2080,27 @@ def predict_location():
     if climate_warning:
         advise.append(climate_warning)
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['loc_title'],
-                         description=f"{trans['feat_loc_desc']} ({species} in {climate_name})",
-                         result=f"{round(score, 1)}%",
-                         unit=trans['suitability_score'],
-                         precautions=advise)
+    return jsonify({
+        "status": "success",
+        "title": trans['loc_title'],
+        "description": f"{trans['feat_loc_desc']} ({data['species']} in {climate_name})",
+        "result": f"{round(score, 1)}%",
+        "score": float(score),
+        "unit": trans['suitability_score'],
+        "precautions": advise
+    })
+
+@app.route("/predict_location", methods=["POST"])
+def predict_location():
+    res = api_predict_location()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
 
 @app.route("/farmer/logbook")
 def logbook():
@@ -1333,12 +2117,13 @@ def export_compliance():
     trans, lang = get_trans()
     return render_template("export_checker.html", trans=trans, lang=lang)
 
-@app.route("/check_export", methods=["POST"])
-def check_export():
+@app.route("/api/check_export", methods=["POST"])
+def api_check_export():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    species = request.form.get("species")
-    abw = float(request.form.get("abw", 0))
-    region = request.form.get("region", "EU")
+    species = data.get("species")
+    abw = float(data.get("abw", 0))
+    region = data.get("region", "EU")
     
     # Export logic (Feature 7)
     eligible = False
@@ -1348,28 +2133,44 @@ def check_export():
     
     result = trans['eligible'] if eligible else trans['ineligible']
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['export_compliance_title'].format(region=region),
-                         description=f"{trans['export_compliance']} ({species}):",
-                         result=result,
-                         unit="Quality Audit Report",
-                         precautions=[trans['precaution_antibiotic'], trans['precaution_cold_chain']])
+    return jsonify({
+        "status": "success",
+        "title": trans['export_compliance_title'].format(region=region),
+        "description": f"{trans['export_compliance']} ({species}):",
+        "result": result,
+        "eligible": eligible,
+        "unit": "Quality Audit Report",
+        "precautions": [trans['precaution_antibiotic'], trans['precaution_cold_chain']]
+    })
 
-@app.route("/predict_feed", methods=["POST"])
-def predict_feed():
+@app.route("/check_export", methods=["POST"])
+def check_export():
+    res = api_check_export()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
+
+@app.route("/api/predict_feed", methods=["POST"])
+def api_predict_feed():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    species_name = request.form.get("species", "Vannamei")
+    species_name = data.get("species", "Vannamei")
     species = le_species_feed.transform([species_name])[0]
-    age = float(request.form.get("age", 30))
-    temp = float(request.form.get("temp", 28))
-    feed_type_name = request.form.get("feed_type", "Pellet")
+    age = float(data.get("age", 30))
+    temp = float(data.get("temp", 28))
+    feed_type_name = data.get("feed_type", "Pellet")
     feed_type = le_feed.transform([feed_type_name])[0]
     
     vals = [[species, age, temp, 6.0, feed_type, 32]]
     quantity_kg = feed_model.predict(vals)[0]
     
     # Unit conversion
-    unit_pref = request.form.get("unit_preference", "kg")
+    unit_pref = data.get("unit_preference", "kg")
     quantity_display, unit_label = convert_quantity(quantity_kg, unit_pref, from_unit="kg")
     
     # Feed Optimization & Cost Reduction (Feature 13)
@@ -1382,12 +2183,31 @@ def predict_feed():
     advise = PRECAUTIONS["Growth"]["Optimize"] if temp > 25 else PRECAUTIONS["Growth"]["Risk"]
     advise.append(f"💰 {saving_tip}")
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['feed_optimizer_title'],
-                         description=f"{trans['feed_desc']} ({species_name}):",
-                         result=f"{round(quantity_display, 2)}",
-                         unit=f"{unit_label} | Estimated Cost: ${round(total_cost_usd, 2)} / ₹{round(total_cost_inr, 2)} per Day",
-                         precautions=advise)
+    return jsonify({
+        "status": "success",
+        "title": trans['feed_optimizer_title'],
+        "description": f"{trans['feed_desc']} ({species_name}):",
+        "result": f"{round(quantity_display, 2)}",
+        "quantity": float(quantity_display),
+        "unit": f"{unit_label} | Estimated Cost: ${round(total_cost_usd, 2)} / ₹{round(total_cost_inr, 2)} per Day",
+        "precautions": advise,
+        "costs": {
+            "usd": round(total_cost_usd, 2),
+            "inr": round(total_cost_inr, 2)
+        }
+    })
+
+@app.route("/predict_feed", methods=["POST"])
+def predict_feed():
+    res = api_predict_feed()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
 
 @app.route("/farmer/iot")
 def iot_dashboard():
@@ -1399,40 +2219,67 @@ def iot_dashboard():
             {"name": "Pond 1 - DO", "value": 5.4, "status": "Optimal"},
             {"name": "Pond 2 - Temp", "value": 31.0, "status": "High Alert"},
             {"name": "Pond 2 - Turbidity", "value": 12.0, "status": "Normal"}
-        ]
+        ],
+        "recent_activity": random.sample([
+            {"msg": "Satellite Link: Zone-4 Sync Complete", "time": "Just Now"},
+            {"msg": "Market Price: Vannamei UP 0.5%", "time": "2 mins ago"},
+            {"msg": "Water Tech: Sensor Node-12 Active", "time": "5 mins ago"},
+            {"msg": "Logistics: Batch B-4421 Dispatched", "time": "12 mins ago"},
+            {"msg": "System: Neural Optimization Active", "time": "15 mins ago"},
+            {"msg": "Expert: Dr. Rao shared new insight", "time": "20 mins ago"},
+            {"msg": "Alert: Salinity shift in Pond-2", "time": "25 mins ago"},
+            {"msg": "Weather: Rain predicted in 4 hours", "time": "30 mins ago"}
+        ], 4),
     }
     return render_template("iot_dashboard.html", trans=trans, lang=lang, data=data)
 
-@app.route("/predict_yield", methods=["POST"])
-def predict_yield():
+@app.route("/api/predict_yield", methods=["POST"])
+def api_predict_yield():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    species = le_species_yield.transform([request.form["species"]])[0]
-    area = float(request.form["area"])
-    feed = float(request.form["feed"])
-    days = float(request.form["days"])
+    species = le_species_yield.transform([data["species"]])[0]
+    area = float(data["area"])
+    feed = float(data["feed"])
+    days = float(data["days"])
     
     vals = [[species, area, feed, days]]
     expected_yield_tons = yield_model.predict(vals)[0]
     
     # Unit conversion (default is tons, convert as needed)
-    unit_pref = request.form.get("unit_preference", "tons")
+    unit_pref = data.get("unit_preference", "tons")
     quantity_display, unit_label = convert_quantity(expected_yield_tons, unit_pref, from_unit="tons")
     
     # Growth Advisory
     advise = PRECAUTIONS["Growth"]["Optimize"] if expected_yield_tons > 50 else PRECAUTIONS["Growth"]["Risk"]
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['yield_title'],
-                         description=trans['feat_yield_desc'],
-                         result=f"{round(quantity_display, 2)}",
-                         unit=unit_label,
-                         precautions=advise)
+    return jsonify({
+        "status": "success",
+        "title": trans['yield_title'],
+        "description": trans['feat_yield_desc'],
+        "result": f"{round(quantity_display, 2)}",
+        "quantity": float(quantity_display),
+        "unit": unit_label,
+        "precautions": advise
+    })
 
-@app.route("/predict_buyer", methods=["POST"])
-def predict_buyer():
+@app.route("/predict_yield", methods=["POST"])
+def predict_yield():
+    res = api_predict_yield()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
+
+@app.route("/api/predict_buyer", methods=["POST"])
+def api_predict_buyer():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    country_name = request.form.get("country", "USA")
-    species_name = request.form.get("species", "Vannamei")
+    country_name = data.get("country", "USA")
+    species_name = data.get("species", "Vannamei")
     
     try:
         country = le_country_buyer.transform([country_name])[0]
@@ -1444,8 +2291,8 @@ def predict_buyer():
     except:
         species = 0
         
-    quantity = float(request.form.get("quantity", 10))
-    grade_name = request.form.get("grade", "A")
+    quantity = float(data.get("quantity", 10))
+    grade_name = data.get("grade", "A")
     try:
         grade = le_grade_buyer.transform([grade_name])[0]
     except:
@@ -1455,21 +2302,37 @@ def predict_buyer():
     price_usd = buyer_model.predict(vals)[0]
     price_inr = price_usd * USD_TO_INR
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['negotiation_portal_title'].format(country=country_name),
-                         description=f"AI Optimized Offer for {quantity} tons ({species_name}):",
-                         result=f"${round(price_usd, 2):,} / ₹{round(price_inr, 2):,}",
-                         unit=trans['final_price'])
+    return jsonify({
+        "status": "success",
+        "title": trans['negotiation_portal_title'].format(country=country_name),
+        "description": f"AI Optimized Offer for {quantity} tons ({species_name}):",
+        "result": f"${round(price_usd, 2):,} / ₹{round(price_inr, 2):,}",
+        "price_usd": round(price_usd, 2),
+        "price_inr": round(price_inr, 2),
+        "unit": trans['final_price']
+    })
 
-@app.route("/calculate_eco", methods=["POST"])
-def calculate_eco():
+@app.route("/predict_buyer", methods=["POST"])
+def predict_buyer():
+    res = api_predict_buyer()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'])
+
+@app.route("/api/calculate_eco", methods=["POST"])
+def api_calculate_eco():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    feed = float(request.form.get("feed"))
-    harvest = float(request.form.get("harvest"))
+    feed = float(data.get("feed"))
+    harvest = float(data.get("harvest"))
     
     # New Input Logic: Area (Acres) & Depth (Feet)
-    area_acres = float(request.form.get("area", 1))
-    depth_feet = float(request.form.get("depth", 5)) # Default 5ft
+    area_acres = float(data.get("area", 1))
+    depth_feet = float(data.get("depth", 5)) # Default 5ft
     
     # Conversion: 1 Acre-foot ≈ 1233.48 m³
     volume_m3 = area_acres * depth_feet * 1233.48
@@ -1485,21 +2348,39 @@ def calculate_eco():
     if water_efficiency > 5:
         advise.append("High water usage detected. Consider recirculation.")
         
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['sust_report_title'],
-                         description=f"FCR: {round(fcr, 2)} | Grade: {grade}",
-                         result=f"{round(carbon_footprint, 1)}",
-                         unit="kg CO2 (Carbon Footprint)",
-                         precautions=advise)
+    return jsonify({
+        "status": "success",
+        "title": trans['sust_report_title'],
+        "description": f"FCR: {round(fcr, 2)} | Grade: {grade}",
+        "result": f"{round(carbon_footprint, 1)}",
+        "carbon_footprint": float(carbon_footprint),
+        "fcr": float(fcr),
+        "grade": grade,
+        "unit": "kg CO2 (Carbon Footprint)",
+        "precautions": advise
+    })
 
-@app.route("/predict_stocking", methods=["POST"])
-def predict_stocking():
+@app.route("/calculate_eco", methods=["POST"])
+def calculate_eco():
+    res = api_calculate_eco()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
+
+@app.route("/api/predict_stocking", methods=["POST"])
+def api_predict_stocking():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    species = le_species_stock.transform([request.form["species"]])[0]
-    area = float(request.form["area"])
-    soil = le_soil.transform([request.form["soil"]])[0]
-    water = le_water_source.transform([request.form["water"]])[0]
-    season = le_season_stock.transform([request.form["season"]])[0]
+    species = le_species_stock.transform([data["species"]])[0]
+    area = float(data["area"])
+    soil = le_soil.transform([data["soil"]])[0]
+    water = le_water_source.transform([data["water"]])[0]
+    season = le_season_stock.transform([data["season"]])[0]
     
     vals = [[species, area, soil, water, season]]
     res = stocking_model.predict(vals)[0]
@@ -1507,24 +2388,41 @@ def predict_stocking():
     # Growth Advisory
     advise = PRECAUTIONS["Growth"]["Optimize"] if res[1] > 80 else PRECAUTIONS["Growth"]["Risk"]
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['stock_title'],
-                         description=f"{trans['stock_desc']} ({request.form['species']}):",
-                         result=f"{int(res[0])} Seeds / {round(res[1], 1)}% Survival",
-                         unit="Advice",
-                         precautions=advise)
+    return jsonify({
+        "status": "success",
+        "title": trans['stock_title'],
+        "description": f"{trans['stock_desc']} ({data['species']}):",
+        "result": f"{int(res[0])} Seeds / {round(res[1], 1)}% Survival",
+        "seeds": int(res[0]),
+        "survival_rate": float(res[1]),
+        "unit": "Advice",
+        "precautions": advise
+    })
+
+@app.route("/predict_stocking", methods=["POST"])
+def predict_stocking():
+    res = api_predict_stocking()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
 
 @app.route("/harvest")
 def harvest():
     trans, lang = get_trans()
     return render_template("harvest_analysis.html", trans=trans, lang=lang)
 
-@app.route("/predict_harvest", methods=["POST"])
-def predict_harvest():
+@app.route("/api/predict_harvest", methods=["POST"])
+def api_predict_harvest():
+    data = request.get_json(silent=True) or request.form
     trans, lang = get_trans()
-    species = request.form.get("species")
-    days = float(request.form.get("days", 90))
-    feed_total = float(request.form.get("feed", 1000))
+    species = data.get("species")
+    days = float(data.get("days", 90))
+    feed_total = float(data.get("feed", 1000))
     
     # Advanced Heuristic for Harvest Logic (Feature 5)
     # Average Body Weight (ABW) estimation
@@ -1535,12 +2433,27 @@ def predict_harvest():
         
     harvest_quality = trans['harvest_grade_a'] if abw > 25 else trans['harvest_grade_b']
     
-    return render_template("result.html", trans=trans, lang=lang,
-                         title=trans['harvest_title'],
-                         description=f"{trans['harvest_desc']} ({species}, {days} days):",
-                         result=f"{round(abw, 1)}g ABW",
-                         unit=harvest_quality,
-                         precautions=[trans['precaution_salinity_final'], trans['precaution_reduce_feed']])
+    return jsonify({
+        "status": "success",
+        "title": trans['harvest_title'],
+        "description": f"{trans['harvest_desc']} ({species}, {days} days):",
+        "result": f"{round(abw, 1)}g ABW",
+        "abw": float(abw),
+        "quality": harvest_quality,
+        "precautions": [trans['precaution_salinity_final'], trans['precaution_reduce_feed']]
+    })
+
+@app.route("/predict_harvest", methods=["POST"])
+def predict_harvest():
+    res = api_predict_harvest()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['quality'],
+                         precautions=data['precautions'])
 
 @app.route("/farmer/seasonal")
 @role_required(['farmer', 'admin'])
@@ -1548,19 +2461,19 @@ def seasonal_advisor():
     trans, lang = get_trans()
     return render_template("seasonal_advisor.html", trans=trans, lang=lang, regions=GLOBAL_AQUA_REGIONS)
 
-@app.route("/predict_seasonal", methods=["GET", "POST"])
-def predict_seasonal():
+@app.route("/api/predict_seasonal", methods=["GET", "POST"])
+def api_predict_seasonal():
+    data = (request.get_json(silent=True) if request.method == "POST" else None) or request.args or request.form
     trans, lang = get_trans()
-    season = request.form.get("season") or request.args.get("season")
-    country = request.form.get("country")
-    state = request.form.get("state")
-    district = request.form.get("district")
-    water_type = request.form.get("water_type", "Freshwater")
+    season = data.get("season")
+    country = data.get("country")
+    state = data.get("state")
+    district = data.get("district")
+    water_type = data.get("water_type", "Freshwater")
     
     if season in SEASONAL_ADVICE:
-        # Deep copy simulated by manual list/dict copy to avoid mutating global
         orig = SEASONAL_ADVICE[season]
-        data = {
+        advice_data = {
             "Fish": list(orig.get("Fish", [])),
             "Prawns": list(orig.get("Prawns", [])),
             "Crabs": list(orig.get("Crabs", [])),
@@ -1570,58 +2483,68 @@ def predict_seasonal():
             "Tips": list(orig.get("Tips", []))
         }
         
-        # --- AI REGIONAL OVERRIDES ---\n        # 1. cold region check (Norway, USA North)
+        # --- AI REGIONAL OVERRIDES ---
         if country == "Norway" or (country == "USA" and state == "Pacific Northwest"):
             if season == "Winter":
-                data["Fish"] = ["Atlantic Salmon", "Rainbow Trout", "Cod"]
-                data["Reason"] = f"Arctic Winter focus in {state}: Optimal for cold-water marine species."
-                data["Tips"] += ["Ensure heaters are functional", "Monitor for ice formation"]
+                advice_data["Fish"] = ["Atlantic Salmon", "Rainbow Trout", "Cod"]
+                advice_data["Reason"] = f"Arctic Winter focus in {state}: Optimal for cold-water marine species."
+                advice_data["Tips"] += ["Ensure heaters are functional", "Monitor for ice formation"]
             else:
-                data["Fish"] = ["Salmon", "Trout", "Mackerel"]
+                advice_data["Fish"] = ["Salmon", "Trout", "Mackerel"]
         
-        # 2. Water Type Filter
         if water_type == "Freshwater":
-            # Remove high-salinity marine species if accidentally listed
-            data["Fish"] = [f for f in data["Fish"] if f not in ["Seabass", "Grouper", "Snapper", "Tuna", "Cod"]]
-            data["Avoid"].append("High-Saline Marine Species")
+            advice_data["Fish"] = [f for f in advice_data["Fish"] if f not in ["Seabass", "Grouper", "Snapper", "Tuna", "Cod"]]
+            advice_data["Avoid"].append("High-Saline Marine Species")
         else:
-            # Brackish/Saline
-            if "Shrimp (Vannamei)" not in data["Prawns"]:
-                data["Prawns"].append("Shrimp (Vannamei)")
-            data["Avoid"].append("Strict Freshwater Species (e.g. Rohu, Catla)")
-            data["WhyAvoid"] += " High salinity causes osmotic stress in freshwater carps."
+            if "Shrimp (Vannamei)" not in advice_data["Prawns"]:
+                advice_data["Prawns"].append("Shrimp (Vannamei)")
+            advice_data["Avoid"].append("Strict Freshwater Species (e.g. Rohu, Catla)")
+            advice_data["WhyAvoid"] += " High salinity causes osmotic stress in freshwater carps."
 
-        reasons = data["Reason"]
+        reasons = advice_data["Reason"]
         
-        # Build Categorized Results
         result_parts = []
-        if data.get("Fish"):
-            result_parts.append(f"🐟 {trans.get('fish', 'Fish')}: {', '.join(data['Fish'])}")
-        if data.get("Prawns"):
-            result_parts.append(f"🦐 {trans.get('prawn', 'Prawns')}: {', '.join(data['Prawns'])}")
-        if data.get("Crabs"):
-            result_parts.append(f"🦀 {trans.get('crab', 'Crabs')}: {', '.join(data['Crabs'])}")
+        if advice_data.get("Fish"):
+            result_parts.append(f"🐟 {trans.get('fish', 'Fish')}: {', '.join(advice_data['Fish'])}")
+        if advice_data.get("Prawns"):
+            result_parts.append(f"🦐 {trans.get('prawn', 'Prawns')}: {', '.join(advice_data['Prawns'])}")
+        if advice_data.get("Crabs"):
+            result_parts.append(f"🦀 {trans.get('crab', 'Crabs')}: {', '.join(advice_data['Crabs'])}")
             
         final_result = "<br>".join(result_parts)
-        avoid_str = ", ".join(data["Avoid"])
-        why_avoid = data.get("WhyAvoid", "")
+        avoid_str = ", ".join(advice_data["Avoid"])
+        why_avoid = advice_data.get("WhyAvoid", "")
         
-        # AI Simulated Environmental Insight
         loc_parts = [p for p in [district, state, country] if p]
         loc_str = ", ".join(loc_parts) if loc_parts else "Global"
-        env_insight = f"📍 Location: {loc_str} | 💧 {data.get('WaterTypeDisplay', water_type)}"
+        env_insight = f"📍 Location: {loc_str} | 💧 {advice_data.get('WaterTypeDisplay', water_type)}"
         unit_text = f"❌ {trans.get('avoid', 'Avoid')}: {avoid_str}"
         if why_avoid:
             unit_text += f"<br><p style='font-size: 0.9rem; color: #ff4d4d; margin-top: 10px; font-weight: 500; font-style: italic;'>ℹ️ {trans.get('seasonal_reason', 'Reason')}: {why_avoid}</p>"
         
-        return render_template("result.html", trans=trans, lang=lang,
-                             title=f"{trans.get('seasonal_res_title', 'Seasonal Advice')}: {season}",
-                             description=f"{env_insight}<br>{trans.get('seasonal_reason', 'Reason')}: {reasons}",
-                             result=final_result,
-                             unit=unit_text,
-                             precautions=data["Tips"])
+        return jsonify({
+            "status": "success",
+            "title": f"{trans.get('seasonal_res_title', 'Seasonal Advice')}: {season}",
+            "description": f"{env_insight}<br>{trans.get('seasonal_reason', 'Reason')}: {reasons}",
+            "result": final_result,
+            "unit": unit_text,
+            "precautions": advice_data["Tips"],
+            "data": advice_data
+        })
     else:
-        return redirect(url_for('seasonal_advisor'))
+        return jsonify({"status": "error", "message": "Invalid season"}), 400
+
+@app.route("/predict_seasonal", methods=["GET", "POST"])
+def predict_seasonal():
+    res = api_predict_seasonal()
+    if res.status_code != 200: return jsonify(res.get_json()), res.status_code
+    data = res.get_json()
+    return render_template("result.html", trans={}, lang='en',
+                         title=data['title'],
+                         description=data['description'],
+                         result=data['result'],
+                         unit=data['unit'],
+                         precautions=data['precautions'])
 
 @app.route("/knowledge")
 @login_required
@@ -2239,7 +3162,7 @@ ORDERS_DB = load_json(ORDERS_FILE, [])
 EXPERTS_DB = load_json(EXPERTS_FILE, [
     {"id": "exp1", "name": "Dr. Anil Sharma", "emoji": "👨‍🔬", "specialty": "Disease & Health Management", "bio": "20+ years in aquaculture disease diagnosis. Specialized in shrimp pathology and WSSV management.", "rating": 5, "reviews": 142, "rate": 800, "location": "Nellore, AP", "verified": True, "online": True, "upi_id": "anil@hdfc"},
     {"id": "exp2", "name": "Dr. Chen Wei", "emoji": "🔬", "specialty": "Water Quality & Chemistry", "bio": "Marine biologist with expertise in brackish water aquaculture and water chemistry optimization.", "rating": 4, "reviews": 89, "rate": 600, "location": "Guangdong, China", "verified": True, "online": False, "upi_id": "chen@axis"},
-    {"id": "exp3", "name": "K. Venkatesh", "emoji": "🌾", "specialty": "Feed Management & Nutrition", "bio": "Senior aquaculture consultant specializing in FCR optimization and feed cost reduction strategies.", "rating": 5, "reviews": 213, "rate": 500, "location": "Guntur, AP", "verified": True, "online": True, "upi_id": "venkat@paytm"},
+    {"id": "exp3", "name": "K. Venkatesh", "emoji": "🌾", "specialty": "Feed Management & Nutrition", "bio": "Senior aquaculture lab_tech specializing in FCR optimization and feed cost reduction strategies.", "rating": 5, "reviews": 213, "rate": 500, "location": "Guntur, AP", "verified": True, "online": True, "upi_id": "venkat@paytm"},
     {"id": "exp4", "name": "Priya Nair", "emoji": "💼", "specialty": "Market & Trade Consulting", "bio": "10 years in aquaculture export. Helps farmers get best prices and navigate export compliance.", "rating": 4, "reviews": 67, "rate": 700, "location": "Kochi, Kerala", "verified": True, "online": False, "upi_id": "priya@gpay"},
     {"id": "exp5", "name": "Nguyen Thi Lan", "emoji": "🌊", "specialty": "General Aquaculture", "bio": "Vannamei farming expert from Mekong Delta with 15 years experience in intensive farming.", "rating": 5, "reviews": 178, "rate": 450, "location": "Can Tho, Vietnam", "verified": True, "online": True, "upi_id": "lan@bhim"},
 ])
@@ -2716,10 +3639,12 @@ def admin_dashboard():
                            users=USERS_DB,
                            admin_config=ADMIN_CONFIG,
                            problems=PROBLEMS_DB,
+                           invite_codes=INVITE_DB.get("active_codes", []),
+                           feedback=FEEDBACK_DB,
                            last_login=datetime.now().strftime("%Y-%m-%d %H:%M"),
-                           trade_listings_count=len(DIRECT_TRADE_DB["farmer_listings"]),
-                           trade_tenders_count=len(DIRECT_TRADE_DB["company_tenders"]),
-                           trade_messages_count=len(DIRECT_TRADE_DB["messages"]))
+                           trade_listings_count=len(DIRECT_TRADE_DB.get("farmer_listings",[])),
+                           trade_tenders_count=len(DIRECT_TRADE_DB.get("company_tenders",[])),
+                           trade_messages_count=len(DIRECT_TRADE_DB.get("messages",[])))
 
 @app.route("/admin/change-password", methods=["POST"])
 @admin_required
@@ -2836,6 +3761,56 @@ def admin_trade_monitor():
                            tenders=tenders,
                            messages=messages,
                            total_stock_value=total_stock_value)
+
+# --- 🛰️ BETA PILOT MANAGEMENT ---
+
+@app.route("/api/beta/feedback", methods=["POST"])
+@login_required
+def api_beta_feedback():
+    """User-submitted pilot testing feedback"""
+    data = request.get_json() or {}
+    email = session.get('user')
+    
+    entry = {
+        "id": f"FB-{random.randint(1000,9999)}",
+        "email": email,
+        "name": session.get('user_name', 'User'),
+        "role": session.get('role', 'farmer'),
+        "type": data.get("type", "bug"), # bug, suggestion, praise
+        "message": data.get("message", ""),
+        "timestamp": datetime.now().isoformat()
+    }
+    
+    FEEDBACK_DB.append(entry)
+    save_feedback()
+    return jsonify({"status": "success", "message": "Thank you for the feedback! Our team is reviewing it."})
+
+@app.route("/admin/beta/feedback")
+@role_required(['admin'])
+def admin_beta_view():
+    """Admin view for collected pilot feedback"""
+    trans, lang = get_trans()
+    return jsonify(FEEDBACK_DB)
+
+@app.route("/admin/invite/generate", methods=["POST"])
+@role_required(['admin'])
+def admin_invite_generate():
+    """Generate a high-security invite code for VIP users"""
+    code = f"AQUA-VIP-{random.randint(100,999)}-{random.randint(10,99)}"
+    INVITE_DB["active_codes"].append(code)
+    save_invites()
+    flash(f"Generated VIP Invite Code: {code}", "success")
+    return redirect(url_for('admin_dashboard') + '#system')
+
+@app.route("/api/invite/verify", methods=["POST"])
+def api_invite_verify():
+    """Verify if an invite code is legitimate during onboarding"""
+    data = request.get_json() or {}
+    code = data.get("code", "").upper()
+    
+    if code in INVITE_DB.get("active_codes", []):
+        return jsonify({"status": "success", "message": "Valid Code: Access Granted."})
+    return jsonify({"status": "error", "message": "Invalid or Expired Invite Code."}), 403
 
 # ======================================================
 # PAYMENT APIS

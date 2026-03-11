@@ -39,8 +39,15 @@
             </p>
         </div>
         <div>
+            {% if session.get('role') and session.get('role') != 'farmer' %}
+            <a href="/dashboard" class="shimmer-btn"
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 1.2rem; padding: 1.8rem 4rem; font-size: 1.5rem; border-radius: 25px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: black; margin-bottom: 1rem; width: 100%; justify-content: center;">
+                <span class="emo" style="font-size: 2rem;">⚡</span> ENTER {{ aqua_roles.get(session.get('role'),
+                {}).get('name', 'PORTAL')|upper }}
+            </a>
+            {% endif %}
             <a href="#expert-consult" class="shimmer-btn"
-                style="text-decoration: none; display: inline-flex; align-items: center; gap: 1.2rem; padding: 1.8rem 4rem; font-size: 1.5rem; border-radius: 25px;">
+                style="text-decoration: none; display: inline-flex; align-items: center; gap: 1.2rem; padding: 1.8rem 4rem; font-size: 1.5rem; border-radius: 25px; width: 100%; justify-content: center;">
                 <span class="emo" style="font-size: 2rem;">🔬</span> {{ trans['contact_expert']|upper|safe }}
             </a>
         </div>

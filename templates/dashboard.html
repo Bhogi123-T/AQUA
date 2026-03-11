@@ -1,0 +1,527 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="dashboard-container" style="padding: 2rem; max-width: 1600px; margin: 0 auto; min-height: 100vh;">
+
+    <!-- 🌌 UNIFIED PORTAL HERO -->
+    <div class="hero-card" style="
+        position: relative; 
+        overflow: hidden; 
+        border-radius: 3rem; 
+        background: linear-gradient(135deg, #0f172a 0%, #060b18 100%); 
+        border: 1px solid rgba(255,255,255,0.05); 
+        padding: 4rem; 
+        margin-bottom: 3rem;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    ">
+        <div class="hero-content"
+            style="position: relative; z-index: 10; display: flex; flex-direction: row; justify-content: space-between; gap: 3rem; flex-wrap: wrap;">
+            <div class="info-side">
+                <div class="category-badge" style="
+                    display: inline-flex; 
+                    align-items: center; 
+                    gap: 0.8rem; 
+                    background: rgba(0, 210, 255, 0.1); 
+                    border: 1px solid rgba(0, 210, 255, 0.2); 
+                    color: var(--primary); 
+                    padding: 0.6rem 1.5rem; 
+                    border-radius: 5rem; 
+                    font-size: 0.75rem; 
+                    font-weight: 900; 
+                    text-transform: uppercase; 
+                    letter-spacing: 2px;
+                    margin-bottom: 2rem;
+                ">
+                    <span style="font-size: 1.2rem;">🛡️</span> {{ dashboard_data.role_info.category }} OPERATIONAL
+                    PORTAL
+                </div>
+                <h1
+                    style="font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 950; color: #fff; margin-bottom: 1.5rem; letter-spacing: -2px;">
+                    <span style="font-size: 5rem; margin-right: 1rem;">{{ dashboard_data.role_info.icon }}</span>
+                    {{ dashboard_data.user_info.role_display }}
+                </h1>
+                <p style="font-size: 1.4rem; color: #cbd5e1; max-width: 600px; line-height: 1.6;">
+                    Welcome, <span style="color: #fff; font-weight: 800;">{{ dashboard_data.user_info.name }}</span>.
+                    <span id="sat-sync-status" style="color: var(--accent); white-space: nowrap;">🛰️ Satellite Neural
+                        Sync: Active</span>
+                </p>
+
+                <!-- ⚡ DYNAMIC QUICK ACTIONS -->
+                <div class="quick-actions"
+                    style="margin-top: 3rem; display: flex; gap: 1.5rem; flex-wrap: wrap; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2.5rem;">
+                    {% for action in dashboard_data.actions %}
+                    <button class="action-btn" onclick="triggerAction('{{ action.id }}')" title="{{ action.desc }}"
+                        style="
+                        background: rgba(255,255,255,0.03); 
+                        border: 1px solid rgba(255,255,255,0.1); 
+                        color: #fff; 
+                        padding: 1rem 2rem; 
+                        border-radius: 1.5rem; 
+                        font-weight: 800; 
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                        transition: all 0.3s ease;
+                    ">
+                        <span style="color: var(--primary);">{{ action.icon }}</span> {{ action.name }}
+                    </button>
+                    {% endfor %}
+                    <button class="action-btn" onclick="location.reload()" style="
+                        background: rgba(255,255,255,0.03); 
+                        border: 1px solid rgba(255,255,255,0.1); 
+                        color: #fff; 
+                        padding: 1rem 2rem; 
+                        border-radius: 1.5rem; 
+                        font-weight: 800; 
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        gap: 1rem;
+                        transition: all 0.3s ease;
+                    ">
+                        <span style="color: var(--accent);">🔄</span> System Sync
+                    </button>
+                </div>
+            </div>
+
+            <!-- 📊 DYNAMIC WIDGETS -->
+            <div class="widget-side"
+                style="display: flex; gap: 2rem; overflow-x: auto; padding-bottom: 1rem; align-items: start;">
+                {% for w in dashboard_data.widgets %}
+                <div class="mini-widget" style="
+                    flex-shrink: 0;
+                    background: rgba(255,255,255,0.02);
+                    border: 1px solid rgba(255,255,255,0.05);
+                    padding: 2.5rem;
+                    border-radius: 2.5rem;
+                    min-width: 200px;
+                    text-align: left;
+                    box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+                ">
+                    <div
+                        style="color: #cbd5e1; font-size: 0.75rem; font-weight: 950; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 0.8rem; display: flex; justify-content: space-between;">
+                        {{ w.label }} <span style="color: var(--accent);">•</span>
+                    </div>
+                    <div style="font-size: 2.8rem; font-weight: 1000; color: #fff;">{{ w.value }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Visual Accents -->
+        <div
+            style="position: absolute; top: -10%; right: -5%; width: 400px; height: 400px; background: radial-gradient(circle, rgba(0, 210, 255, 0.1) 0%, transparent 70%); filter: blur(60px); pointer-events: none;">
+        </div>
+    </div>
+
+    <!-- 🏗️ GRID LAYOUT -->
+    <div class="responsive-grid-12">
+
+        <!-- LEFT: LEADS & LOGS (8 COL) -->
+        <div class="main-column" style="display: flex; flex-direction: column; gap: 3rem; grid-column: span 8;">
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem;">
+                <!-- WORK LEADS -->
+                <div class="glass-section"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 2.5rem;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem;">
+                        <h3
+                            style="font-size: 1.6rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 1rem;">
+                            <span style="color: var(--primary);">📥</span> Active Leads
+                        </h3>
+                        <span
+                            style="background: rgba(0, 210, 255, 0.1); color: var(--primary); padding: 0.4rem 1.2rem; border-radius: 5rem; font-size: 0.75rem; font-weight: 900;">{{
+                            dashboard_data.leads|length }} ACTIVE</span>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        {% if dashboard_data.leads %}
+                        {% for lead in dashboard_data.leads %}
+                        <div class="lead-item"
+                            style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.8rem; border-radius: 1.8rem;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                                <span
+                                    style="font-size: 0.7rem; color: #cbd5e1; font-weight: 800; letter-spacing: 1px;">ID:
+                                    {{ lead.id }}</span>
+                                <span
+                                    style="font-size: 0.7rem; color: var(--accent); font-weight: 900; background: rgba(0, 255, 136, 0.1); padding: 0.3rem 0.8rem; border-radius: 0.6rem;">{{
+                                    lead.status|upper }}</span>
+                            </div>
+                            <p style="color: #f8fafc; font-size: 1.1rem; font-weight: 600; line-height: 1.5;">{{
+                                lead.msg }}</p>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div style="text-align: center; padding: 5rem 0; opacity: 0.3;">
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">📭</div>
+                            <p style="font-weight: 800; font-size: 1.2rem; color: #fff;">No active tasks found</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- OPERATIONAL LOGS -->
+                <div class="glass-section"
+                    style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 2.5rem;">
+                    <h3
+                        style="font-size: 1.6rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 1rem; margin-bottom: 2.5rem;">
+                        <span style="color: #7b61ff;">📑</span> Ledger & Logs
+                    </h3>
+
+                    <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+                        {% if dashboard_data.reports %}
+                        {% for report in dashboard_data.reports %}
+                        <div class="log-item"
+                            style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.03); padding: 1.5rem; border-radius: 1.8rem; display: flex; align-items: center; gap: 2rem; cursor: pointer; transition: 0.3s;">
+                            <div
+                                style="width: 55px; height: 55px; background: rgba(123, 97, 255, 0.1); border-radius: 1.2rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem;">
+                                📄
+                            </div>
+                            <div>
+                                <div style="color: #fff; font-weight: 800; font-size: 1.1rem;">{{ report.title }}</div>
+                                <div style="color: #cbd5e1; font-size: 0.85rem; font-weight: 700; margin-top: 0.4rem;">
+                                    {{ report.date }} • {{ report.status if report.status else 'Verified' }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        {% else %}
+                        <div style="text-align: center; padding: 5rem 0; opacity: 0.3;">
+                            <div style="font-size: 4rem; margin-bottom: 1.5rem;">🔍</div>
+                            <p style="font-weight: 800; font-size: 1.2rem; color: #fff;">No records available</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- ECOSYSTEM CONNECTIVITY -->
+            <div class="glass-section"
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 3rem;">
+                <h3
+                    style="font-size: 1.8rem; font-weight: 1000; color: #fff; margin-bottom: 3rem; display: flex; align-items: center; gap: 1.5rem;">
+                    <span style="color: #f59e0b;">🤝</span> Industry Connectivity Graph
+                </h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem;">
+                    {% for conn in dashboard_data.connections %}
+                    <div class="conn-card" style="
+                        background: rgba(15,23,42,0.4); 
+                        border: 1px solid rgba(255,255,255,0.03); 
+                        padding: 2.5rem; 
+                        border-radius: 2.5rem; 
+                        text-align: center;
+                        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                        cursor: pointer;
+                    ">
+                        <div style="font-size: 3.5rem; margin-bottom: 2rem;">{{ conn.icon }}</div>
+                        <div style="color: #fff; font-weight: 900; font-size: 1.3rem; margin-bottom: 0.5rem;">{{
+                            conn.name }}</div>
+                        <div
+                            style="color: #cbd5e1; font-size: 0.8rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;">
+                            {{ conn.category }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: ACTIVITY FEED (4 COL) -->
+        <div class="side-column" style="grid-column: span 4;">
+            <div class="glass-section"
+                style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 2.5rem; height: 100%; position: sticky; top: 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4rem;">
+                    <h3
+                        style="font-size: 1.6rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 1rem;">
+                        <span style="color: var(--accent);">📡</span> Live Activity
+                    </h3>
+                    <div id="live-ping"
+                        style="position: relative; width: 12px; height: 12px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 20px var(--accent);">
+                        <div class="ping-wave"
+                            style="position: absolute; inset: -6px; border: 2px solid var(--accent); border-radius: 50%; animation: pulse 2s infinite;">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="live-feed-container" class="feed-container"
+                    style="display: flex; flex-direction: column; gap: 3rem; position: relative; padding-left: 1rem;">
+                    <div class="feed-line"
+                        style="position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), transparent);">
+                    </div>
+
+                    {% for act in dashboard_data.recent_activity %}
+                    <div class="feed-item" style="display: flex; gap: 2.5rem; position: relative; z-index: 1;">
+                        <div class="dot"
+                            style="width: 44px; height: 44px; background: #060b18; border: 3px solid var(--accent); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);">
+                            <div style="width: 10px; height: 10px; background: var(--accent); border-radius: 50%;">
+                            </div>
+                        </div>
+                        <div style="padding-top: 0.5rem;">
+                            <p
+                                style="color: #f8fafc; font-size: 1.1rem; font-weight: 700; line-height: 1.5; margin-bottom: 0.6rem;">
+                                {{ act.msg }}</p>
+                            <span
+                                style="color: #cbd5e1; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">{{
+                                act.time }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 🧪 ACTION MODAL (GENERIC) -->
+<div id="action-modal"
+    style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:9999; backdrop-filter:blur(10px); align-items:center; justify-content:center; padding:2rem;">
+    <div class="app-card" style="max-width:600px; width:100%; position:relative;">
+        <button onclick="document.getElementById('action-modal').style.display='none'"
+            style="position:absolute; top:1rem; right:1rem; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">&times;</button>
+        <div id="modal-body">
+            <h2 id="modal-title" style="margin-bottom:2rem; color: #fff;">Action Details</h2>
+            <div id="modal-form-content"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 🧬 REALTIME DATA ENGINE
+    function syncLiveEcosystem() {
+        const ping = document.getElementById('live-ping');
+        const sat = document.getElementById('sat-sync-status');
+
+        // Visual indicator of background sync
+        if (ping) ping.style.boxShadow = '0 0 40px var(--accent)';
+        if (sat) sat.innerHTML = '🛰️ Satellite Neural Sync: Processing...';
+
+        fetch('/api/aquacycle/dashboard')
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success') {
+                    const data = res.data;
+                    updateActivityFeed(data.recent_activity);
+                    setTimeout(() => {
+                        if (ping) ping.style.boxShadow = '0 0 20px var(--accent)';
+                        if (sat) sat.innerHTML = '🛰️ Satellite Neural Sync: Active';
+                    }, 1000);
+                }
+            });
+    }
+
+    function updateActivityFeed(activities) {
+        const container = document.getElementById('live-feed-container');
+        if (!container) return;
+
+        // We only update if length changed or first time
+        let html = '<div class="feed-line" style="position: absolute; left: 24px; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, var(--accent), transparent);"></div>';
+
+        activities.forEach(act => {
+            html += `
+                <div class="feed-item" style="display: flex; gap: 2.5rem; position: relative; z-index: 1;">
+                    <div class="dot" style="width: 44px; height: 44px; background: #060b18; border: 3px solid var(--accent); border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);">
+                        <div style="width: 10px; height: 10px; background: var(--accent); border-radius: 50%;"></div>
+                    </div>
+                    <div style="padding-top: 0.5rem;">
+                        <p style="color: #f8fafc; font-size: 1.1rem; font-weight: 700; line-height: 1.5; margin-bottom: 0.6rem;">${act.msg}</p>
+                        <span style="color: #cbd5e1; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">${act.time}</span>
+                    </div>
+                </div>
+            `;
+        });
+
+        container.innerHTML = html;
+    }
+
+    // Start Live Polling (every 30 seconds to be polite, user sees 'live' ping)
+    setInterval(syncLiveEcosystem, 30000);
+
+    // Initial sync
+    setTimeout(syncLiveEcosystem, 2000);
+
+    function triggerAction(actionId) {
+        console.log("Triggering Action:", actionId);
+        const modal = document.getElementById('action-modal');
+        const title = document.getElementById('modal-title');
+        const content = document.getElementById('modal-form-content');
+
+        modal.style.display = 'flex';
+        title.innerHTML = actionId.replace(/_/g, ' ').toUpperCase();
+
+        // 🧠 INTELLIGENT DYNAMIC FORM GENERATION
+        let formHtml = `<div style="padding: 1.5rem; color: #cbd5e1;">`;
+
+        // Define input fields based on action keywords
+        let fields = [];
+
+        if (actionId.includes('register') || actionId.includes('create')) {
+            fields = [
+                { id: 'name', label: 'Display Name / Batch ID', placeholder: 'e.g. Pond #4 / Batch-V102', type: 'text' },
+                { id: 'type', label: 'Species / Industry Type', placeholder: 'e.g. L. Vannamei / Organic', type: 'text' },
+                { id: 'count', label: 'Primary Quantity (Units/Tons)', placeholder: 'e.g. 500000', type: 'number' }
+            ];
+        } else if (actionId.includes('record') || actionId.includes('log') || actionId.includes('test')) {
+            fields = [
+                { id: 'value', label: 'Operational Value (Reading)', placeholder: 'e.g. 7.5 (pH) / 100kg (Feed)', type: 'text' },
+                { id: 'ref', label: 'Location / Pond Ref', placeholder: 'e.g. P2-North', type: 'text' },
+                { id: 'notes', label: 'Technician Notes', placeholder: 'e.g. All sensors calibrated', type: 'textarea' }
+            ];
+        } else if (actionId.includes('list') || actionId.includes('offer')) {
+            fields = [
+                { id: 'price', label: 'Ask Price (Local/Global)', placeholder: 'e.g. ₹450 / $6.5 per kg', type: 'text' },
+                { id: 'qty', label: 'Total Available Quantity', placeholder: 'e.g. 10 Tons', type: 'text' },
+                { id: 'expiry', label: 'Ex-Farm Date / Expiry', type: 'date' }
+            ];
+        } else if (actionId.includes('buy') || actionId.includes('order')) {
+            fields = [
+                { id: 'q_request', label: 'Requested Quantity', placeholder: 'e.g. 500 Bags / 2M PL', type: 'text' },
+                { id: 'target_id', label: 'Preferred Supplier ID (Optional)', placeholder: 'e.g. SUPP-202', type: 'text' },
+                { id: 'urgent', label: 'Urgent Processing?', type: 'checkbox' }
+            ];
+        } else if (actionId.includes('upload') || actionId.includes('report')) {
+            formHtml += `
+                <div style="border: 2px dashed rgba(0, 210, 255, 0.2); padding: 3rem; text-align:center; border-radius:1.5rem; background: rgba(0,210,255,0.02); margin-bottom: 2rem;">
+                    <p style="color: #cbd5e1; font-weight: 700;">📡 SATELLITE UPLINK READY</p>
+                    <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 0.5rem;">Drag and drop PDF report or photos</p>
+                    <input type="file" style="display:none;" id="action_file">
+                    <button class="app-btn-large" onclick="document.getElementById('action_file').click()" style="padding: 1rem 2rem; font-size: 1rem; margin-top: 1.5rem;">SELECT DOCUMENT</button>
+                </div>
+            `;
+            fields = [{ id: 'doc_id', label: 'Reference Code', placeholder: 'e.g. QC-9922', type: 'text' }];
+        } else {
+            // Default "Work" Module for Track/View/Monitor
+            fields = [
+                { id: 'target_ref', label: 'Target Reference (ID)', placeholder: 'e.g. Shipment #92', type: 'text' },
+                { id: 'comment', label: 'Status Comment', placeholder: 'e.g. On-route to processing plant', type: 'text' }
+            ];
+        }
+
+        // Build the HTML for fields
+        fields.forEach(f => {
+            formHtml += `<div class="app-input-group" style="margin-bottom:1.5rem;">
+                <label style="display:block; margin-bottom:0.7rem; color:#fff; font-weight:700; font-size:0.9rem; letter-spacing:0.5px;">${f.label.toUpperCase()}</label>`;
+
+            if (f.type === 'textarea') {
+                formHtml += `<textarea id="field_${f.id}" class="app-input" placeholder="${f.placeholder}" style="width:100%; min-height:100px; padding:1.2rem; background:rgba(255,255,255,0.03);"></textarea>`;
+            } else if (f.type === 'checkbox') {
+                formHtml += `<input type="checkbox" id="field_${f.id}" style="width:24px; height:24px; accent-color:var(--primary);"> <span style="margin-left:10px; color:var(--text-muted);">Enable Priority Sync</span>`;
+            } else {
+                formHtml += `<input type="${f.type}" id="field_${f.id}" class="app-input" placeholder="${f.placeholder || ''}" value="${f.value || ''}" style="width:100%; padding:1.2rem; background:rgba(255,255,255,0.03);">`;
+            }
+            formHtml += `</div>`;
+        });
+
+        formHtml += `
+            <button class="shimmer-btn pulse-glow" onclick="submitAction('${actionId}')" 
+                style="width:100%; margin-top:2.5rem; padding:1.8rem; border-radius:1.5rem; border:none; background:var(--primary); color:black; font-weight:900; font-size:1.1rem; cursor: pointer; text-transform:uppercase; letter-spacing:2px;">
+                🚀 EXECUTE COMMAND
+            </button>
+            <p style="text-align:center; color: var(--text-muted); font-size: 0.8rem; margin-top: 1.5rem; font-weight: 700;">
+                SECURE SATELLITE ENCRYPTION: ACTIVE (AES-256)
+            </p>
+        </div>`;
+
+        content.innerHTML = formHtml;
+    }
+
+    function submitAction(actionId) {
+        // Collect all dynamic fields
+        const data = {
+            timestamp: new Date().toISOString()
+        };
+        const inputs = document.querySelectorAll('[id^="field_"]');
+        inputs.forEach(input => {
+            const key = input.id.replace('field_', '');
+            data[key] = input.type === 'checkbox' ? input.checked : input.value;
+        });
+
+        fetch('/api/aquacycle/work', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: actionId,
+                data: data
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    alert('Success: ' + data.message);
+                    location.reload();
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            });
+    }
+
+    // Auto-scroll horizontal widgets if needed
+    const widgetSide = document.querySelector('.widget-side');
+    if (widgetSide) {
+        widgetSide.addEventListener('wheel', (evt) => {
+            evt.preventDefault();
+            widgetSide.scrollLeft += evt.deltaY;
+        });
+    }
+</script>
+
+<style>
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(2.8);
+            opacity: 0;
+        }
+    }
+
+    .action-btn:hover {
+        background: rgba(255, 255, 255, 0.1) !important;
+        transform: translateY(-4px);
+        border-color: var(--primary) !important;
+        box-shadow: 0 10px 25px rgba(0, 210, 255, 0.2);
+    }
+
+    .conn-card:hover {
+        background: rgba(0, 210, 255, 0.08) !important;
+        border-color: rgba(0, 210, 255, 0.3) !important;
+        transform: translateY(-12px) scale(1.03);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .lead-item:hover,
+    .log-item:hover {
+        background: rgba(255, 255, 255, 0.08) !important;
+        border-color: rgba(255, 255, 255, 0.15) !important;
+        transform: scale(1.01);
+    }
+
+    .mini-widget {
+        transition: all 0.3s ease;
+    }
+
+    .mini-widget:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.04) !important;
+    }
+
+    /* Custom Responsive Grid */
+    @media (max-width: 1400px) {
+        .main-column {
+            grid-column: span 12 !important;
+        }
+
+        .side-column {
+            grid-column: span 12 !important;
+            position: static !important;
+        }
+
+        .hero-content {
+            flex-direction: column !important;
+        }
+    }
+</style>
+{% endblock %}

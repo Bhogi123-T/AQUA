@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<header style="margin-bottom: 3rem; text-align: center;">
+    <h2
+        style="font-size: 3rem; font-weight: 900; background: linear-gradient(90deg, #00f2ff, #0061ff); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        🧪 {{ trans['lab_console_title'] or 'Lab Technician Console' }}
+    </h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['lab_console_desc'] or 'Advanced Water & Health
+        Diagnostic Hub' }}</p>
+</header>
+
+<div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+    <!-- Water Quality Analysis Tool -->
+    <div class="card premium-card">
+        <h3 style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+            <span>💧</span> {{ trans['water_analysis'] or 'Water Quality Analysis' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Enter pond parameters to generate
+            a digital health report.</p>
+        <form action="/api/aquacycle/work" method="POST" class="ajax-form">
+            <input type="hidden" name="action" value="water_test">
+            <div class="form-group">
+                <label>Pond ID / Farmer Email</label>
+                <input type="text" name="target_id" placeholder="e.g. pond-101" required>
+            </div>
+            <div class="form-group">
+                <label>Ammonia (NH3) mg/L</label>
+                <input type="number" step="0.01" name="ammonia" placeholder="e.g. 0.05">
+            </div>
+            <div class="form-group">
+                <label>Nitrite (NO2) mg/L</label>
+                <input type="number" step="0.01" name="nitrite" placeholder="e.g. 0.1">
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem;">Generate Report</button>
+        </form>
+    </div>
+
+    <!-- Seed Health Verification -->
+    <div class="card premium-card">
+        <h3 style="color: var(--secondary); display: flex; align-items: center; gap: 0.5rem;">
+            <span>🧬</span> {{ trans['seed_health'] or 'Seed Verification' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Verify Post-Larvae (PL) health
+            status for hatcheries.</p>
+        <form action="/api/aquacycle/work" method="POST" class="ajax-form">
+            <input type="hidden" name="action" value="record_results">
+            <div class="form-group">
+                <label>Hatchery ID</label>
+                <input type="text" name="target_id" placeholder="H-123" required>
+            </div>
+            <div class="form-group">
+                <label>PCR Test Result</label>
+                <select name="pcr_result">
+                    <option value="negative">Negative (Safe)</option>
+                    <option value="positive">Positive (Infected)</option>
+                </select>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem; background: var(--secondary);">Verify
+                Batch</button>
+        </form>
+    </div>
+
+    <!-- Disease Alert Hub -->
+    <div class="card premium-card" style="border: 1px solid rgba(255, 77, 77, 0.2);">
+        <h3 style="color: #ff4d4d; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🚨</span> {{ trans['disease_alert_title'] or 'Expert Advisory' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Issue critical health advisories
+            to all connected farmers.</p>
+        <form action="/api/aquacycle/work" method="POST" class="ajax-form">
+            <input type="hidden" name="action" value="send_alerts">
+            <div class="form-group">
+                <label>Alert Level</label>
+                <select name="severity">
+                    <option value="low">Informational</option>
+                    <option value="medium">Warning</option>
+                    <option value="high">Critical Emergency</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Instructions</label>
+                <textarea name="msg" placeholder="e.g. Immediate water exchange advised for Zone-B"
+                    style="width: 100%; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; padding: 0.5rem;"></textarea>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem; background: #ff4d4d;">Broadcast Alert</button>
+        </form>
+    </div>
+</div>
+
+<style>
+    .premium-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.8rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<script>
+    document.querySelectorAll('.ajax-form').forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "Processing...";
+            btn.disabled = true;
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    showToast('✅ ' + result.message, 'success');
+                    form.reset();
+                } else {
+                    showToast('❌ ' + result.message, 'error');
+                }
+            } catch (err) {
+                showToast('❌ System Error', 'error');
+            } finally {
+                btn.innerText = originalText;
+                btn.disabled = false;
+            }
+        });
+    });
+
+    function showToast(msg, type) {
+        // Simplified toast for demo
+        alert(msg);
+    }
+</script>
+{% endblock %}

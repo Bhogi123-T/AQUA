@@ -42,6 +42,50 @@
                 box-shadow: 0 0 0 0 rgba(0, 210, 255, 0);
             }
         }
+
+        /* 🚀 ULTIMATE GOOGLE TRANSLATE BANNER KILLER 🚀 */
+        .goog-te-banner-frame.skiptranslate,
+        .goog-te-banner-frame,
+        .goog-te-banner,
+        .goog-te-menu-frame,
+        iframe.goog-te-banner-frame,
+        iframe[id=":1.container"],
+        iframe[id=":0.container"],
+        iframe[id*="goog-te-banner"],
+        .skiptranslate,
+        #google_translate_element,
+        .goog-te-spinner-pos,
+        #goog-gt-tt,
+        .goog-te-balloon-frame,
+        .goog-te-balloon-frame iframe,
+        .goog-tooltip,
+        .goog-tooltip-less,
+        .goog-tooltip-more,
+        .goog-te-gadget,
+        .goog-te-gadget-simple,
+        .goog-te-gadget-icon,
+        .goog-te-menu-value {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            width: 0 !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+            position: absolute !important;
+            left: -9999px !important;
+        }
+
+        html, body {
+            top: 0 !important;
+            position: relative !important;
+        }
+
+        .goog-text-highlight {
+            background-color: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
     </style>
     <script src="{{ url_for('static', filename='offline-manager.js') }}"></script>
     <script id="aqua-trans-data" type="application/json">{{ trans | tojson | safe }}</script>
@@ -88,7 +132,9 @@
             </button>
             <div class="logo-portal">
                 <a href="/" class="logo glow-text"
-                    style="font-family: 'Outfit', sans-serif; font-weight: 900; letter-spacing: -1px; text-decoration:none; font-size:2.2rem; color:white; text-shadow: 0 0 15px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.2);">AquaSphere</a>
+                    style="font-family: 'Outfit', sans-serif; font-weight: 900; letter-spacing: -1px; text-decoration:none; font-size:2.2rem; color:white; text-shadow: 0 0 15px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.2); display: flex; align-items: center; gap: 0.8rem;">
+                    <span style="font-size: 2.5rem;">🐟</span> AquaSphere
+                </a>
             </div>
         </div>
 
@@ -106,10 +152,12 @@
                 style="padding: 0.5rem 1.2rem; border-radius: 1rem; font-size: 0.9rem;">Join Now</a>
             {% else %}
             <div style="display:flex; align-items:center; gap:1rem;">
-                <span style="color: var(--text-muted); font-size: 0.95rem;">Welcome, <strong style="color:white;">{{
-                        session.get('user_name', 'Partner') }}</strong></span>
+                <span style="color: var(--text-muted); font-size: 0.95rem;">{{ trans.get('nav_welcome', 'Welcome') }},
+                    <strong style="color:white;">{{
+                        session.get('user_name', trans.get('partner', 'Partner')) }}</strong></span>
                 <a href="/logout"
-                    style="color: #ff4d7d; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,77,125,0.2); padding: 0.5rem 1rem; border-radius: 1rem;">Logout</a>
+                    style="color: #ff4d7d; text-decoration: none; font-weight: 700; border: 1px solid rgba(255,77,125,0.2); padding: 0.5rem 1rem; border-radius: 1rem;">{{
+                    trans.get('nav_logout', 'Logout') }}</a>
             </div>
             {% endif %}
         </div>
@@ -119,84 +167,244 @@
     <div id="sidebar" class="sidebar">
         <div class="nav-links">
             <div class="nav-category">{{ trans['reg_analysis']|upper|safe if trans else 'REGIONAL ANALYSIS' }}</div>
-            <a href="/" class="nav-item {{ 'active' if request.path == '/' }}">
+            <a href="{{ '/dashboard' if session.get('user') else '/' }}"
+                class="nav-item {{ 'active' if request.path == '/' or request.path == '/dashboard' }}">
                 <span class="emo">🏠</span> <span>{{ trans['home']|safe if trans else 'Home' }}</span>
             </a>
             <a href="/location" class="nav-item {{ 'active' if request.path == '/location' }}">
                 <span class="emo">📍</span> <span>{{ trans['nav_loc']|safe if trans else 'Location' }}</span>
             </a>
             <a href="/districts" class="nav-item {{ 'active' if request.path == '/districts' }}">
-                <span class="emo">🏘️</span> <span>District Hub</span>
+                <span class="emo">🏘️</span> <span>{{ trans.get('nav_districts_hub', 'District Hub') }}</span>
             </a>
 
             {% if session.get('user') %}
-            <div class="nav-category">INTEGRATED HUBS</div>
+            <div class="nav-category">{{ trans.get('nav_system_cat', 'AQUACYCLE SYSTEM') }}</div>
+            <a href="/dashboard" class="nav-item {{ 'active' if request.path == '/dashboard' }}"
+                style="background: linear-gradient(90deg, rgba(0, 210, 255, 0.1), transparent); border: 1px solid rgba(0, 210, 255, 0.2); margin-bottom: 1rem;">
+                <span class="emo">⚡</span> <span style="font-weight: 800; color: var(--primary);">{{
+                    trans.get('nav_unified_dashboard', 'UNIFIED DASHBOARD') }}</span>
+            </a>
+
+            <!-- Role-Specific Hubs -->
+            <div class="nav-category">{{ trans.get('nav_operational_cat', 'OPERATIONAL HUBS') }}</div>
+
+            {% if session.get('role') in ['farmer', 'admin'] %}
             <a href="/farmer" class="nav-item {{ 'active' if request.path == '/farmer' }}">
-                <span class="emo">👨‍🌾</span> <span>Farmer Hub</span>
-            </a>
-            <a href="/business" class="nav-item {{ 'active' if request.path == '/business' }}">
-                <span class="emo">💼</span> <span>Market Panel</span>
-            </a>
-            <a href="/expert" class="nav-item {{ 'active' if request.path == '/expert' }}">
-                <span class="emo">👨‍🔧</span> <span>Expert Console</span>
-            </a>
-            <a href="/ai-vision" class="nav-item {{ 'active' if request.path == '/ai-vision' }}">
-                <span class="emo">👁️</span> <span>AI Neural Vision</span>
-            </a>
-            <a href="/ledger" class="nav-item {{ 'active' if request.path == '/ledger' }}">
-                <span class="emo">⛓️</span> <span>Blockchain Ledger</span>
+                <span class="emo">👨‍🌾</span> <span>{{ trans.get('nav_farmer', 'Farmer Hub') }}</span>
             </a>
             {% endif %}
 
-            <!-- 🌍 NEW: AI Global Language Hub (Google Integration) -->
-            <div class="nav-category" style="margin-top:2rem;">LANGUAGE OS</div>
-            <div id="google_translate_element"
-                style="padding: 1rem; border-radius: 15px; background: rgba(255,255,255,0.05); margin: 0 1rem;"></div>
-            <script type="text/javascript">
-                function googleTranslateElementInit() {
-                    new google.translate.TranslateElement({
-                        pageLanguage: 'en',
-                        includedLanguages: 'en,hi,te,ta,vi,th,id,bn',
-                        layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                        autoDisplay: false
-                    }, 'google_translate_element');
-                }
-            </script>
-            <script type="text/javascript"
-                src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
-            <div class="nav-category" style="margin-top:2rem;">SYSTEM</div>
-            <a href="javascript:void(0)" class="nav-item" id="sidebar-close-btn"
-                style="border: 1px solid var(--rose); background: rgba(255, 77, 125, 0.05);">
-                <span class="emo">❌</span> <span style="color: var(--rose); font-weight: 800;">Close Sidebar</span>
+            {% if session.get('role') in ['hatchery', 'admin'] %}
+            <a href="/hatchery" class="nav-item {{ 'active' if request.path == '/hatchery' }}">
+                <span class="emo">🏢</span> <span>{{ trans.get('nav_hatchery', 'Hatchery Hub') }}</span>
             </a>
-            {% if config.FEATURES.PAYMENT_TRANSFERS %}
+            {% endif %}
+
+            {% if session.get('role') in ['feed_supplier', 'admin'] %}
+            <a href="/dashboard" class="nav-item {{ 'active' if request.path == '/dashboard' }}">
+                <span class="emo">🍽️</span> <span>{{ trans.get('nav_supply', 'Supply Matrix') }}</span>
+            </a>
+            {% endif %}
+
+            {% if session.get('role') in ['lab_tech', 'admin'] %}
+            <a href="/lab-tech" class="nav-item {{ 'active' if request.path == '/lab-tech' }}">
+                <span class="emo">🧪</span> <span>{{ trans.get('nav_lab', 'Lab Console') }}</span>
+            </a>
+            {% endif %}
+
+            {% if session.get('role') in ['buyer', 'exporter', 'admin'] %}
+            <a href="/buyer" class="nav-item {{ 'active' if request.path == '/buyer' }}">
+                <span class="emo">💼</span> <span>{{ trans.get('nav_market_panel', 'Market Panel') }}</span>
+            </a>
+            {% endif %}
+
+            {% if session.get('role') in ['transport', 'harvest_contractor', 'processing_plant', 'admin'] %}
+            <a href="/dashboard" class="nav-item {{ 'active' if request.path == '/dashboard' }}">
+                <span class="emo">🚛</span> <span>{{ trans.get('nav_logistics_hub', 'Logistics Hub') }}</span>
+            </a>
+            {% endif %}
+
+            <a href="/ai-vision" class="nav-item {{ 'active' if request.path == '/ai-vision' }}">
+                <span class="emo">👁️</span> <span>{{ trans.get('nav_ai_vision', 'AI Neural Vision') }}</span>
+            </a>
+
+            <a href="/portal" class="nav-item {{ 'active' if request.path == '/portal' }}"
+                style="border: 1px dashed var(--primary); margin-top: 1.5rem; background: rgba(0, 210, 255, 0.05);">
+                <span class="emo">🔄</span> <span>{{ trans['switch_portal']|safe if trans and 'switch_portal' in trans
+                    else 'Switch Portal' }}</span>
+            </a>
+            {% endif %}
+
+            <!-- 🌍 NEW: AI Global Language Hub (AQUA OS) -->
+            <div class="nav-category"
+                style="margin-top:2.5rem; color: #00f2ff; font-weight: 950; letter-spacing: 2.5px; display: flex; align-items: center; justify-content: space-between; font-family: 'Outfit', sans-serif; font-size: 1.2rem;">
+                <span style="text-shadow: 0 0 15px rgba(0, 242, 255, 0.4);">{{ trans.get('nav_lang_os', 'LANGUAGE OS')
+                    }}</span>
+                <span
+                    style="font-size: 0.6rem; background: rgba(0, 242, 255, 0.15); padding: 3px 10px; border-radius: 20px; border: 1px solid rgba(0, 242, 255, 0.3); color: #00f2ff; font-weight: 900;">{{
+                    trans.get('nav_ai_hub', 'AI HUB') }}</span>
+            </div>
+
+            <div class="language-os-container" style="padding: 0 1rem;">
+                <!-- Search Box matching user's image (Clean dark pill) -->
+                <div class="lang-search-wrapper" style="margin-bottom: 2rem; padding: 0 0.5rem;">
+                    <input type="text" id="lang-search"
+                        placeholder="{{ trans.get('lang_search_placeholder', 'Search languages...') }}"
+                        style="width: 100%; background: #0b1120; border: 1.5px solid rgba(255,255,255,0.05); color: white; padding: 18px 25px; border-radius: 50px; font-size: 1rem; outline: none; transition: all 0.4s; box-shadow: inset 0 4px 12px rgba(0,0,0,0.4), 0 0 0 rgba(0, 242, 255, 0); font-weight: 500;">
+                </div>
+
+                <div id="popular-langs"
+                    style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; max-height: 250px; overflow-y: auto; padding-right: 5px;"
+                    class="custom-scroll">
+                    <button onclick="translateSite('en')" class="lang-node {{ 'active' if lang == 'en' }}"
+                        style="--c: var(--primary);">
+                        <span class="flag">🇺🇸</span> English
+                    </button>
+                    <button onclick="translateSite('hi')" class="lang-node {{ 'active' if lang == 'hi' }}"
+                        style="--c: var(--amber);">
+                        <span class="flag">🇮🇳</span> Hindi
+                    </button>
+                    <button onclick="translateSite('te')" class="lang-node {{ 'active' if lang == 'te' }}"
+                        style="--c: var(--accent);">
+                        <span class="flag">🇮🇳</span> Telugu
+                    </button>
+                    <button onclick="translateSite('ta')" class="lang-node {{ 'active' if lang == 'ta' }}"
+                        style="--c: var(--secondary);">
+                        <span class="flag">🇮🇳</span> Tamil
+                    </button>
+                    <button onclick="translateSite('zh-CN')" class="lang-node {{ 'active' if lang == 'zh-CN' }}"
+                        style="--c: #ff4d4d;">
+                        <span class="flag">🇨🇳</span> Chinese
+                    </button>
+                    <button onclick="translateSite('es')" class="lang-node {{ 'active' if lang == 'es' }}"
+                        style="--c: #ffcc00;">
+                        <span class="flag">🇪🇸</span> Spanish
+                    </button>
+                    <button onclick="translateSite('ar')" class="lang-node {{ 'active' if lang == 'ar' }}"
+                        style="--c: #2ecc71;">
+                        <span class="flag">🇸🇦</span> Arabic
+                    </button>
+                    <button onclick="translateSite('ru')" class="lang-node {{ 'active' if lang == 'ru' }}"
+                        style="--c: #3498db;">
+                        <span class="flag">🇷🇺</span> Russian
+                    </button>
+                </div>
+
+                <!-- Google Translate Element (Styled) -->
+                <div id="google_translate_element"
+                    style="margin-top: 1.5rem; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 12px; border: 1px solid rgba(0,210,255,0.2);">
+                </div>
+
+                <!-- AI Zone Detection -->
+                <button onclick="requestUserLocation();"
+                    style="width: 100%; margin-top: 1rem; background: linear-gradient(90deg, rgba(0,210,255,0.1), rgba(0,255,136,0.1)); border: 1px solid var(--primary); color: white; padding: 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; cursor: pointer; transition: all 0.3s;"
+                    class="glow-on-hover">
+                    ✨ AI ZONE DETECTION
+                </button>
+            </div>
+
+            <style>
+                .lang-node {
+                    background: rgba(255, 255, 255, 0.03);
+                    border: 1px solid var(--glass-border);
+                    color: white;
+                    padding: 10px;
+                    border-radius: 10px;
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    gap: 8px;
+                    transition: all 0.3s;
+                    text-align: left;
+                }
+
+                .lang-node:hover {
+                    background: rgba(255, 255, 255, 0.08);
+                    border-color: var(--c);
+                    transform: translateY(-2px);
+                    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+                }
+
+                .lang-node.active {
+                    background: rgba(0, 210, 255, 0.1);
+                    border-color: var(--primary);
+                    color: var(--primary);
+                }
+
+                .lang-search-wrapper input:focus {
+                    border-color: var(--primary);
+                    background: rgba(0, 0, 0, 0.6);
+                    box-shadow: 0 0 15px rgba(0, 210, 255, 0.2);
+                }
+
+                .custom-scroll::-webkit-scrollbar {
+                    width: 3px;
+                }
+
+                .custom-scroll::-webkit-scrollbar-thumb {
+                    background: var(--primary);
+                    border-radius: 10px;
+                }
+
+                /* Hide Google Translate Bar */
+                .goog-te-banner-frame.skiptranslate,
+                .goog-te-gadget-icon {
+                    display: none !important;
+                }
+
+                body {
+                    top: 0px !important;
+                }
+
+                .goog-te-gadget {
+                    color: transparent !important;
+                }
+
+                .goog-te-gadget span {
+                    display: none !important;
+                }
+
+                .goog-te-combo {
+                    background: rgba(0, 0, 0, 0.5) !important;
+                    color: white !important;
+                    border: 1px solid var(--primary) !important;
+                    padding: 5px !important;
+                    border-radius: 5px !important;
+                }
+            </style>
+
+            <script>
+                document.getElementById('lang-search')?.addEventListener('input', function (e) {
+                    const q = e.target.value.toLowerCase();
+                    document.querySelectorAll('.lang-node').forEach(node => {
+                        const txt = node.textContent.toLowerCase();
+                        node.style.display = txt.includes(q) ? 'flex' : 'none';
+                    });
+                });
+            </script>
+
+            <div class="nav-category" style="margin-top:2rem;">ACCOUNT & SYSTEM</div>
+            <a href="/profile" class="nav-item {{ 'active' if request.path == '/profile' }}"><span class="emo">👤</span>
+                <span>My Profile</span></a>
+            <a href="/settings" class="nav-item {{ 'active' if request.path == '/settings' }}"><span
+                    class="emo">⚙️</span> <span>Settings</span></a>
+
+            {% if session.get('role') in ['farmer', 'feed_supplier', 'hatchery', 'buyer', 'admin'] and
+            config.FEATURES.PAYMENT_TRANSFERS %}
             <a href="/payments" class="nav-item {{ 'active' if request.path == '/payments' }}"><span
                     class="emo">💳</span> <span>Payments</span></a>
             {% endif %}
-            <a href="/expert" class="nav-item {{ 'active' if request.path == '/expert' }}">
-                <span class="emo">🔬</span> <span>Expert Ecosystem</span>
-            </a>
-            <a href="/knowledge" class="nav-item"><span class="emo">💬</span> <span>Library</span></a>
-            <a href="/settings" class="nav-item {{ 'active' if request.path == '/settings' }}"><span
-                    class="emo">⚙️</span> <span>Settings</span></a>
-            <a href="/profile" class="nav-item {{ 'active' if request.path == '/profile' }}"><span class="emo">👤</span>
-                <span>Profile</span></a>
 
-            <div class="language-hub" style="margin-top: auto; padding-top: 1rem; padding-inline: 1.5rem;">
-                <p
-                    style="font-size: 0.7rem; color: var(--text-muted); font-weight: 900; margin-bottom: 0.5rem; letter-spacing: 1px;">
-                    LANGUAGE OS</p>
-                <select onchange="window.location.href='?lang='+this.value"
-                    style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--glass-border); color: white; padding: 10px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; outline: none; cursor: pointer;">
-                    <option value="en" {% if lang=='en' %}selected{% endif %}>English</option>
-                    <option value="hi" {% if lang=='hi' %}selected{% endif %}>Hindi (हिन्दी)</option>
-                    <option value="te" {% if lang=='te' %}selected{% endif %}>Telugu (తెలుగు)</option>
-                    <option value="ta" {% if lang=='ta' %}selected{% endif %}>Tamil (தமிழ்)</option>
-                    <option value="es" {% if lang=='es' %}selected{% endif %}>Spanish</option>
-                    <option value="zh" {% if lang=='zh' %}selected{% endif %}>Chinese</option>
-                </select>
-            </div>
+            <a href="/knowledge" class="nav-item"><span class="emo">💬</span> <span>Library</span></a>
+
+            <a href="javascript:void(0)" class="nav-item" id="sidebar-close-btn"
+                style="border: 1px solid var(--rose); background: rgba(255, 77, 125, 0.05); margin-top: 2rem;">
+                <span class="emo">❌</span> <span style="color: var(--rose); font-weight: 800;">Close Sidebar</span>
+            </a>
+
         </div>
     </div>
 
@@ -256,7 +464,7 @@
 
     <footer
         style="text-align: center; padding: 4rem 0; opacity: 0.5; font-size: 0.9rem; font-weight: 800; letter-spacing: 2px;">
-        © 2026 AQUASPHERE | SMART AQUACULTURE PLATFORM
+        © 2026 AQUASPHERE | SMART AQUACULTURE PLATFORM | CREATED BY BHOGI
     </footer>
 
     {% if config.FEATURES.AI_CHATBOT %}
@@ -500,6 +708,18 @@
                 ext: '.svg',
                 base: 'https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/'
             });
+
+            // 💎 Language Search Logic
+            const langSearch = document.getElementById('lang-search');
+            if (langSearch) {
+                langSearch.addEventListener('input', function (e) {
+                    const term = e.target.value.toLowerCase();
+                    document.querySelectorAll('.lang-node').forEach(node => {
+                        const text = node.textContent.toLowerCase();
+                        node.style.display = text.includes(term) ? 'flex' : 'none';
+                    });
+                });
+            }
         });
 
         let qrGenerated = false;
@@ -630,7 +850,73 @@
                 location.reload();
             }
         }
+
+        /* 🌍 ROBUST GOOGLE TRANSLATE ENGINE */
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'hi,te,ta,zh-CN,es,ar,ru,en',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                autoDisplay: false
+            }, 'google_translate_element');
+        }
+
+        function translateSite(langCode) {
+            // 1. Set Google Translate Cookie
+            const cookieValue = "/en/" + langCode;
+            document.cookie = "googtrans=" + cookieValue + "; path=/";
+            document.cookie = "googtrans=" + cookieValue + "; path=/; domain=" + location.hostname;
+
+            // 2. Clear Google Translate state to prevent double-translation issues
+            const clearCookie = "googtrans=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            if (langCode === 'en') {
+                document.cookie = clearCookie;
+                document.cookie = "googtrans=; path=/; domain=" + location.hostname + "; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+            }
+
+            // 3. Sync with Flask server by redirecting with lang param
+            const url = new URL(window.location.href);
+            url.searchParams.set('lang', langCode);
+            window.location.href = url.toString();
+        }
+
+        // Auto-detect lang from URL on load if manually triggered
+        window.addEventListener('load', () => {
+            const params = new URLSearchParams(window.location.search);
+            const lang = params.get('lang');
+            if (lang && lang !== 'en' && lang !== 'auto') {
+                // translateSite(lang); // Uncomment if you want auto-force from URL
+            }
+
+            // 🚀 Nuclear Cleanup: Remove Google Translate Banner specifically
+            const killBanner = () => {
+                const bannerSelectors = [
+                    '.goog-te-banner-frame',
+                    'iframe[id=":1.container"]',
+                    'iframe[id=":0.container"]',
+                    '#goog-gt-tt',
+                    '.goog-te-balloon-frame',
+                    '.skiptranslate'
+                ];
+                
+                bannerSelectors.forEach(selector => {
+                    document.querySelectorAll(selector).forEach(el => {
+                        el.style.display = 'none';
+                        el.style.visibility = 'hidden';
+                        if (el.parentNode && selector.includes('banner')) el.remove();
+                    });
+                });
+                
+                document.body.style.top = '0px';
+                document.body.style.position = 'relative';
+                document.documentElement.style.top = '0px';
+            };
+            setInterval(killBanner, 50);
+            killBanner();
+        });
     </script>
+    <script type="text/javascript"
+        src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="{{ url_for('static', filename='main.js') }}"></script>
 </body>
 

@@ -14,86 +14,100 @@
 
     <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 3rem;">
         <!-- 📸 UPLOAD PANEL -->
-        <div class="app-card" style="border: 2px dashed var(--primary); padding: 3rem; text-align: center;">
+        <div class="app-card"
+            style="border: 2px dashed var(--primary); padding: 3rem; text-align: center; position: relative; overflow: hidden;">
             <div id="drop-zone"
                 style="cursor: pointer; padding: 2rem; border-radius: 20px; background: rgba(0,0,0,0.2);">
                 <div style="font-size: 4rem; margin-bottom: 1rem;">📤</div>
-                <h3>Drag & Drop Image</h3>
-                <p>or click to browse from gallery</p>
+                <h3>Neural Input Source</h3>
+                <p>Drag & Drop Aqua Media for Analysis</p>
                 <input type="file" id="file-input" hidden accept="image/*">
             </div>
 
             <div id="preview-container" style="display: none; margin-top: 2rem;">
                 <img id="image-preview" style="max-width: 100%; border-radius: 15px; border: 2px solid var(--accent);">
-                <button id="analyze-btn" class="shimmer-btn" style="margin-top: 2rem; width: 100%;">🚀 RUN NEURAL
-                    ANALYSIS</button>
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button id="analyze-btn" class="shimmer-btn" style="flex: 2;">🚀 RUN NEURAL ANALYSIS</button>
+                    <button id="train-mode-btn" class="app-btn-large"
+                        style="flex: 1; background: rgba(255,255,255,0.05); font-size: 0.8rem; padding: 0.5rem;">🧠
+                        TRAIN CORE</button>
+                </div>
+            </div>
+
+            <!-- Neural Stats Floating Badge -->
+            <div
+                style="position: absolute; top: 1rem; right: 1rem; background: rgba(0,210,255,0.1); padding: 0.5rem 1rem; border-radius: 20px; border: 1px solid var(--primary); font-size: 0.7rem; font-weight: 800;">
+                ACCURACY: <span id="stat-accuracy">{{ (vision_stats.accuracy * 100) | round(2) }}%</span>
             </div>
         </div>
 
         <!-- 📊 RESULTS PANEL -->
         <div class="app-card" id="analysis-panel" style="opacity: 0.5; pointer-events: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-                <h3 style="margin:0;">Neural Diagnostics</h3>
-                <div id="valid-badge" class="live-pulse-badge" style="display:none; background: var(--accent);">✅ VALID
-                    AQUA SOURCE</div>
-            </div>
-
             <div id="loading-spinner" style="display: none; text-align: center; padding: 3rem;">
-                <div class="live-pulse" style="width: 50px; height: 50px;"></div>
-                <p style="margin-top: 1rem; font-family: monospace; color: var(--primary);">CONVOLUTIONAL FEATURE
-                    EXTRACTION...</p>
-                <p id="loading-step" style="font-size: 0.8rem; opacity: 0.5;">Scanning for aquatic markers...</p>
+                <div class="live-pulse" style="width: 50px; height: 50px; background: var(--primary);"></div>
+                <p style="margin-top: 1rem; font-family: monospace; color: var(--primary);">PROCESSING TENSORS...</p>
+                <p id="loading-step" style="font-size: 0.8rem; opacity: 0.5;">Initializing weights...</p>
             </div>
 
             <div id="results-content">
-                <div id="invalid-msg"
-                    style="display: none; text-align: center; color: var(--rose); padding: 2rem; border: 1px solid var(--rose); border-radius: 15px; background: rgba(255, 77, 125, 0.05);">
+                <div id="initial-msg" style="text-align: center; padding: 4rem; opacity: 0.5;">
+                    <div style="font-size: 3rem; margin-bottom: 1rem;">🛰️</div>
+                    <h3>Waiting for Input</h3>
+                    <p>Uplink an image to start neural diagnostic</p>
+                </div>
+
+                <div id="invalid-msg" style="display: none; text-align: center; color: var(--rose); padding: 2rem;">
                     <div style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
-                    <h4 style="color: var(--rose);">INVALID INPUT DETECTED</h4>
-                    <p style="font-size: 1rem;">The neural core could not identify any aquaculture-related features
-                        (Fish, Prawn, or Marine Life) in this media. Please upload a valid aqua-related image or video.
-                    </p>
+                    <h4>NON-AQUA SOURCE</h4>
+                    <p>The neural core did not identify any aquatic markers. Try training the model if this is a new
+                        species.</p>
                 </div>
 
                 <div id="diagnostic-data" style="display: none;">
-                    <div class="sub-panel" style="margin-bottom: 2rem; border-left: 5px solid var(--primary);">
-                        <p class="small-label">Classified Organism</p>
-                        <p id="organism-type" style="font-size: 1.5rem; font-weight: 1000; color: #fff;">Prawn (Penaeus
-                            monodon)</p>
-                    </div>
-
-                    <div style="display: flex; flex-direction: column; gap: 1.2rem;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 0.9rem; font-weight: 800;">Neural Confidence</span>
-                            <span id="conf-val" style="color: var(--accent); font-weight: 950;">0%</span>
-                        </div>
-                        <div
-                            style="height: 10px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;">
-                            <div id="conf-bar"
-                                style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1);">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div id="disease-info" style="margin-top: 3rem; animation: popIn 0.5s ease-out;">
-                        <div id="severity-badge" class="live-pulse-badge"
-                            style="background: var(--rose); margin-bottom: 1rem;">⚠️ CRITICAL THREAT</div>
-                        <h4 id="detected-disease" style="color: #fff; margin: 0; font-size: 2.2rem;">White Spot Syndrome
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h4 id="organism-type" style="color: var(--primary); margin:0; font-weight: 900;">Detected Class
                         </h4>
-                        <p id="disease-desc"
-                            style="margin-top: 1rem; font-size: 1.15rem; color: var(--text-muted); line-height: 1.5;">
-                            High probability of viral infection (WSSV). Characteristic white spots on carapace and rapid
-                            mortality observed in neural pattern matching.
-                        </p>
-
-                        <div style="margin-top: 2rem; display: flex; gap: 1rem;">
-                            <a href="/expert" class="app-btn-large"
-                                style="text-decoration: none; background: var(--violet); color: white; flex: 1; text-align: center; padding: 1rem;">👨‍⚕️
-                                TALK TO EXPERT</a>
-                            <button onclick="location.reload()" class="app-btn-large"
-                                style="background: rgba(255,255,255,0.1); color: white; flex: 1;">🔄 NEW SCAN</button>
-                        </div>
+                        <div class="live-pulse-badge" id="conf-val" style="background: var(--accent);">99% Conf.</div>
                     </div>
+
+                    <h2 id="detected-disease" style="margin: 1rem 0; font-size: 2.5rem;">Diagnosis</h2>
+                    <div id="severity-badge" class="live-pulse-badge" style="margin-bottom: 1.5rem;">Severity</div>
+
+                    <p id="disease-desc" style="font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;"></p>
+
+                    <div style="margin-top: 3rem; display: flex; gap: 1rem;">
+                        <button onclick="location.reload()" class="app-btn-large"
+                            style="flex:1; background: rgba(0,210,255,0.1);">🔄 RETRANSMIT</button>
+                        <a href="/expert" class="app-btn-large"
+                            style="flex:1; text-decoration: none; text-align:center;">👨‍⚕️ EXPERT SYNC</a>
+                    </div>
+                </div>
+
+                <!-- 🧠 TRAINING CONSOLE (HIDDEN BY DEFAULT) -->
+                <div id="training-console" style="display: none; padding: 1rem; animation: slideInLeft 0.5s ease-out;">
+                    <h3 style="color: var(--accent); margin-bottom: 1.5rem;">Neural Training Console</h3>
+                    <p style="margin-bottom: 2rem; font-size: 0.9rem;">Map this image pattern to a disease marker to
+                        train the global AquaSphere dataset.</p>
+
+                    <div class="app-input-group">
+                        <span class="app-label">Identify Organism</span>
+                        <input type="text" id="train-organism" class="app-input" placeholder="e.g. Black Tiger Prawn">
+                    </div>
+
+                    <div class="app-input-group">
+                        <span class="app-label">Disease Label</span>
+                        <input type="text" id="train-disease" class="app-input" placeholder="e.g. Vibrio Infection">
+                    </div>
+
+                    <div class="app-input-group">
+                        <span class="app-label">Description / Solution</span>
+                        <textarea id="train-desc" class="app-input" style="min-height: 80px;"
+                            placeholder="Diagnostic details..."></textarea>
+                    </div>
+
+                    <button id="submit-training" class="shimmer-btn" style="width: 100%; padding: 1.5rem;">📥 UPLOAD TO
+                        NEURAL CORE</button>
                 </div>
             </div>
         </div>
@@ -102,7 +116,8 @@
     <!-- 🌐 BRAIN TELEMETRY FOOTER -->
     <div style="margin-top: 5rem; text-align: center; opacity: 0.3;">
         <p style="font-family: monospace; letter-spacing: 5px; font-size: 0.8rem;">
-            AQUASPHERE NEURAL CORE v4.2 // LAYER_COUNT: 152 // ACTIVATION: RELU
+            AQUASPHERE NEURAL CORE v4.2 // TOTAL SAMPLES: <span id="stat-samples">{{ vision_stats.total_images }}</span>
+            // LAST TRAINED: {{ vision_stats.last_trained }}
         </p>
     </div>
 </div>
@@ -110,41 +125,16 @@
 <script>
     const dropZone = document.getElementById('drop-zone');
     const fileInput = document.getElementById('file-input');
-    const previewContainer = document.getElementById('preview-container');
     const imagePreview = document.getElementById('image-preview');
+    const previewContainer = document.getElementById('preview-container');
     const analyzeBtn = document.getElementById('analyze-btn');
-    const analysisPanel = document.getElementById('analysis-panel');
+    const trainModeBtn = document.getElementById('train-mode-btn');
+    const trainingConsole = document.getElementById('training-console');
     const loadingSpinner = document.getElementById('loading-spinner');
-    const resultsContent = document.getElementById('results-content');
-    const loadingStep = document.getElementById('loading-step');
     const diagnosticData = document.getElementById('diagnostic-data');
+    const initialMsg = document.getElementById('initial-msg');
     const invalidMsg = document.getElementById('invalid-msg');
-    const validBadge = document.getElementById('valid-badge');
-
-    // 🌊 COMPREHENSIVE AQUACULTURE DATASETS
-    const AQUA_DATASET = [
-        {
-            keywords: ['shrimp', 'prawn', 'vannamei', 'larvae'],
-            type: 'Tiger Prawn (Penaeus monodon)',
-            disease: 'White Spot Syndrome (WSSV)',
-            desc: 'Highly contagious viral infection. Neural scans show characteristic white calcified spots on the cuticle. Recommendation: Immediate quarantine and water disinfection.',
-            severity: 'CRITICAL THREAT'
-        },
-        {
-            keywords: ['fish', 'tilapia', 'rohu', 'carp'],
-            type: 'Cultured Fish (Tilapia)',
-            disease: 'Fin Rot / Epizootic Ulcerative Syndrome',
-            desc: 'Bacterial/Fungal invasion. Neural biomarkers indicate severe tissue necrosis at ventral fins. Recommendation: Antibacterial bath and water quality correction.',
-            severity: 'HIGH RISK'
-        },
-        {
-            keywords: ['water', 'pond', 'surface', 'algae'],
-            type: 'Pond Ecosystem (Water)',
-            disease: 'Harmful Cyanobacteria Bloom',
-            desc: 'Ecological imbalance. AI detected high chlorophyll-a concentrations and toxin-producing blue-green algae. Recommendation: Enhance aeration and reduce feed input.',
-            severity: 'MONITORING'
-        }
-    ];
+    const analysisPanel = document.getElementById('analysis-panel');
 
     dropZone.onclick = () => fileInput.click();
 
@@ -159,82 +149,96 @@
                 analysisPanel.style.opacity = '1';
                 analysisPanel.style.pointerEvents = 'auto';
 
-                // Reset UI for new uploads
-                invalidMsg.style.display = 'none';
-                diagnosticData.style.display = 'none';
-                validBadge.style.display = 'none';
-                document.getElementById('conf-bar').style.width = '0%';
-                document.getElementById('conf-val').innerText = '0%';
+                // Set default training keyword based on filename
+                document.getElementById('train-organism').value = file.name.split('.')[0];
             };
             reader.readAsDataURL(file);
         }
     };
 
-    analyzeBtn.onclick = () => {
+    analyzeBtn.onclick = async () => {
         analyzeBtn.disabled = true;
-        analyzeBtn.innerHTML = '🧠 ANALYZING NEURAL TENSORS...';
+        initialMsg.style.display = 'none';
+        diagnosticData.style.display = 'none';
+        invalidMsg.style.display = 'none';
         loadingSpinner.style.display = 'block';
-        resultsContent.style.filter = 'blur(10px)';
 
-        let steps = ['Validating Aqua Markers...', 'Segmenting Bio-Features...', 'Neural Classification...', 'Generating Diagnosis...'];
+        let steps = ['Validating Tensors...', 'CNN Forward Pass...', 'Pattern Matching...', 'Finalizing Weights...'];
         let stepIdx = 0;
+        const stepIv = setInterval(() => {
+            if (stepIdx < steps.length) document.getElementById('loading-step').innerText = steps[stepIdx++];
+        }, 600);
 
-        const stepInterval = setInterval(() => {
-            if (stepIdx < steps.length) {
-                loadingStep.innerText = steps[stepIdx++];
-            } else {
-                clearInterval(stepInterval);
-            }
-        }, 800);
+        try {
+            const resp = await fetch('/api/vision/analyze', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: fileInput.files[0].name })
+            });
+            const res = await resp.json();
 
-        // Simulated AI Deep Learning Logic
-        setTimeout(() => {
-            const fileName = fileInput.files[0].name.toLowerCase();
-            const foundData = AQUA_DATASET.find(d => d.keywords.some(k => fileName.includes(k)));
-
+            clearInterval(stepIv);
             loadingSpinner.style.display = 'none';
-            resultsContent.style.filter = 'none';
             analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = '🚀 RUN NEURAL ANALYSIS';
 
-            if (foundData) {
-                // ✅ VALID AQUACULTURE DETECTED
-                invalidMsg.style.display = 'none';
+            if (res.is_aqua) {
                 diagnosticData.style.display = 'block';
-                validBadge.style.display = 'inline-flex';
+                document.getElementById('organism-type').innerText = res.data.type;
+                document.getElementById('detected-disease').innerText = res.data.disease;
+                document.getElementById('disease-desc').innerText = res.data.desc;
+                document.getElementById('conf-val').innerText = res.confidence + '% CONF.';
 
-                document.getElementById('organism-type').innerText = foundData.type;
-                document.getElementById('detected-disease').innerText = foundData.disease;
-                document.getElementById('disease-desc').innerText = foundData.desc;
+                const sev = document.getElementById('severity-badge');
+                sev.innerText = res.data.severity;
+                sev.style.background = res.data.severity.includes('CRITICAL') ? '#ff0055' : '#00ff88';
 
-                const severityBadge = document.getElementById('severity-badge');
-                severityBadge.innerText = foundData.severity;
-                severityBadge.style.background = foundData.severity === 'CRITICAL THREAT' ? 'var(--rose)' :
-                    (foundData.severity === 'HIGH RISK' ? 'var(--amber)' : 'var(--primary)');
-
-                // Animate Neural Confidence
-                setTimeout(() => {
-                    const confidence = (94 + Math.random() * 5).toFixed(2);
-                    document.getElementById('conf-bar').style.width = confidence + '%';
-                    document.getElementById('conf-val').innerText = confidence + '%';
-                }, 100);
-
-                confirmaiton_trigger('success');
+                updateStatusGlow('success');
             } else {
-                // ❌ NON-AQUA IMAGE DETECTED
                 invalidMsg.style.display = 'block';
-                diagnosticData.style.display = 'none';
-                validBadge.style.display = 'none';
-                confirmaiton_trigger('error');
+                updateStatusGlow('error');
             }
-        }, 3500);
+        } catch (err) {
+            console.error(err);
+            loadingSpinner.style.display = 'none';
+            analyzeBtn.disabled = false;
+        }
     };
 
-    function confirmaiton_trigger(status) {
-        const panel = document.getElementById('analysis-panel');
-        const color = status === 'success' ? 'var(--accent)' : 'var(--rose)';
-        panel.style.boxShadow = `0 0 50px ${color}`;
-        setTimeout(() => panel.style.boxShadow = 'none', 800);
+    trainModeBtn.onclick = () => {
+        diagnosticData.style.display = 'none';
+        invalidMsg.style.display = 'none';
+        initialMsg.style.display = 'none';
+        trainingConsole.style.display = 'block';
+    };
+
+    document.getElementById('submit-training').onclick = async () => {
+        const payload = {
+            keyword: fileInput.files[0].name.toLowerCase(),
+            organism: document.getElementById('train-organism').value,
+            disease: document.getElementById('train-disease').value,
+            desc: document.getElementById('train-desc').value,
+            severity: 'MONITORING'
+        };
+
+        const resp = await fetch('/api/vision/train', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        const res = await resp.json();
+
+        if (res.status === 'success') {
+            alert(res.message);
+            document.getElementById('stat-samples').innerText = res.total_images;
+            document.getElementById('stat-accuracy').innerText = res.new_accuracy + '%';
+            trainingConsole.style.display = 'none';
+            initialMsg.style.display = 'block';
+        }
+    };
+
+    function updateStatusGlow(status) {
+        const color = status === 'success' ? 'var(--primary)' : 'var(--rose)';
+        analysisPanel.style.boxShadow = `0 0 40px ${color}33`;
     }
 </script>
 {% endblock %}

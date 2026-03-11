@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --primary: #00d2ff;
     --secondary: #3a7bd5;
     --accent: #00ff88;
@@ -12,7 +12,7 @@
     --glass-border: rgba(255, 255, 255, 0.09);
     --card-bg: rgba(10, 16, 40, 0.7);
     --text-primary: #ffffff;
-    --text-muted: #cbd5e1;
+    --text-muted: #94a3b8;
     --font-main: 'Outfit', 'Inter', system-ui, sans-serif;
     --surface: rgba(255, 255, 255, 0.03);
     --glow: rgba(0, 210, 255, 0.4);
@@ -21,7 +21,7 @@
     --sidebar-width: 350px;
 }
 
-/* 🧬 Professional Fluid Typography & Reset */
+/* ðŸ§¬ Professional Fluid Typography & Reset */
 h1,
 h2,
 h3,
@@ -55,7 +55,7 @@ p {
     opacity: 0.9;
 }
 
-/* 🌊 Premium Neon Scrollbars */
+/* ðŸŒŠ Premium Neon Scrollbars */
 ::-webkit-scrollbar {
     width: 5px;
 }
@@ -70,9 +70,9 @@ p {
     box-shadow: 0 0 8px var(--primary);
 }
 
-/* ═══════════════════════════════════════════
-   🌌 DEEP SPACE ANIMATED BACKGROUND
-═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ðŸŒŒ DEEP SPACE ANIMATED BACKGROUND
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 body {
     background: #030712;
     background-image:
@@ -114,7 +114,7 @@ body::before {
     z-index: 0;
 }
 
-/* 🟢 Super-Activated Live Pulse for Ticker */
+/* ðŸŸ¢ Super-Activated Live Pulse for Ticker */
 .live-pulse {
     display: inline-block;
     width: 8px;
@@ -184,9 +184,9 @@ body::before {
     }
 }
 
-/* ═══════════════════════════════════════════
-   ✨ PREMIUM KEYFRAME ANIMATIONS
-═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   âœ¨ PREMIUM KEYFRAME ANIMATIONS
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 @keyframes auroraShift {
     0% {
         transform: translate(0, 0) scale(1);
@@ -356,9 +356,9 @@ body::before {
     }
 }
 
-/* ═══════════════════════════════════════════
-   🌟 GLOW TEXT UTILITY
-═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ðŸŒŸ GLOW TEXT UTILITY
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 .glow-text {
     background: linear-gradient(90deg, var(--primary), var(--accent), var(--primary));
     background-size: 200% auto;
@@ -369,9 +369,9 @@ body::before {
     font-weight: 900;
 }
 
-/* ═══════════════════════════════════════════
-   🔥 PREMIUM CARD BOOST
-═══════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ðŸ”¥ PREMIUM CARD BOOST
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 .container {
     max-width: none;
@@ -703,7 +703,7 @@ div {
 }
 
 /* =====================================================
-   🌈 TWEMOJI — All emoji are now colourful SVG images
+   ðŸŒˆ TWEMOJI â€” All emoji are now colourful SVG images
    These rules ensure correct sizing & positioning
    ===================================================== */
 
@@ -712,7 +712,7 @@ div {
     display: inline-block;
 }
 
-/* Twemoji images — global sizing */
+/* Twemoji images â€” global sizing */
 img.emoji {
     height: 1em;
     width: 1em;
@@ -727,7 +727,7 @@ img.emoji {
     z-index: 1;
 }
 
-/* Nav items — slightly larger emoji */
+/* Nav items â€” slightly larger emoji */
 .nav-item img.emoji {
     height: 1.2em;
     width: 1.2em;
@@ -977,6 +977,99 @@ h3 {
     background: rgba(30, 41, 59, 1);
 }
 
+/* Unified Portal Styles */
+.user-profile-nav {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.5rem 1rem;
+    padding-right: 0.5rem;
+    border-radius: 1.5rem;
+    border: 1px solid var(--glass-border);
+}
+
+.user-info-brief {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user-role-tag {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--primary);
+}
+
+.user-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: white;
+}
+
+.logout-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 1rem;
+    background: rgba(255, 77, 125, 0.1);
+    border: 1px solid rgba(255, 77, 125, 0.2);
+    color: var(--rose);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.logout-icon-btn:hover {
+    background: var(--rose);
+    color: white;
+    transform: scale(1.05);
+}
+
+.glass-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    border-radius: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+.logout-item span {
+    color: var(--rose) !important;
+}
+
+.logout-item:hover {
+    background: rgba(255, 77, 125, 0.1) !important;
+    border-color: rgba(255, 77, 125, 0.2) !important;
+}
+
+/* Scroll adjustments for main content */
+.container {
+    padding-top: 4rem;
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.sidebar-footer {
+    margin-top: auto;
+    padding: 2rem;
+    border-top: 1px solid var(--glass-border);
+}
+
+.created-by {
+    font-size: 0.85rem;
+    opacity: 0.6;
+    text-align: center;
+    font-weight: 600;
+}
+
 .app-card p {
     font-size: 1.4rem;
     line-height: 1.6;
@@ -1073,7 +1166,7 @@ h3 {
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
 }
 
-/* 🚀 Premium Hover & Interaction Effects */
+/* ðŸš€ Premium Hover & Interaction Effects */
 .app-card {
     transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
     position: relative;
@@ -1102,7 +1195,7 @@ h3 {
     left: 100%;
 }
 
-/* 🔼 Back to Top Button */
+/* ðŸ”¼ Back to Top Button */
 #back-to-top {
     position: fixed;
     bottom: 30px;
@@ -1136,7 +1229,7 @@ h3 {
     background: var(--accent);
 }
 
-/* 📱 Mobile Adjustments */
+/* ðŸ“± Mobile Adjustments */
 @media (max-width: 768px) {
     body {
         font-size: 16px;
@@ -1155,7 +1248,7 @@ h3 {
     }
 }
 
-/* 💎 Premium Text Highlights */
+/* ðŸ’Ž Premium Text Highlights */
 .glow-text {
     background: linear-gradient(to right, #fff, var(--primary));
     -webkit-background-clip: text;
@@ -1168,7 +1261,7 @@ h3 {
     text-shadow: 0 0 15px var(--accent);
 }
 
-/* 🌊 Hero Section Base Styles */
+/* ðŸŒŠ Hero Section Base Styles */
 .hero-section {
     padding: 14rem 0 10rem;
     position: relative;
@@ -1192,7 +1285,7 @@ h3 {
     font-weight: 500;
 }
 
-/* 🏠 Dashboard Full Width Fix */
+/* ðŸ  Dashboard Full Width Fix */
 .home-dashboard {
     width: 100%;
     max-width: none;
@@ -1203,7 +1296,7 @@ h3 {
     width: 100%;
 }
 
-/* 🌊 LIVING AQUARIUM ANIMATION */
+/* ðŸŒŠ LIVING AQUARIUM ANIMATION */
 .swimmer {
     position: fixed;
     left: -15%;
@@ -1296,7 +1389,7 @@ h3 {
     }
 }
 
-/* 🛡️ Working Scanner Effect for Sidebar */
+/* ðŸ›¡ï¸ Working Scanner Effect for Sidebar */
 #sidebar::after {
     content: '';
     position: absolute;
@@ -1369,21 +1462,10 @@ h3 {
     }
 
     /* Better mobile card spacing */
-    .app-card,
-    .premium-card {
-        padding: 2rem 1.5rem !important;
+    .app-card {
+        padding: 2rem 1.5rem;
         border-radius: 20px;
-        margin: 1rem 0 !important;
-    }
-
-    /* Fix large dashboard headers */
-    header h2 {
-        font-size: 2rem !important;
-        margin-bottom: 1rem !important;
-    }
-
-    header p {
-        font-size: 1rem !important;
+        margin: 1.5rem 0.5rem;
     }
 
     /* Optimize headings for mobile */
@@ -1423,76 +1505,7 @@ h3 {
     /* Better mobile navigation */
     #sidebar {
         width: 85vw;
-        max-width: 350px;
-        left: -350px;
-        /* Hide by default */
-    }
-
-    body.sidebar-open #sidebar {
-        left: 0;
-    }
-
-    /* 📱 NEW: Responsive Layout Helpers */
-    .responsive-grid-12 {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        gap: 3rem;
-    }
-
-    @media (max-width: 1200px) {
-        .responsive-grid-12 {
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-
-        .main-column,
-        .side-column {
-            grid-column: span 12 !important;
-        }
-    }
-
-    /* Fix for 400px blocks that overflow on mobile */
-    .grid,
-    [style*="grid-template-columns"] {
-        grid-template-columns: 1fr !important;
-    }
-
-    @media (min-width: 769px) {
-        .grid {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
-        }
-    }
-
-    /* Hero adjustments */
-    .hero-card,
-    [style*="padding: 4rem"] {
-        padding: 2rem 1.5rem !important;
-        border-radius: 2rem !important;
-    }
-
-    .hero-content {
-        flex-direction: column !important;
-        gap: 2rem !important;
-    }
-
-    .info-side h1 {
-        font-size: 2.5rem !important;
-        line-height: 1.1 !important;
-    }
-
-    .widget-side {
-        padding-bottom: 2rem !important;
-    }
-
-    .mini-widget {
-        padding: 1.5rem !important;
-        min-width: 180px !important;
-    }
-
-    /* Ticker Visibility */
-    .live-ticker {
-        bottom: 0px !important;
-        padding: 0.8rem 0 !important;
+        max-width: 320px;
     }
 
     /* Improve ticker for mobile */
@@ -1606,19 +1619,8 @@ h3 {
         /* Hide language switcher from header on small mobile, keep it in sidebar/modal */
     }
 
-    .logo {
-        font-size: 1.5rem !important;
-        gap: 0.5rem !important;
-    }
-
-    .logo span {
-        font-size: 1.8rem !important;
-    }
-
     #connection-badge {
         margin-left: auto;
-        padding: 5px 8px !important;
-        min-width: unset !important;
     }
 }
 

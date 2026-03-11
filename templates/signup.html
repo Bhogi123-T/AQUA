@@ -1,153 +1,376 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-    <div class="app-card"
-        style="margin: 0; max-width: 450px; width: 100%; padding: 3rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+<div class="login-wrapper">
+    <div class="grid-overlay"></div>
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
 
-        <div style="text-align: center; margin-bottom: 3rem;">
-            <div
-                style="width: 80px; height: 80px; background: rgba(0, 255, 136, 0.1); border-radius: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid rgba(0, 255, 136, 0.2);">
-                <span style="font-size: 2.5rem;">🚀</span>
+    <div class="login-card" style="max-width: 500px;">
+        <div class="card-header">
+            <div class="brand-logo"
+                style="width: 80px; height: 80px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ url_for('static', filename='img/prawn_logo.png') }}" alt="AquaSphere Prawn Logo"
+                    style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4)); animation: logoFloat 3s ease-in-out infinite;">
             </div>
-            <h2
-                style="font-size: 2.2rem; font-weight: 900; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #00ff88 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
-                {{ trans['join_aqua'] }}</h2>
-            <p style="color: var(--text-muted); font-size: 0.95rem;">{{ trans['create_account'] }}</p>
+            <h2 class="welcome-text">{{ trans['join_aqua'] }}</h2>
+            <p class="subtitle">{{ trans['create_account'] }}</p>
         </div>
 
         {% if error %}
-        <div
-            style="background: rgba(255, 0, 85, 0.1); border: 1px solid rgba(255, 0, 85, 0.2); color: #ff0055; padding: 1rem; border-radius: 1rem; margin-bottom: 2rem; font-size: 0.9rem; font-weight: 600; text-align: center;">
-            ⚠️ {{ error }}
+        <div class="error-node">
+            <span>⚠️ {{ error }}</span>
         </div>
         {% endif %}
 
-        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem;">
-            <a href="/login/google" class="google-login-btn">
-                <div class="google-icon-wrapper">
-                    <svg viewBox="0 0 24 24" width="24" height="24">
-                        <path fill="#4285F4"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="#34A853"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="#FBBC05"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                        <path fill="#EA4335"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                </div>
-                <span>Sign up with Google</span>
-            </a>
+        <a href="/login/google" class="google-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                <path fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            <span>Sign up with Google</span>
+        </a>
+
+        <div class="divider">
+            <div class="line"></div>
+            <span>OR CONTINUE WITH EMAIL</span>
+            <div class="line"></div>
         </div>
 
-        <!-- OR DIVIDER -->
-        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem;">
-            <div
-                style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);">
-            </div>
-            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;">OR
-                CONTINUE WITH EMAIL</span>
-            <div
-                style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, rgba(255,255,255,0.1), transparent);">
-            </div>
-        </div>
-
-        <form action="/signup" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
-
-            <div class="app-input-group">
-                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">{{
-                    trans['full_name'] }}</span>
-                <input type="text" name="name" class="app-input" placeholder="e.g., Bhogi Rao"
-                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
-                    required autofocus>
+        <form action="/signup" method="POST" class="auth-form">
+            <div class="input-container">
+                <span class="input-icon">👤</span>
+                <input type="text" name="name" class="premium-input" placeholder="{{ trans['full_name'] }}" required
+                    autofocus>
             </div>
 
-            <div class="app-input-group">
-                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">{{
-                    trans['phone_email'] }}</span>
-                <input type="email" name="email" class="app-input" placeholder="Email Address"
-                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+            <div class="input-container">
+                <span class="input-icon">📧</span>
+                <input type="email" name="email" class="premium-input" placeholder="{{ trans['phone_email'] }}"
                     required>
             </div>
 
-            <div class="app-input-group">
-                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">{{
-                    trans['aqua_type'] or 'Your Role' }}</span>
-                <select name="role" class="app-input"
-                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem; color: white; width: 100%; appearance: none; cursor: pointer;"
-                    required>
-                    <option value="farmer">🚜 Aquaculture Farmer</option>
-                    <option value="business">💼 Business / Supply Chain</option>
-                    <option value="expert">🔬 Marine Scientist / Expert</option>
-                    <option value="supplier">🛒 Equipment/Feed Supplier</option>
-                    <option value="hatchery">👶 Hatchery Owner</option>
-                    <option value="transport">🚛 Logistics Partner</option>
-                    <option value="government">🏛️ Government Officer</option>
+            <div class="input-container">
+                <span class="input-icon">💼</span>
+                <select name="role" class="premium-input" style="appearance: none; cursor: pointer;" required>
+                    <option value="" disabled selected>-- Select Your Industry Role --</option>
+                    {% for r_id, r_data in aqua_roles.items() %}
+                    <option value="{{ r_id }}">{{ r_data.icon }} {{ r_data.name }}</option>
+                    {% endfor %}
                 </select>
-                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">* Admins are verified
-                    privately</div>
+                <span
+                    style="position:absolute; right:1.25rem; top:50%; transform:translateY(-50%); pointer-events:none; opacity:0.5;">▼</span>
             </div>
 
-            <div class="app-input-group">
-                <span class="app-label" style="font-size: 0.75rem; letter-spacing: 1px; color: #00ff88;">Password</span>
-                <input type="password" name="password" class="app-input" placeholder="Create a strong password"
-                    style="background: rgba(0,0,0,0.3); border-color: rgba(255,255,255,0.1); padding: 1.2rem; border-radius: 1rem; font-size: 1rem;"
+            <div class="input-container">
+                <span class="input-icon">🔒</span>
+                <input type="password" name="password" id="password" class="premium-input" placeholder="Password"
                     required>
+                <button type="button" class="eye-toggle" onclick="togglePassword()">👁️</button>
             </div>
 
-            <button class="active-btn-signup"
-                style="width: 100%; padding: 1.3rem; border-radius: 1.2rem; font-weight: 900; font-size: 1.1rem; letter-spacing: 1px; border: none; cursor: pointer;">
-                {{ trans['create_account'] }}
+            <div class="input-container">
+                <span class="input-icon">🎟️</span>
+                <input type="text" name="invite_code" class="premium-input"
+                    placeholder="Invite Code (e.g. AQUA-BETA-2026)" style="border-color: rgba(139, 92, 246, 0.3);">
+            </div>
+
+            <button type="submit" class="submit-btn-glow">
+                {{ trans['create_account'] }} ➔
             </button>
         </form>
 
-        <div
-            style="margin-top: 3.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2rem;">
-            <p style="color: var(--text-muted); font-size: 0.9rem;">
-                {{ trans['already_account'] }} <a href="/login?lang={{ lang }}"
-                    style="color: #00ff88; font-weight: 800; text-decoration: none; margin-left: 0.5rem;">{{
-                    trans['login'] }} →</a>
-            </p>
+        <div class="auth-switch">
+            <p>{{ trans['already_account'] }} <a href="/login?lang={{ lang }}">{{ trans['login'] }}</a></p>
         </div>
     </div>
 </div>
 
 <style>
-    .google-login-btn {
-        width: 100%;
-        padding: 1rem;
-        border-radius: 1.2rem;
-        background: white;
-        color: #1f2937;
-        border: none;
-        font-weight: 750;
+    :root {
+        --violet-primary: #8B5CF6;
+        --violet-glow: rgba(139, 92, 246, 0.4);
+        --dark-bg: #0B0B0B;
+        --card-bg: #111111;
+        --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        text-decoration: none;
-        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+        background-color: var(--dark-bg);
+        position: relative;
+        overflow: hidden;
+        padding: 2rem;
     }
 
-    .google-login-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+    .grid-overlay {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.3;
+        pointer-events: none;
     }
 
-    .active-btn-signup {
-        background: #00ff88;
+    .glow-top {
+        position: absolute;
+        top: -20%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, var(--violet-glow) 0%, transparent 70%);
+        filter: blur(80px);
+        pointer-events: none;
+    }
+
+    .glow-bottom {
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, var(--violet-glow) 0%, transparent 70%);
+        filter: blur(80px);
+        pointer-events: none;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 440px;
+        background: var(--card-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 3rem;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    @keyframes logoFloat {
+
+        0%,
+        100% {
+            transform: translateY(0);
+        }
+
+        50% {
+            transform: translateY(-10px);
+        }
+    }
+
+    .welcome-text {
+        font-size: 2rem;
+        font-weight: 850;
+        color: white;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .subtitle {
+        color: #888;
+        font-size: 0.95rem;
+    }
+
+    .error-node {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .flash-node {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        color: var(--violet-primary);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        width: 100%;
+        padding: 0.85rem;
+        background: white;
         color: black;
-        box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
-        transition: all 0.3s ease;
+        border-radius: 12px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 2.5rem;
+        transition: all 0.2s;
     }
 
-    .active-btn-signup:hover {
+    .google-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .divider .line {
+        flex: 1;
+        height: 1px;
+        background: var(--glass-border);
+    }
+
+    .divider span {
+        font-size: 0.7rem;
+        color: #555;
+        font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .input-container {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .premium-input {
+        width: 100%;
+        background: #1A1A1A;
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 1rem 1rem 1rem 3.5rem;
+        color: white;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+
+    .premium-input:focus {
+        outline: none;
+        border-color: var(--violet-primary);
+        background: #222;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
+    }
+
+    .eye-toggle {
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #555;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .eye-toggle:hover {
+        color: var(--violet-primary);
+    }
+
+    .submit-btn-glow {
+        margin-top: 1rem;
+        padding: 1.15rem;
+        border-radius: 14px;
+        background: var(--violet-primary);
+        color: white;
+        border: none;
+        font-weight: 850;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 10px 25px var(--violet-glow);
+    }
+
+    .submit-btn-glow:hover {
         transform: translateY(-3px);
-        box-shadow: 0 15px 40px rgba(0, 255, 136, 0.4);
+        box-shadow: 0 20px 40px var(--violet-glow);
         filter: brightness(1.1);
     }
+
+    .auth-switch {
+        margin-top: 2.5rem;
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .auth-switch p {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .auth-switch a {
+        color: var(--violet-primary);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 5px;
+    }
 </style>
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const eyeBtn = document.querySelector('.eye-toggle');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            eyeBtn.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            eyeBtn.textContent = '👁️';
+        }
+    }
+</script>
 {% endblock %}

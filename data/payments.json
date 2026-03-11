@@ -80,5 +80,16 @@
         "type": "debit",
         "timestamp": "2026-02-25 10:44",
         "icon": "\ud83d\udd2c"
+    },
+    {
+        "id": "PAY-8",
+        "user_id": "bhogeswararaothirumalasetti@gmail.com",
+        "description": "Consult: Dr. Anil Sharma - Farm Visit (physical)",
+        "amount": "800",
+        "method": "UPI",
+        "status": "Completed",
+        "type": "debit",
+        "timestamp": "2026-03-09 17:11",
+        "icon": "\ud83d\udd2c"
     }
 ]

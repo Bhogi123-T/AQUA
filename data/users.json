@@ -6,7 +6,7 @@
         "auth_method": "dev_mock"
     },
     "bhogeswararaothirumalasetti@gmail.com": {
-        "name": "bhogi",
+        "name": "Bhogeswara rao Thirumalasetti",
         "role": "admin",
         "joined_at": "2026-02-09T13:45:48.454475"
     },
@@ -32,7 +32,7 @@
     "admin@aquasphere.com": {
         "name": "AquaSphere Admin",
         "password": "scrypt:32768:8:1$PX5HRjKOmliLAeiJ$b9145e920f2eecfe383256082e4c9da7923de9d4ae0f6799f3cd892ca47af2d4ac59cd9159ef1a6cdd794d3a0c6bd1e64a99bc2b625118dae4699889cb70723f",
-        "role": "admin",
+        "role": "farmer",
         "joined_at": "2026-02-21T23:32:24.355700",
         "auth_method": "local",
         "picture": ""
@@ -64,5 +64,38 @@
         "role": "farmer",
         "joined_at": "2026-02-25T00:19:14.474630",
         "auth_method": "local"
+    },
+    "hatchery@gmail.com": {
+        "name": "Naidu",
+        "password": "scrypt:32768:8:1$HB1Up4bxHPwaxtzg$afe6d6e9ede029b8215951f07c31d48f0ce890821d6e7171d6c00c3aae45fa06d01357d311115fbcdd5773188bfb64084e30f89a18421565dcf3589019576fef",
+        "role": "hatchery",
+        "joined_at": "2026-03-08T13:21:15.818939",
+        "auth_method": "local"
+    },
+    "exporter@gmail.com": {
+        "name": "Global Exporter",
+        "password": "scrypt:32768:8:1$HB1Up4bxHPwaxtzg$afe6d6e9ede029b8215951f07c31d48f0ce890821d6e7171d6c00c3aae45fa06d01357d311115fbcdd5773188bfb64084e30f89a18421565dcf3589019576fef",
+        "role": "exporter",
+        "joined_at": "2026-03-08T13:35:00.000000",
+        "auth_method": "local"
+    },
+    "hatcheryt@gmail.com": {
+        "name": "madhu",
+        "password": "scrypt:32768:8:1$jo4ZyuLcagzLJJzH$718219b75422be37540788b971f3b81dee2bdc25676fc58dd85abd13f7087870de875c75d75e8bd7fdea0aedd0ca46057c41ed1b098fe7a767ee6bea4be02505",
+        "role": "hatchery_tech",
+        "joined_at": "2026-03-09T10:39:13.537490",
+        "auth_method": "local"
+    },
+    "naidubhogi21@gmail.com": {
+        "name": "Naidu Bhogi",
+        "role": "admin",
+        "location": {
+            "country": "India \ud83c\uddee\ud83c\uddf3",
+            "state": "Andhra Pradesh",
+            "district": "Krishna"
+        },
+        "picture": "https://lh3.googleusercontent.com/a/ACg8ocK1GkzDkMfudEjbTUff0rBYAyC_6zl_I7REIz3LqQLvDylqEQ=s96-c",
+        "joined_at": "2026-03-09T20:11:50.884314",
+        "auth_method": "google"
     }
 }

@@ -10,3 +10,4 @@ twilio
 requests
 authlib
 supabase
+flask-cors

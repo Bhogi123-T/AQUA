@@ -13,20 +13,15 @@ async function checkLocationPermission() {
 
     window.LOCATION_CHECK_DONE = true;
 
-    // 🌐 NEW: IP Location Fallback (Works on HTTP & Mobile without prompt)
+    // 🌐 NEW: IP Location Fallback
     const getIPLocation = async () => {
         try {
             const res = await fetch('https://ipapi.co/json/');
             const data = await res.json();
             if (data.latitude && data.longitude) {
-                console.log('📍 IP-based location activated (Fallback):', data.city);
+                console.log('📍 IP-based location found:', data.city);
                 window.LOCATION_ENABLED = true;
-                // Sync with server if needed
-                fetch('/api/set-lang-by-geo', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ lat: data.latitude, lon: data.longitude })
-                });
+                // REMOVED: No longer automatically syncing language to server
                 return true;
             }
         } catch (e) {
@@ -92,7 +87,9 @@ function showLocationNotification(customMessage = null) {
         top: 80px;
         left: 50%;
         transform: translateX(-50%);
-        background: linear-gradient(135deg, #ff6b35, #ff0055);
+        background: rgba(11, 17, 32, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 0, 85, 0.3);
         color: white;
         padding: 1.5rem 2rem;
         border-radius: 16px;

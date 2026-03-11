@@ -1,0 +1,16 @@
+{
+    "leads": [],
+    "reports": [],
+    "hatcheries": {},
+    "seed_batches": [],
+    "farms": {},
+    "ponds": [],
+    "inventory": [],
+    "shipments": [],
+    "jobs": [],
+    "finance": {
+        "loans": [],
+        "insurance": []
+    },
+    "transactions": []
+}

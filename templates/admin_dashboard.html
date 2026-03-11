@@ -279,6 +279,26 @@
         background: rgba(0, 210, 255, 0.15);
         color: var(--primary);
     }
+
+    .pilot-badge {
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-size: 0.65rem;
+        font-weight: 900;
+        color: white;
+    }
+
+    .pilot-badge-bug {
+        background: #ff0055;
+    }
+
+    .pilot-badge-suggestion {
+        background: #00d2ff;
+    }
+
+    .pilot-badge-praise {
+        background: #00ff88;
+    }
 </style>
 
 <!-- 🛡️ OS HEADER -->
@@ -350,6 +370,7 @@
     <button onclick="showAdminTab('users')" id="atab-users" class="hub-tab-btn">👥 USERS</button>
     <button onclick="showAdminTab('revenue')" id="atab-revenue" class="hub-tab-btn">💰 REVENUE</button>
     <button onclick="showAdminTab('trade')" id="atab-trade" class="hub-tab-btn">🤝 TRADE</button>
+    <button onclick="showAdminTab('pilot')" id="atab-pilot" class="hub-tab-btn">🛰️ PILOT HUB</button>
     <button onclick="showAdminTab('crisis')" id="atab-crisis" class="hub-tab-btn">🚑 CRISIS MGMT</button>
     <button onclick="showAdminTab('system')" id="atab-system" class="hub-tab-btn">⚙️ SYSTEM</button>
     <button onclick="showAdminTab('alerts')" id="atab-alerts" class="hub-tab-btn">🚨 ALERTS</button>
@@ -787,6 +808,68 @@
                 Active</p>
             <p style="margin:4px 0 0; color:var(--text-muted); font-size:0.85rem;">All direct trades are verified by
                 AquaSphere's Smart Contract engine. Farmer payments are protected.</p>
+        </div>
+    </div>
+</div>
+
+<!-- PILOT HUB TAB -->
+<div id="admin-section-pilot" class="admin-sector">
+    <div style="display:grid; grid-template-columns:1fr 1.5fr; gap:1.5rem; margin-bottom:2rem;">
+        <!-- Invite Management -->
+        <div class="app-card" style="border-top: 5px solid var(--primary);">
+            <h3 style="color:var(--primary); margin-top:0;">🎟️ Invite Management</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:1.5rem;">Generate exclusive invite codes
+                to onboard real industry partners during the pilot phase.</p>
+
+            <div
+                style="background:rgba(0,0,0,0.2); border-radius:1rem; padding:1rem; margin-bottom:1.5rem; max-height:200px; overflow-y:auto;">
+                <p
+                    style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:0.75rem;">
+                    Active Codes</p>
+                {% for code in invite_codes %}
+                <div
+                    style="display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid rgba(255,255,255,0.05);">
+                    <code style="color:var(--primary); font-weight:800;">{{ code }}</code>
+                    <span style="font-size:0.7rem; color:#00ff88;">ACTIVE</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <form action="/admin/invite/generate" method="POST">
+                <button type="submit" class="pay-btn"
+                    style="width:100%; font-size:0.9rem; background:var(--primary); color:black;">+ Generate VIP
+                    Code</button>
+            </form>
+        </div>
+
+        <!-- Feedback & Beta Stats -->
+        <div class="app-card" style="border-top: 5px solid #00ff88;">
+            <h3 style="color:#00ff88; margin-top:0;">🛰️ Pilot Feedback Feed</h3>
+            <div
+                style="display:flex; flex-direction:column; gap:1rem; max-height:450px; overflow-y:auto; padding-right:10px;">
+                {% for entry in feedback %}
+                <div
+                    style="background:rgba(255,255,255,0.03); border-radius:1rem; padding:1.25rem; border:1px solid rgba(0,255,136,0.1);">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:0.75rem;">
+                        <span style="font-weight:800; color:#00ff88; font-size:0.85rem;">{{ entry.name }} ({{
+                            entry.role|upper }})</span>
+                        <span style="font-size:0.7rem; color:var(--text-muted);">{{ entry.timestamp[:16]|replace('T','
+                            ') }}</span>
+                    </div>
+                    <div style="display:flex; align-items:flex-start; gap:0.75rem;">
+                        <span class="pilot-badge pilot-badge-{{ entry.type }}">
+                            {{ entry.type|upper }}
+                        </span>
+                        <p style="margin:0; font-size:0.9rem; line-height:1.4; color:white;">{{ entry.message }}</p>
+                    </div>
+                </div>
+                {% else %}
+                <div style="text-align:center; padding:3rem; color:var(--text-muted);">
+                    <p style="font-size:2rem; margin-bottom:1rem;">📡</p>
+                    <p>No feedback received yet. The scanners are active.</p>
+                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
 </div>

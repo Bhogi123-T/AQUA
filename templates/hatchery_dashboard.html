@@ -1,0 +1,125 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<header style="margin-bottom: 3rem; text-align: center;">
+    <h2
+        style="font-size: 3rem; font-weight: 900; background: linear-gradient(90deg, #ff8c00, #ff0080); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;">
+        🏢 {{ trans['hatchery_hub_title'] or 'Hatchery Operation Center' }}
+    </h2>
+    <p style="color: var(--text-muted); font-size: 1.2rem;">{{ trans['hatchery_hub_desc'] or 'Manage Seed Batches,
+        Breeding Logs & Distribution' }}</p>
+</header>
+
+<div class="grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+    <!-- Batch Creation Tool -->
+    <div class="card premium-card">
+        <h3 style="color: #ff8c00; display: flex; align-items: center; gap: 0.5rem;">
+            <span>🧬</span> {{ trans['create_batch'] or 'Create Seed Batch' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Initialize a new batch of
+            PL/Fingerlings for the marketplace.</p>
+        <form action="/api/aquacycle/work" method="POST" class="ajax-form">
+            <input type="hidden" name="action" value="create_batch">
+            <div class="form-group">
+                <label>Species</label>
+                <select name="type">
+                    <option value="Vannamei">Vannamei Shrimp</option>
+                    <option value="Tiger">Tiger Prawn</option>
+                    <option value="Tilapia">Tilapia Fish</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Count (Millions)</label>
+                <input type="number" step="0.1" name="count" placeholder="e.g. 2.5" required>
+            </div>
+            <div class="form-group">
+                <label>Target Price (per 1000)</label>
+                <input type="number" name="price" placeholder="e.g. 450" required>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem; background: #ff8c00;">Initialize Batch</button>
+        </form>
+    </div>
+
+    <!-- Health Certificates -->
+    <div class="card premium-card">
+        <h3 style="color: #00ff88; display: flex; align-items: center; gap: 0.5rem;">
+            <span>📜</span> {{ trans['upload_cert'] or 'Health Certificates' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Upload digital health and PCR
+            verification documents.</p>
+        <form action="/api/aquacycle/work" method="POST" class="ajax-form">
+            <input type="hidden" name="action" value="upload_health_cert">
+            <div class="form-group">
+                <label>Batch ID</label>
+                <input type="text" name="target_id" placeholder="B-XXXX" required>
+            </div>
+            <div class="form-group">
+                <label>Certificate File</label>
+                <input type="file" style="display: none;" id="cert-file">
+                <div onclick="document.getElementById('cert-file').click()"
+                    style="border: 2px dashed rgba(255,255,255,0.1); padding: 2rem; border-radius: 10px; text-align: center; cursor: pointer;">
+                    📁 Click to Upload PDF/JPG
+                </div>
+            </div>
+            <button class="btn" style="width: 100%; margin-top: 1rem; background: #00ff88;">Submit
+                Certification</button>
+        </form>
+    </div>
+
+    <!-- Active Orders -->
+    <div class="card premium-card" style="border: 1px solid rgba(0, 210, 255, 0.2);">
+        <h3 style="color: var(--primary); display: flex; align-items: center; gap: 0.5rem;">
+            <span>🛒</span> {{ trans['active_orders'] or 'Farmer Requests' }}
+        </h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Review and accept incoming seed
+            orders from farmers.</p>
+        <div
+            style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 10px; min-height: 155px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+            <div style="font-size: 0.8rem; color: var(--text-muted);">No pending orders currently matching your
+                inventory.</div>
+            <a href="/dashboard"
+                style="color: var(--primary); text-decoration: none; font-size: 0.8rem; margin-top: 1rem; font-weight: 800;">Check
+                Ecosystem Feed →</a>
+        </div>
+        <button class="btn" style="width: 100%; margin-top: 1.5rem;">Manage Marketplace</button>
+    </div>
+</div>
+
+<style>
+    .premium-card {
+        background: rgba(255, 255, 255, 0.02);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 2rem;
+        transition: all 0.3s ease;
+    }
+
+    .premium-card:hover {
+        transform: translateY(-5px);
+        background: rgba(255, 255, 255, 0.04);
+        border-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 0.8rem;
+        color: white;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}

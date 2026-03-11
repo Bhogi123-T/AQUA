@@ -27,62 +27,17 @@
         <input type="hidden" name="role" id="selected-role" required>
 
         <div
-            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
-            <!-- Farmer -->
-            <div class="role-card" onclick="selectRole('farmer')" id="card-farmer">
-                <div class="role-icon">🐟</div>
-                <h3>Farmer</h3>
-                <p>Manage ponds, use AI diagnostics, and sell directly to companies.</p>
+            style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+            {% for role in aqua_roles %}
+            <div class="role-card" onclick="selectRole('{{ role.id }}')" id="card-{{ role.id }}">
+                <div class="role-icon">{{ role.icon }}</div>
+                <h3>{{ role.name }}</h3>
+                <p
+                    style="font-size: 0.8rem; text-transform: uppercase; color: var(--primary); letter-spacing: 1px; margin-bottom: 0.5rem;">
+                    {{ role.category }}</p>
                 <div class="role-select-indicator"></div>
             </div>
-
-            <!-- Business / Buyer -->
-            <div class="role-card" onclick="selectRole('business')" id="card-business">
-                <div class="role-icon">💼</div>
-                <h3>Businessman / Buyer</h3>
-                <p>Access exports/imports, place orders, and manage trade logistics.</p>
-                <div class="role-select-indicator"></div>
-            </div>
-
-            <!-- Expert -->
-            <div class="role-card" onclick="selectRole('expert')" id="card-expert">
-                <div class="role-icon">👨‍🔬</div>
-                <h3>Expert / Consultant</h3>
-                <p>Provide consultations, analyze media, and share specialized knowledge.</p>
-                <div class="role-select-indicator"></div>
-            </div>
-
-            <!-- Supplier -->
-            <div class="role-card" onclick="selectRole('supplier')" id="card-supplier">
-                <div class="role-icon">🛒</div>
-                <h3>Supplier / Vendor</h3>
-                <p>Sell feed, equipment, and probiotics to verified farmers.</p>
-                <div class="role-select-indicator"></div>
-            </div>
-
-            <!-- Hatchery -->
-            <div class="role-card" onclick="selectRole('hatchery')" id="card-hatchery">
-                <div class="role-icon">👶</div>
-                <h3>Hatchery Owner</h3>
-                <p>Supply high-quality seeds and manage PL tracking.</p>
-                <div class="role-select-indicator"></div>
-            </div>
-
-            <!-- Transport -->
-            <div class="role-card" onclick="selectRole('transport')" id="card-transport">
-                <div class="role-icon">🚛</div>
-                <h3>Logistics Partner</h3>
-                <p>Cold storage, transport, and fleet management for aquaculture.</p>
-                <div class="role-select-indicator"></div>
-            </div>
-
-            <!-- Government -->
-            <div class="role-card" onclick="selectRole('government')" id="card-government">
-                <div class="role-icon">🏛️</div>
-                <h3>Govt Officer</h3>
-                <p>Issue alerts, post schemes, and verify farm compliance.</p>
-                <div class="role-select-indicator"></div>
-            </div>
+            {% endfor %}
         </div>
 
         <div id="geo-selection"

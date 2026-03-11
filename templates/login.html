@@ -1,142 +1,173 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<div style="min-height: 80vh; display: flex; align-items: center; justify-content: center; padding: 2rem;">
-    <div class="app-card"
-        style="margin: 0; max-width: 450px; width: 100%; padding: 3rem; background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(20px); border: 1px solid var(--glass-border); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
+<div class="login-wrapper">
+    <div class="grid-overlay"></div>
+    <div class="glow-top"></div>
+    <div class="glow-bottom"></div>
 
-        <div style="text-align: center; margin-bottom: 3rem;">
-            <div
-                style="width: 80px; height: 80px; background: rgba(0, 210, 255, 0.1); border-radius: 2rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; border: 1px solid rgba(0, 210, 255, 0.2); animation: float 3s ease-in-out infinite;">
-                <span style="font-size: 2.5rem;">🔐</span>
+    <div class="login-card">
+        <div class="card-header">
+            <div class="brand-logo"
+                style="width: 80px; height: 80px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
+                <img src="{{ url_for('static', filename='img/prawn_logo.png') }}" alt="AquaSphere Prawn Logo"
+                    style="width: 100%; height: 100%; object-fit: contain; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.4)); animation: logoFloat 3s ease-in-out infinite;">
             </div>
-            <h2
-                style="font-size: 2.5rem; font-weight: 950; margin-bottom: 0.5rem; background: linear-gradient(135deg, #fff 0%, #00d2ff 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -1px;">
-                {{ trans['login'] }}</h2>
-            <p style="color: var(--text-muted); font-size: 1rem; font-weight: 500;">{{ trans['access_dash'] }}</p>
+            <h2 class="welcome-text">{{ trans['login'] }}</h2>
+            <p class="subtitle">{{ trans['access_dash'] }}</p>
         </div>
 
         {% if error %}
-        <div
-            style="background: rgba(255, 0, 85, 0.1); border: 1px solid rgba(255, 0, 85, 0.2); color: #ff0055; padding: 1.2rem; border-radius: 1.2rem; margin-bottom: 2.5rem; font-size: 0.95rem; font-weight: 600; text-align: center; backdrop-filter: blur(10px);">
-            ⚠️ {{ error }}
+        <div class="error-node">
+            <span>⚠️ {{ error }}</span>
         </div>
         {% endif %}
 
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
         {% for category, message in messages %}
-        {% if "OTP" in message or "Dev Mode" in message %}
-        <div
-            style="background: rgba(0, 255, 136, 0.1); border: 1px solid rgba(0, 255, 136, 0.3); color: #00ff88; padding: 1.2rem; border-radius: 1.2rem; margin-bottom: 2.5rem; font-size: 0.95rem; font-weight: 700; text-align: center; animation: pulse 2s infinite; backdrop-filter: blur(10px);">
-            🚀 {{ message }}
+        <div class="flash-node">
+            <span>🚀 {{ message }}</span>
         </div>
-        {% endif %}
         {% endfor %}
         {% endif %}
         {% endwith %}
 
-        <!-- PRIMARY OAUTH SECTION -->
-        <div style="display: flex; flex-direction: column; gap: 1rem; margin-bottom: 2.5rem;">
-            <a href="/login/google" class="google-login-btn"
-                style="height: 65px; font-size: 1.15rem; background: linear-gradient(135deg, #fff 0%, #f8fafc 100%);">
-                <div class="google-icon-wrapper"
-                    style="background: white; padding: 8px; border-radius: 8px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                    <svg viewBox="0 0 24 24" width="28" height="28">
-                        <path fill="#4285F4"
-                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
-                        <path fill="#34A853"
-                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
-                        <path fill="#FBBC05"
-                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
-                        <path fill="#EA4335"
-                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
-                    </svg>
-                </div>
-                <span style="font-weight: 800; color: #1e293b;">Sign in with Google</span>
-            </a>
-            <p
-                style="text-align: center; color: var(--text-muted); font-size: 0.85rem; font-weight: 600; margin-top: 0.5rem;">
-                <span class="emo">⚡</span> Fast, secure, and one-tap access
-            </p>
+        <a href="/login/google" class="google-btn">
+            <svg viewBox="0 0 24 24" width="20" height="20">
+                <path fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                <path fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                <path fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                <path fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+            </svg>
+            <span>Sign in with Google</span>
+        </a>
+
+        <div class="divider">
+            <div class="line"></div>
+            <span>OR CONTINUE WITH EMAIL</span>
+            <div class="line"></div>
         </div>
 
-        <!-- OR DIVIDER -->
-        <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 2.5rem;">
-            <div
-                style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, rgba(255,255,255,0.1), transparent);">
-            </div>
-            <span style="color: var(--text-muted); font-size: 0.85rem; font-weight: 800; letter-spacing: 2px;">OR SECURE
-                LOGIN</span>
-            <div
-                style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, rgba(255,255,255,0.1), transparent);">
-            </div>
-        </div>
-
-        <form action="/login" method="POST" style="display: flex; flex-direction: column; gap: 1.5rem;">
-            <div class="app-input-group">
-                <span class="app-label"
-                    style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;">{{
-                    trans['phone_email'] }}</span>
-                <input type="email" name="email" class="app-input" placeholder="name@company.com"
-                    style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 1.3rem; border-radius: 1.2rem; font-size: 1rem; color: white; transition: all 0.3s;"
-                    required autofocus>
+        <form action="/login" method="POST" class="auth-form">
+            <div class="input-container">
+                <span class="input-icon">📧</span>
+                <input type="email" name="email" class="premium-input" placeholder="{{ trans['phone_email'] }}" required
+                    autofocus>
             </div>
 
-            <div class="app-input-group">
-                <span class="app-label"
-                    style="font-size: 0.75rem; letter-spacing: 1px; color: var(--primary); text-transform: uppercase;">Password</span>
-                <input type="password" name="password" class="app-input" placeholder="••••••••"
-                    style="background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.1); padding: 1.3rem; border-radius: 1.2rem; font-size: 1rem; color: white; transition: all 0.3s;"
+            <div class="input-container">
+                <span class="input-icon">🔒</span>
+                <input type="password" name="password" id="password" class="premium-input" placeholder="Password"
                     required>
+                <button type="button" class="eye-toggle" onclick="togglePassword()">👁️</button>
             </div>
 
-            <button class="auth-submit-btn">
-                {{ trans['login'] }}
+            <div class="form-footer">
+                <label class="remember-me">
+                    <input type="checkbox"> <span>Stay logged in</span>
+                </label>
+                <a href="#" class="forgot-link">Forgot password?</a>
+            </div>
+
+            <button type="submit" class="submit-btn-glow">
+                {{ trans['login'] }} ➔
             </button>
         </form>
 
-        <div
-            style="margin-top: 3.5rem; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 2.5rem;">
-
-            {% if not service_status.env_file or not (service_status.google and service_status.email) %}
-            <div
-                style="background: rgba(255, 230, 0, 0.05); border: 1px dashed rgba(255, 230, 0, 0.3); padding: 1.5rem; border-radius: 1.5rem; margin-bottom: 2rem; text-align: left;">
-                <h4 style="color: #ffe600; margin: 0 0 0.5rem; font-size: 0.9rem;"><span class="emo">🛠️</span> How to
-                    Enable Real OTP & Google
-                    Login:</h4>
-                <p style="color: var(--text-muted); font-size: 0.8rem; line-height: 1.5; margin: 0;">
-                    1. Create a file named <strong>.env</strong> in your project folder.<br>
-                    2. Copy contents from <strong>.env.example</strong> into it.<br>
-                    3. Fill in your <strong>Google Client ID</strong> and <strong>Email credentials</strong>.<br>
-                    <span style="color: #00ff88; font-weight: 700;">Until then, the system will use "Dev Mode" with
-                        on-screen codes.</span>
-                </p>
-            </div>
-            {% endif %}
-
-            <p style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
-                {{ trans['no_account'] }}
-            </p>
-            <a href="/signup?lang={{ lang }}" class="secondary-auth-btn">
-                ✨ {{ trans['create_account'] or 'Create New Account' }}
-            </a>
-            <!-- Forgot credentials note (no hints, no credentials shown) -->
-            <div
-                style="margin-top:1.5rem; padding:1.2rem 1.5rem; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07); border-radius:1.25rem; text-align:left;">
-                <p style="margin:0; font-size:0.82rem; color:var(--text-muted); line-height:1.6;">
-                    <span class="emo">🔑</span> <strong style="color:#fff;">Forgot your password?</strong><br>
-                    Contact your platform administrator or use <strong style="color:var(--primary);">Sign in with
-                        Google</strong> if your account was created via Google.
-                </p>
-            </div>
-
+        <div class="auth-switch">
+            <p>{{ trans['no_account'] }} <a href="/signup?lang={{ lang }}">{{ trans['create_account'] }}</a></p>
         </div>
     </div>
 </div>
 
 <style>
-    @keyframes float {
+    :root {
+        --violet-primary: #8B5CF6;
+        --violet-glow: rgba(139, 92, 246, 0.4);
+        --dark-bg: #0B0B0B;
+        --card-bg: #111111;
+        --glass-border: rgba(255, 255, 255, 0.08);
+    }
+
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: var(--dark-bg);
+        position: relative;
+        padding: 2rem;
+    }
+
+    .grid-overlay {
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(139, 92, 246, 0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(139, 92, 246, 0.05) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.3;
+        pointer-events: none;
+    }
+
+    .glow-top {
+        position: absolute;
+        top: -20%;
+        right: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, var(--violet-glow) 0%, transparent 70%);
+        filter: blur(80px);
+        pointer-events: none;
+    }
+
+    .glow-bottom {
+        position: absolute;
+        bottom: -20%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, var(--violet-glow) 0%, transparent 70%);
+        filter: blur(80px);
+        pointer-events: none;
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 440px;
+        background: var(--card-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        padding: 3rem;
+        position: relative;
+        z-index: 10;
+        box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+        animation: cardAppear 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes cardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card-header {
+        text-align: center;
+        margin-bottom: 2.5rem;
+    }
+
+    @keyframes logoFloat {
 
         0%,
         100% {
@@ -148,110 +179,213 @@
         }
     }
 
-    .google-login-btn {
-        width: 100%;
+    .welcome-text {
+        font-size: 2rem;
+        font-weight: 850;
+        color: white;
+        margin-bottom: 0.5rem;
+        letter-spacing: -1px;
+    }
+
+    .subtitle {
+        color: #888;
+        font-size: 0.95rem;
+    }
+
+    .error-node {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.2);
+        color: #ef4444;
         padding: 1rem;
-        border-radius: 1.2rem;
-        background: white;
-        color: #1f2937;
-        border: none;
-        font-weight: 750;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .flash-node {
+        background: rgba(139, 92, 246, 0.1);
+        border: 1px solid rgba(139, 92, 246, 0.2);
+        color: var(--violet-primary);
+        padding: 1rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .google-btn {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 1rem;
-        cursor: pointer;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        text-decoration: none;
-        box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
-        position: relative;
-        overflow: hidden;
-    }
-
-    .google-login-btn:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
-    }
-
-    .google-login-btn:active {
-        transform: translateY(-1px) scale(0.98);
-    }
-
-    .auth-submit-btn {
+        gap: 12px;
         width: 100%;
-        padding: 1.3rem;
-        border-radius: 1.2rem;
-        font-weight: 900;
-        font-size: 1.1rem;
-        letter-spacing: 1px;
-        background: var(--primary);
+        padding: 0.85rem;
+        background: white;
         color: black;
-        border: none;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
-    }
-
-    .auth-submit-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 40px rgba(0, 210, 255, 0.5);
-        filter: brightness(1.1);
-    }
-
-    .secondary-auth-btn {
-        display: block;
-        width: 100%;
-        padding: 1.2rem;
-        border-radius: 1.2rem;
+        border-radius: 12px;
         text-decoration: none;
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid var(--glass-border);
-        color: white;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 2.5rem;
+        transition: all 0.2s;
+    }
+
+    .google-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 2rem;
+    }
+
+    .divider .line {
+        flex: 1;
+        height: 1px;
+        background: var(--glass-border);
+    }
+
+    .divider span {
+        font-size: 0.7rem;
+        color: #555;
         font-weight: 800;
+        letter-spacing: 1.5px;
+    }
+
+    .auth-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+
+    .input-container {
+        position: relative;
+    }
+
+    .input-icon {
+        position: absolute;
+        left: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 1.1rem;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .premium-input {
+        width: 100%;
+        background: #1A1A1A;
+        border: 1px solid var(--glass-border);
+        border-radius: 14px;
+        padding: 1rem 1rem 1rem 3.5rem;
+        color: white;
         font-size: 1rem;
-        transition: all 0.3s ease;
+        transition: all 0.3s;
     }
 
-    .secondary-auth-btn:hover {
-        background: rgba(255, 255, 255, 0.08);
-        border-color: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
-    }
-
-    .app-input:focus {
-        background: rgba(0, 0, 0, 0.6) !important;
-        border-color: var(--primary) !important;
-        box-shadow: 0 0 20px rgba(0, 210, 255, 0.2);
+    .premium-input:focus {
         outline: none;
+        border-color: var(--violet-primary);
+        background: #222;
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
     }
 
-    @keyframes pulse {
-        0% {
-            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.4);
-        }
-
-        70% {
-            box-shadow: 0 0 0 10px rgba(0, 255, 136, 0);
-        }
-
-        100% {
-            box-shadow: 0 0 0 0 rgba(0, 255, 136, 0);
-        }
-    }
-
-    .active-btn {
-        background: var(--primary);
-        color: black;
-        box-shadow: 0 10px 20px rgba(0, 210, 255, 0.2);
-        transition: all 0.3s ease;
+    .eye-toggle {
+        position: absolute;
+        right: 1.25rem;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
         border: none;
+        color: #555;
+        cursor: pointer;
+        padding: 5px;
+    }
+
+    .eye-toggle:hover {
+        color: var(--violet-primary);
+    }
+
+    .form-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+    }
+
+    .remember-me {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: #888;
+        font-size: 0.85rem;
         cursor: pointer;
     }
 
-    .active-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 30px rgba(0, 210, 255, 0.4);
+    .forgot-link {
+        color: var(--violet-primary);
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .submit-btn-glow {
+        margin-top: 1rem;
+        padding: 1.15rem;
+        border-radius: 14px;
+        background: var(--violet-primary);
+        color: white;
+        border: none;
+        font-weight: 850;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        box-shadow: 0 10px 25px var(--violet-glow);
+    }
+
+    .submit-btn-glow:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 40px var(--violet-glow);
         filter: brightness(1.1);
+    }
+
+    .auth-switch {
+        margin-top: 2.5rem;
+        text-align: center;
+        padding-top: 2rem;
+        border-top: 1px solid var(--glass-border);
+    }
+
+    .auth-switch p {
+        color: #888;
+        font-size: 0.9rem;
+    }
+
+    .auth-switch a {
+        color: var(--violet-primary);
+        text-decoration: none;
+        font-weight: 700;
+        margin-left: 5px;
     }
 </style>
+
+<script>
+    function togglePassword() {
+        const passwordField = document.getElementById('password');
+        const eyeBtn = document.querySelector('.eye-toggle');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
+            eyeBtn.textContent = '🙈';
+        } else {
+            passwordField.type = 'password';
+            eyeBtn.textContent = '👁️';
+        }
+    }
+</script>
 {% endblock %}
