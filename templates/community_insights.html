@@ -13,20 +13,20 @@
     style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
     <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid var(--primary);">
         <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.total_farmers }}</div>
-        <div style="color: var(--primary); font-weight: 700; letter-spacing: 1px;">TOTAL FARMERS</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Registered on Platform</p>
+        <div style="color: var(--primary); font-weight: 700; letter-spacing: 1px;">{{ trans['total_farmers'] }}</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">{{ trans['connected'] }}</p>
     </div>
 
     <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid var(--accent);">
         <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.pond_density }}</div>
-        <div style="color: var(--accent); font-weight: 700; letter-spacing: 1px;">ACTIVE PONDS</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Currently Stocked</p>
+        <div style="color: var(--accent); font-weight: 700; letter-spacing: 1px;">{{ trans['active_ponds'] }}</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">{{ trans['active'] }}</p>
     </div>
 
     <div class="app-card" style="padding: 2rem; text-align: center; border-bottom: 4px solid #ff0055;">
         <div style="font-size: 3rem; font-weight: 900; color: white;">{{ data.active_farmers | length }}</div>
-        <div style="color: #ff0055; font-weight: 700; letter-spacing: 1px;">ACTIVE REGIONS</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">Reporting Live Data</p>
+        <div style="color: #ff0055; font-weight: 700; letter-spacing: 1px;">{{ trans['active_regions'] }}</div>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">{{ trans['live_label'] }}</p>
     </div>
 </div>
 
@@ -34,9 +34,7 @@
 
     <!-- REGIONAL BREAKDOWN -->
     <div>
-        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 1rem;"><span
-                class="emo">🗺️</span> Regional Pond
-            Density</h3>
+        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--primary); padding-left: 1rem;">{{ trans['regional_pond_density'] }}</h3>
         <div class="app-card" style="padding: 0; overflow: hidden;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead style="background: rgba(255,255,255,0.05);">
@@ -77,9 +75,7 @@
 
     <!-- TRENDS & ALERTS -->
     <div>
-        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--accent); padding-left: 1rem;"><span
-                class="emo">📈</span> Disease & Crop
-            Trends</h3>
+        <h3 style="margin-bottom: 1.5rem; border-left: 5px solid var(--accent); padding-left: 1rem;">{{ trans['disease_crop_trends'] }}</h3>
 
         <div class="app-card" style="padding: 2rem;">
             <p style="color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem;">Aggregated from community
@@ -89,8 +85,7 @@
             <div style="margin-bottom: 1.5rem;">
                 <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
                     <span style="font-weight: 700;">{{ item.name }}</span>
-                    <span
-                        style="font-size: 0.8rem; color: {% if item.trend == 'up' %}#ff0055{% elif item.trend == 'down' %}#00ff88{% else %}#aaa{% endif %};">
+                    <span class="trend-label trend-{{ item.trend }}">
                         {% if item.trend == 'up' %}↗ Rising{% elif item.trend == 'down' %}↘ Falling{% else %}→ Stable{%
                         endif %}
                     </span>
@@ -98,8 +93,7 @@
                 <!-- Simple CSS Bar -->
                 <div
                     style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
-                    <div
-                        style="height: 100%; width: {{ item.count * 5 }}%; background: {% if item.trend == 'up' %}#ff0055{% elif item.trend == 'down' %}#00ff88{% else %}var(--primary){% endif %};">
+                    <div class="trend-bar trend-bar-{{ item.trend }}" style="--trend-width: {{ (item.count * 5) }}%; width: var(--trend-width);">
                     </div>
                 </div>
                 <div style="text-align: right; font-size: 0.7rem; color: var(--text-muted); margin-top: 3px;">{{
@@ -112,7 +106,7 @@
             style="padding: 1.5rem; margin-top: 2rem; display: flex; align-items: center; gap: 1rem; background: linear-gradient(90deg, rgba(0, 210, 255, 0.1), rgba(0,0,0,0));">
             <div style="font-size: 2rem;">💡</div>
             <div>
-                <h4 style="margin-bottom: 0.25rem;">Did you know?</h4>
+                <h4 style="margin-bottom: 0.25rem;">{{ trans['did_you_know'] }}</h4>
                 <p style="font-size: 0.9rem; color: #ddd;">Based on pond density, <strong>Andhra Pradesh</strong> is
                     currently the most active aquaculture region, followed by the Mekong Delta.</p>
             </div>
@@ -121,6 +115,16 @@
 </div>
 
 <style>
+    .trend-label { font-size: 0.8rem; }
+    .trend-up { color: #ff0055; }
+    .trend-down { color: #00ff88; }
+    .trend-stable { color: #aaa; }
+
+    .trend-bar { height: 100%; border-radius: 4px; }
+    .trend-bar-up { background: #ff0055; }
+    .trend-bar-down { background: #00ff88; }
+    .trend-bar-stable { background: var(--primary); }
+
     @media (max-width: 900px) {
         .split-grid {
             grid-template-columns: 1fr !important;

@@ -1,11 +1,19 @@
-# ml/location_model.py
 import pandas as pd
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import RandomForestRegressor
 import joblib
+import os
+
+# Define relative paths
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATASET_PATH = os.path.join(BASE_DIR, "datasets", "location.csv")
+MODEL_DIR = os.path.join(BASE_DIR, "models")
 
 # Load dataset
-df = pd.read_csv("dataset/location.csv")
+if not os.path.exists(DATASET_PATH):
+    raise FileNotFoundError(f"Dataset not found: {DATASET_PATH}")
+
+df = pd.read_csv(DATASET_PATH)
 
 # Encode categorical columns
 le_country = LabelEncoder()
@@ -28,11 +36,12 @@ model = RandomForestRegressor(n_estimators=20, random_state=42)
 model.fit(X, y)
 
 # Save model and encoders
-joblib.dump(model, "models/location.pkl")
-joblib.dump(le_country, "models/le_country.pkl")
-joblib.dump(le_state, "models/le_state.pkl")
-joblib.dump(le_climate, "models/le_climate.pkl")
-joblib.dump(le_aqua, "models/le_aqua.pkl")
-joblib.dump(le_species, "models/le_species_location.pkl")
+os.makedirs(MODEL_DIR, exist_ok=True)
+joblib.dump(model, os.path.join(MODEL_DIR, "location.pkl"))
+joblib.dump(le_country, os.path.join(MODEL_DIR, "le_country.pkl"))
+joblib.dump(le_state, os.path.join(MODEL_DIR, "le_state.pkl"))
+joblib.dump(le_climate, os.path.join(MODEL_DIR, "le_climate.pkl"))
+joblib.dump(le_aqua, os.path.join(MODEL_DIR, "le_aqua.pkl"))
+joblib.dump(le_species, os.path.join(MODEL_DIR, "le_species_location.pkl"))
 
-print("Location model trained and saved successfully!")
+print(f"Location model and encoders trained and saved successfully to {MODEL_DIR}")

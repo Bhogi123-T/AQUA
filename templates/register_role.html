@@ -28,7 +28,7 @@
 
         <div
             style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
-            {% for role in aqua_roles %}
+            {% for role in aqua_roles.values() %}
             <div class="role-card" onclick="selectRole('{{ role.id }}')" id="card-{{ role.id }}">
                 <div class="role-icon">{{ role.icon }}</div>
                 <h3>{{ role.name }}</h3>

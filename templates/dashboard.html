@@ -200,12 +200,17 @@
             <div class="glass-section"
                 style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 3rem;">
                 <h3
-                    style="font-size: 1.8rem; font-weight: 1000; color: #fff; margin-bottom: 3rem; display: flex; align-items: center; gap: 1.5rem;">
-                    <span style="color: #f59e0b;">🤝</span> Industry Connectivity Graph
+                    style="font-size: 1.8rem; font-weight: 1000; color: #fff; margin-bottom: 3rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem;">
+                    <div style="display: flex; align-items: center; gap: 1.5rem;">
+                        <span style="color: #f59e0b;">🤝</span> Industry Connectivity Graph
+                    </div>
+                    <a href="{{ url_for('ecosystem_hub', lang=lang) }}" class="action-btn" style="text-decoration: none; font-size: 0.9rem; padding: 0.8rem 1.5rem; border-radius: 1rem; background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.2); color: var(--primary);">
+                        View Full Ecosystem Hub ➜
+                    </a>
                 </h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 2rem;">
                     {% for conn in dashboard_data.connections %}
-                    <div class="conn-card" style="
+                    <div class="conn-card" onclick="triggerAction('connect_{{ conn.id }}')" style="
                         background: rgba(15,23,42,0.4); 
                         border: 1px solid rgba(255,255,255,0.03); 
                         padding: 2.5rem; 
@@ -389,6 +394,14 @@
                 </div>
             `;
             fields = [{ id: 'doc_id', label: 'Reference Code', placeholder: 'e.g. QC-9922', type: 'text' }];
+        } else if (actionId.includes('connect_')) {
+            const roleTarget = actionId.split('_')[1] ? actionId.split('_')[1].toUpperCase() : 'INDUSTRY PARTNER';
+            fields = [
+                { id: 'partner_role', label: 'Establishing Connection With', value: roleTarget, type: 'text' },
+                { id: 'purpose', label: 'Purpose of Connection', placeholder: 'e.g. Seeking Supply, Consultation...', type: 'text' },
+                { id: 'message', label: 'Initial Message / Proposal', placeholder: 'Enter your message to initiate the handshake...', type: 'textarea' },
+                { id: 'urgent', label: 'Mark as High Priority', type: 'checkbox' }
+            ];
         } else {
             // Default "Work" Module for Track/View/Monitor
             fields = [

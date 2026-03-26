@@ -1,0 +1,481 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="ecosystem-container" style="padding: 2rem; max-width: 1600px; margin: 0 auto; min-height: 100vh; position: relative; overflow: hidden;">
+    
+    <!-- 🌌 AMBIENT BACKGROUND EFFECTS -->
+    <div style="position: absolute; top: -10%; left: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(0, 210, 255, 0.08) 0%, transparent 70%); filter: blur(80px); pointer-events: none; z-index: 0;"></div>
+    <div style="position: absolute; bottom: -10%; right: -10%; width: 600px; height: 600px; background: radial-gradient(circle, rgba(123, 97, 255, 0.08) 0%, transparent 70%); filter: blur(100px); pointer-events: none; z-index: 0;"></div>
+
+    <!-- 🛰️ HEADER SECTION -->
+    <div class="header-section" style="position: relative; z-index: 10; margin-bottom: 4rem; text-align: center;">
+        <div class="category-badge" style="
+            display: inline-flex; 
+            align-items: center; 
+            gap: 0.8rem; 
+            background: rgba(0, 210, 255, 0.1); 
+            border: 1px solid rgba(0, 210, 255, 0.2); 
+            color: var(--primary); 
+            padding: 0.6rem 1.8rem; 
+            border-radius: 5rem; 
+            font-size: 0.8rem; 
+            font-weight: 950; 
+            text-transform: uppercase; 
+            letter-spacing: 3px;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        ">
+            <span style="font-size: 1.2rem;">🌐</span> GLOBAL AQUA-CONNECTIVITY 3.0
+        </div>
+        <h1 style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 1000; color: #fff; margin-bottom: 1rem; letter-spacing: -2px; animation: fadeInUp 0.8s ease-out;">
+            Industry <span style="background: linear-gradient(to right, #00d2ff, #3a7bd5); background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Ecosystem Network</span>
+        </h1>
+        <p style="font-size: 1.3rem; color: #cbd5e1; max-width: 800px; margin: 0 auto; line-height: 1.6; animation: fadeInUp 1s ease-out;">
+            Mapping and orchestrating the entire lifecycle of aquaculture production through a decentralized, high-trust connectivity matrix.
+        </p>
+    </div>
+
+    <!-- 🏗️ MAIN INTERACTIVE GRID -->
+    <div class="ecosystem-grid" style="display: grid; grid-template-columns: 1fr 350px; gap: 3rem; position: relative; z-index: 10;">
+        
+        <!-- LEFT: VISUALIZATION HUB -->
+        <div class="viz-hub" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 3rem; padding: 3rem; backdrop-filter: blur(20px); box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5); position: relative; min-height: 700px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            
+            <!-- 🪐 CENTRAL HUB GRAPH (SVG) -->
+            <svg id="network-graph" viewBox="0 0 1000 800" style="width: 100%; height: 100%; position: absolute; top:0; left:0; pointer-events:all;">
+                <defs>
+                    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                        <feGaussianBlur stdDeviation="5" result="blur" />
+                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                    </filter>
+                    <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="rgba(0, 210, 255, 0.2)" />
+                        <stop offset="50%" stop-color="rgba(0, 210, 255, 0.8)" />
+                        <stop offset="100%" stop-color="rgba(0, 210, 255, 0.2)" />
+                    </linearGradient>
+                </defs>
+
+                <!-- Dynamic Connections will be rendered here by JS -->
+                <g id="connections-group"></g>
+                <g id="nodes-group"></g>
+            </svg>
+
+            <!-- 📡 OVERLAY ANALYTICS -->
+            <div style="position: absolute; top: 2rem; right: 2rem; display: flex; flex-direction: column; gap: 1rem;">
+                <div class="glass-stat" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1.5rem; backdrop-filter: blur(10px); min-width: 180px;">
+                    <div style="color: #cbd5e1; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Nodes Active</div>
+                    <div style="font-size: 2rem; font-weight: 1000; color: #fff;" id="stat-nodes">10</div>
+                </div>
+                <div class="glass-stat" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1.5rem; backdrop-filter: blur(10px); min-width: 180px;">
+                    <div style="color: #cbd5e1; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Active Transmissions</div>
+                    <div style="font-size: 2rem; font-weight: 1000; color: var(--primary);" id="stat-links">32</div>
+                </div>
+                <div class="glass-stat" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 1.5rem; backdrop-filter: blur(10px); min-width: 180px;">
+                    <div style="color: #cbd5e1; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem;">Network Health</div>
+                    <div style="font-size: 2rem; font-weight: 1000; color: #00ff88;">99.4%</div>
+                </div>
+            </div>
+
+            <!-- 🧭 INTERACTION TUTORIAL -->
+            <div style="position: absolute; bottom: 2rem; left: 2rem; color: #cbd5e1; font-size: 0.9rem; font-weight: 700; display: flex; align-items: center; gap: 1rem;">
+                <div style="width: 20px; height: 2px; background: var(--primary);"></div>
+                CLICK NODES TO INITIATE HANDSHAKE • HOVER TO SEE DATA PATHS
+            </div>
+        </div>
+
+        <!-- RIGHT: LIVE HANDSHAKE FEED -->
+        <div class="feed-column">
+            
+            <!-- ⚡ LIVE ACTIVITY MONITOR -->
+            <div class="glass-section" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 2rem; margin-bottom: 2rem;">
+                <h3 style="font-size: 1.4rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <span style="color: var(--accent);">📡</span> Live Network Activity
+                </h3>
+                <div id="live-feed" style="display: flex; flex-direction: column; gap: 1.5rem; max-height: 300px; overflow-y: auto; padding-right: 0.5rem; margin-bottom: 2rem;">
+                    <!-- Feed items injected by JS -->
+                    <div class="feed-item-mini" style="opacity: 0.5; text-align: center; padding: 2rem;">
+                        Synchronizing with neural matrix...
+                    </div>
+                </div>
+
+                <h4 style="font-size: 0.9rem; font-weight: 900; color: #fff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 1.5rem; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1.5rem;">My Connection Requests</h4>
+                <div id="my-connections" style="display: flex; flex-direction: column; gap: 1rem;">
+                    <div style="opacity: 0.4; font-size: 0.8rem; text-align: center; padding: 1rem;">No active requests</div>
+                </div>
+            </div>
+
+            <!-- 🤝 QUICK CONNECT LIST -->
+            <div class="glass-section" style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 2.5rem; padding: 2rem;">
+                <h3 style="font-size: 1.4rem; font-weight: 900; color: #fff; display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+                    <span style="color: #f59e0b;">✨</span> Smart Recommendations
+                </h3>
+                <div style="display: flex; flex-direction: column; gap: 1rem;">
+                    {% for rec in recommendations %}
+                    <div class="rec-card" onclick="initiateConnection('{{ rec.id }}', '{{ rec.name }}')" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 1.5rem; display: flex; align-items: center; gap: 1.2rem; cursor: pointer; transition: 0.3s hover;">
+                        <div style="font-size: 1.8rem;">{{ rec.icon }}</div>
+                        <div style="flex-grow: 1;">
+                            <div style="color: #fff; font-weight: 800; font-size: 1rem;">{{ rec.name }}</div>
+                            <div style="color: #cbd5e1; font-size: 0.75rem; font-weight: 700;">{{ rec.role }} • {{ rec.location }}</div>
+                        </div>
+                        <div style="color: var(--primary); font-size: 1.2rem;">➜</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 🧪 HANDSHAKE MODAL -->
+<div id="handshake-modal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; backdrop-filter:blur(15px); align-items:center; justify-content:center; padding:2rem;">
+    <div class="app-card" style="max-width:550px; width:100%; position:relative; background: #0f172a; border: 1px solid rgba(255,255,255,0.1); border-radius: 2.5rem; padding: 3rem; box-shadow: 0 50px 100px -20px rgba(0,210,255,0.2);">
+        <button onclick="document.getElementById('handshake-modal').style.display='none'" style="position:absolute; top:2rem; right:2rem; background:none; border:none; color:#fff; font-size:2.5rem; cursor:pointer;">&times;</button>
+        
+        <div style="text-align: center; margin-bottom: 3rem;">
+            <div id="modal-icon" style="font-size: 5rem; margin-bottom: 1.5rem;">🤝</div>
+            <h2 id="modal-title" style="font-size: 2.2rem; font-weight: 1000; color: #fff; letter-spacing: -1px;">Establish Handshake</h2>
+            <p id="modal-desc" style="color: #cbd5e1; font-weight: 600;">Connecting with Industry Partner...</p>
+        </div>
+
+        <div style="margin-bottom: 2.5rem;">
+            <label style="display:block; margin-bottom:1rem; color:#fff; font-weight:900; font-size:0.8rem; text-transform:uppercase; letter-spacing:2px;">Handshake Protocol</label>
+            <select id="conn-purpose" class="app-input" style="width:100%; padding:1.2rem; background:rgba(255,255,255,0.03); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); color: #fff;">
+                <option value="Trade Opportunity">Trade Opportunity</option>
+                <option value="Supply Procurement">Supply Procurement</option>
+                <option value="Consultation & Advice">Consultation & Advice</option>
+                <option value="Logistics Coordination">Logistics Coordination</option>
+                <option value="Technical Collaboration">Technical Collaboration</option>
+            </select>
+        </div>
+
+        <div style="margin-bottom: 3rem;">
+            <label style="display:block; margin-bottom:1rem; color:#fff; font-weight:900; font-size:0.8rem; text-transform:uppercase; letter-spacing:2px;">Connection Message</label>
+            <textarea id="conn-message" class="app-input" placeholder="Initiate the handshake with a professional message..." style="width:100%; min-height:120px; padding:1.2rem; background:rgba(255,255,255,0.03); border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); color: #fff;"></textarea>
+        </div>
+
+        <button onclick="submitHandshake()" class="shimmer-btn" style="width:100%; padding:1.8rem; border-radius:1.5rem; border:none; background:var(--primary); color:black; font-weight:1000; font-size:1.1rem; cursor: pointer; text-transform:uppercase; letter-spacing:2px; box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);">
+            🚀 Execute Connection Protocol
+        </button>
+    </div>
+</div>
+
+<script>
+    const ROLES = {{ roles_json|safe }};
+    const CONNECTIONS = {{ connections_json|safe }};
+    const USER_ROLE = "{{ user_role }}";
+    
+    // 🧬 NETWORK ENGINE
+    const nodes = Object.entries(ROLES).map(([id, info], i) => {
+        const angle = (i / Object.keys(ROLES).length) * Math.PI * 2;
+        const radius = 300;
+        return {
+            id,
+            name: info.name,
+            icon: info.icon,
+            category: info.category,
+            x: 500 + Math.cos(angle) * radius,
+            y: 400 + Math.sin(angle) * radius,
+            isUser: id === USER_ROLE
+        };
+    });
+
+    const links = [];
+    Object.entries(CONNECTIONS).forEach(([from, targets]) => {
+        targets.forEach(to => {
+            links.push({ from, to });
+        });
+    });
+
+    function initGraph() {
+        const connGroup = document.getElementById('connections-group');
+        const nodesGroup = document.getElementById('nodes-group');
+        
+        // Render Connections
+        links.forEach(link => {
+            const fromNode = nodes.find(n => n.id === link.from);
+            const toNode = nodes.find(n => n.id === link.to);
+            if (!fromNode || !toNode) return;
+
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            line.setAttribute('x1', fromNode.x);
+            line.setAttribute('y1', fromNode.y);
+            line.setAttribute('x2', toNode.x);
+            line.setAttribute('y2', toNode.y);
+            line.setAttribute('stroke', 'rgba(0, 210, 255, 0.1)');
+            line.setAttribute('stroke-width', '2');
+            line.setAttribute('id', `link-${link.from}-${link.to}`);
+            line.classList.add('network-link');
+            connGroup.appendChild(line);
+        });
+
+        // Render Nodes
+        nodes.forEach(node => {
+            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+            g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+            g.classList.add('network-node');
+            if (node.isUser) g.classList.add('user-node');
+            
+            // Outer Glow
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            circle.setAttribute('r', node.isUser ? '55' : '45');
+            circle.setAttribute('fill', node.isUser ? 'rgba(0, 210, 255, 0.2)' : 'rgba(15, 23, 42, 0.8)');
+            circle.setAttribute('stroke', node.isUser ? 'var(--primary)' : 'rgba(255, 255, 255, 0.1)');
+            circle.setAttribute('stroke-width', '3');
+            circle.style.cursor = 'pointer';
+            
+            // Emoji
+            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            text.setAttribute('y', '8');
+            text.setAttribute('text-anchor', 'middle');
+            text.setAttribute('font-size', '35');
+            text.textContent = node.icon;
+            text.style.pointerEvents = 'none';
+
+            // Label
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            label.setAttribute('y', '70');
+            label.setAttribute('text-anchor', 'middle');
+            label.setAttribute('fill', '#fff');
+            label.setAttribute('font-weight', '900');
+            label.setAttribute('font-size', '14');
+            label.textContent = node.name.toUpperCase();
+            label.style.pointerEvents = 'none';
+
+            g.appendChild(circle);
+            g.appendChild(text);
+            g.appendChild(label);
+            
+            g.onclick = () => highlightRole(node.id);
+            nodesGroup.appendChild(g);
+        });
+
+        document.getElementById('stat-nodes').innerText = nodes.length;
+        document.getElementById('stat-links').innerText = links.length;
+    }
+
+    function highlightRole(roleId) {
+        // Reset all
+        document.querySelectorAll('.network-link').forEach(l => {
+            l.setAttribute('stroke', 'rgba(0, 210, 255, 0.1)');
+            l.setAttribute('stroke-width', '2');
+            l.classList.remove('active-link');
+        });
+
+        // Active links for this role
+        const activeLinks = links.filter(l => l.from === roleId || l.to === roleId);
+        activeLinks.forEach(link => {
+            const el = document.getElementById(`link-${link.from}-${link.to}`);
+            if (el) {
+                el.setAttribute('stroke', 'var(--primary)');
+                el.setAttribute('stroke-width', '4');
+                el.classList.add('active-link');
+            }
+        });
+
+        // Show Modal if not self
+        if (roleId !== USER_ROLE) {
+            initiateConnection(roleId, ROLES[roleId].name);
+        }
+    }
+
+    function initiateConnection(id, name) {
+        const modal = document.getElementById('handshake-modal');
+        document.getElementById('modal-icon').innerText = ROLES[id].icon;
+        document.getElementById('modal-title').innerText = `Handshake: ${name}`;
+        document.getElementById('modal-desc').innerText = `Establishing high-trust connection with ${ROLES[id].category} sector.`;
+        modal.style.display = 'flex';
+        modal.dataset.targetId = id;
+    }
+
+    function submitHandshake() {
+        const modal = document.getElementById('handshake-modal');
+        const targetId = modal.dataset.targetId;
+        const purpose = document.getElementById('conn-purpose').value;
+        const message = document.getElementById('conn-message').value;
+
+        // Visual Feedback
+        const btn = event.target;
+        btn.innerHTML = '⚡ ENCRYPTING PROTOCOL...';
+        btn.disabled = true;
+
+        fetch('/api/aquacycle/work', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: `connect_${targetId}`,
+                data: { purpose, message }
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                btn.innerHTML = '✅ HANDSHAKE INITIATED';
+                setTimeout(() => {
+                    modal.style.display = 'none';
+                    btn.innerHTML = '🚀 Execute Connection Protocol';
+                    btn.disabled = false;
+                    syncLiveFeed();
+                }, 1500);
+            }
+        });
+    }
+
+    function syncLiveFeed() {
+        fetch('/api/aquacycle/dashboard')
+        .then(res => res.json())
+        .then(res => {
+            if (res.status === 'success') {
+                const data = res.data;
+                
+                // 1. Update Live Feed
+                const feed = document.getElementById('live-feed');
+                const activities = data.recent_activity;
+                let feedHtml = '';
+                activities.forEach(act => {
+                    feedHtml += `
+                        <div class="feed-item-mini" style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 1.2rem; border-left: 3px solid var(--primary);">
+                            <div style="color: #fff; font-size: 0.95rem; font-weight: 700; line-height: 1.4;">${act.msg}</div>
+                            <div style="color: #cbd5e1; font-size: 0.7rem; font-weight: 800; margin-top: 0.5rem; text-transform: uppercase;">${act.time}</div>
+                        </div>
+                    `;
+                });
+                feed.innerHTML = feedHtml || '<div style="opacity: 0.4; text-align: center;">No live transmissions</div>';
+
+                // 2. Update My Connection Requests (Leads)
+                const connList = document.getElementById('my-connections');
+                const leads = data.leads.filter(l => l.status === 'pending');
+                let connHtml = '';
+                leads.forEach(l => {
+                    const isFromMe = l.from === data.user_info.role;
+                    connHtml += `
+                        <div class="conn-request" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); padding: 1.5rem; border-radius: 1.5rem; position: relative;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem;">
+                                <span style="color: ${isFromMe ? 'var(--primary)' : 'var(--accent)'}; font-size: 0.7rem; font-weight: 900; text-transform: uppercase;">
+                                    ${isFromMe ? 'Outbound Handshake' : 'Inbound Handshake'}
+                                </span>
+                                <span style="font-size: 0.7rem; color: #fff; opacity: 0.5;">ID: ${l.id}</span>
+                            </div>
+                            <div style="color: #fff; font-size: 0.9rem; font-weight: 600; line-height: 1.4; margin-bottom: 1.5rem;">${l.msg}</div>
+                            
+                            ${!isFromMe ? `
+                            <div style="display: flex; gap: 1rem;">
+                                <button onclick="respondHandshake('${l.id}', 'approve')" style="flex: 1; padding: 0.8rem; border-radius: 1rem; border: none; background: var(--primary); color: #000; font-weight: 900; font-size: 0.8rem; cursor: pointer;">APPROVE</button>
+                                <button onclick="respondHandshake('${l.id}', 'decline')" style="flex: 1; padding: 0.8rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #fff; font-weight: 900; font-size: 0.8rem; cursor: pointer;">DECLINE</button>
+                            </div>
+                            ` : `
+                            <div style="text-align: center; color: var(--primary); font-size: 0.8rem; font-weight: 950; letter-spacing: 1px;">WAITING FOR PEER SYNC...</div>
+                            `}
+                        </div>
+                    `;
+                });
+                connList.innerHTML = connHtml || '<div style="opacity: 0.4; font-size: 0.8rem; text-align: center; padding: 1rem;">No active requests</div>';
+            }
+        });
+    }
+
+    function respondHandshake(leadId, action) {
+        // Find button element
+        const btn = event.target;
+        btn.innerHTML = 'SYNCING...';
+        btn.disabled = true;
+
+        fetch('/api/aquacycle/work', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: action === 'approve' ? 'approve_batch' : 'handle_disputes', // Reusing existing paths
+                data: { lead_id: leadId, response: action }
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                btn.innerHTML = action === 'approve' ? 'SUCCESS' : 'DECLINED';
+                setTimeout(syncLiveFeed, 1000);
+            }
+        });
+    }
+
+    // Init components
+    initGraph();
+    syncLiveFeed();
+    setInterval(syncLiveFeed, 10000);
+
+</script>
+
+<style>
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+        from { opacity: 0; transform: translateY(-30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .network-link {
+        transition: all 0.5s ease;
+        stroke-dasharray: 1000;
+        stroke-dashoffset: 1000;
+        animation: drawLine 2s forwards ease-out;
+    }
+    
+    @keyframes drawLine {
+        to { stroke-dashoffset: 0; }
+    }
+
+    .active-link {
+        filter: drop-shadow(0 0 8px var(--primary));
+        opacity: 1 !important;
+        stroke-dasharray: 10, 5;
+        animation: flowDash 20s linear infinite !important;
+    }
+
+    @keyframes flowDash {
+        to { stroke-dashoffset: -1000; }
+    }
+
+    .network-node {
+        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .network-node:hover {
+        transform: scale(1.1) translate(var(--tw-translate-x), var(--tw-translate-y));
+    }
+    .network-node circle {
+        transition: all 0.3s ease;
+    }
+    .network-node:hover circle {
+        fill: rgba(0, 210, 255, 0.15);
+        stroke-width: 5;
+        stroke: var(--primary);
+    }
+    
+    .user-node circle {
+        stroke: var(--accent);
+        fill: rgba(0, 255, 136, 0.1);
+        filter: drop-shadow(0 0 15px var(--accent));
+        animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); filter: drop-shadow(0 0 5px var(--accent)); }
+        50% { transform: scale(1.05); filter: drop-shadow(0 0 20px var(--accent)); }
+        100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--accent)); }
+    }
+
+    .rec-card:hover {
+        background: rgba(0, 210, 255, 0.08) !important;
+        transform: translateX(10px);
+        border-color: var(--primary) !important;
+    }
+
+    .feed-item-mini {
+        animation: slideInRight 0.5s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from { opacity: 0; transform: translateX(20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+</style>
+{% endblock %}

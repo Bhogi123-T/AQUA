@@ -1,165 +1,616 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<header style="margin-bottom: 3rem; text-align: center;">
-    <h2>{{ trans['farmer_title'] | safe }}</h2>
-    <p style="color: var(--text-muted); text-align: center;">{{ trans['farmer_desc'] }}</p>
-</header>
+<!-- 🛸 PREMIUM FARM COMMAND HUB (DASHBOARD) -->
+<div class="farmer-hub-container">
+    {% if session.get('role') == 'admin' %}
+    <div class="admin-override-banner">
+        🛡️ SYSTEM AUTHORITY ACTIVE: FULL DASHBOARD OVERRIDE ENABLED
+    </div>
+    {% endif %}
 
-<div class="grid">
-    <!-- Disease Check -->
-    <div class="card">
-        <h3>{{ trans['disease_title'] | safe }}</h3>
-        <form action="/predict_disease" method="POST">
-            <div class="form-group">
-                <label>{{ trans['water_temp'] }} (°C)</label>
-                <input type="number" step="0.1" name="temp" placeholder="e.g. 28.5" required>
+    <!-- 🌌 DASHBOARD HEADER -->
+    <header class="hub-header">
+        <div class="hub-status-badge">
+            <span class="live-pulse"></span>
+            <span class="status-text">{{ trans['aqua_os_online'] }}</span>
+        </div>
+        <h1 class="hub-title">
+            {{ trans['farmer_hub_title'] | safe }}
+        </h1>
+        <p class="hub-subtitle">{{ trans['farmer_hub_subtitle'] }}</p>
+    </header>
+
+    <!-- 📡 COMMAND REAL-TIME DASHBOARD -->
+    <div class="dashboard-core">
+        <div class="dashboard-grid">
+            <!-- Stock Health -->
+            <div class="dashboard-widget stock-health-widget">
+                <p class="widget-label">{{ trans['stock_health'] }}</p>
+                <div class="widget-value-container">
+                    <div id="live-health" class="widget-value">--</div>
+                    <div class="widget-sub-label">{{ trans['pct_optimal'] }}</div>
+                </div>
+                <div class="progress-container">
+                    <div id="live-health-bar" class="progress-bar health-bar"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>pH {{ trans['level'] }}</label>
-                <input type="number" step="0.01" name="ph" placeholder="e.g. 7.2" required>
+
+            <!-- Telemetry Parameters -->
+            <div class="dashboard-widget telemetry-widget">
+                <div class="telemetry-grid">
+                    <div class="telemetry-item">
+                        <p class="tele_label">{{ trans['do'] }}</p>
+                        <div id="live-do" class="tele_value">--</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <p class="tele_label">{{ trans['ammonia'] }}</p>
+                        <div id="live-ammonia" class="tele_value warning">--</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <p class="tele_label">{{ trans['temperature'] }}</p>
+                        <div id="live-temp" class="tele_value">--</div>
+                    </div>
+                    <div class="telemetry-item">
+                        <p class="tele_label">{{ trans['ph_level'] }}</p>
+                        <div id="live-ph" class="tele_value">--</div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>{{ trans['do'] }} (mg/L)</label>
-                <input type="number" step="0.1" name="do" placeholder="e.g. 6.0" required>
+
+            <!-- Risk Status -->
+            <div class="dashboard-widget risk-status-widget">
+                <p class="widget-label">{{ trans['risk_panel'] }}</p>
+                <div id="live-risk" class="risk-value secure" data-secure="{{ trans['status_safe'] }}" data-warning="{{ trans['warning'] }}" data-critical="{{ trans['critical'] }}">
+                    {{ trans['status_safe'] }}
+                </div>
+                <div class="risk-footer">
+                    <span id="live-risk-desc">{{ trans['system_nominal'] }}</span>
+                    <a href="/expert" class="protocol-btn">🛡️ {{ trans['protocol'] }}</a>
+                </div>
+                <div class="risk-progress-container">
+                    <div id="live-risk-bar" class="risk-progress-bar"></div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>{{ trans['salinity'] }} (ppt)</label>
-                <input type="number" step="0.1" name="salinity" placeholder="e.g. 15" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['turbidity'] }} (NTU)</label>
-                <input type="number" step="0.1" name="turbidity" placeholder="e.g. 30" required>
-            </div>
-            <button class="btn">{{ trans['btn_risk'] }}</button>
-        </form>
+        </div>
+
+        <!-- AI ADVISORY STRIP -->
+        <div class="ai-advisory-strip">
+            <div class="ai-tag">{{ trans['ai_os_tag'] }}</div>
+            <div id="live-advice" class="ai-message" data-analyzing="{{ trans['analyzing_streams'] }}">{{ trans['analyzing_streams'] }}</div>
+        </div>
     </div>
 
-    <!-- Feed Management -->
-    <div class="card">
-        <h3>{{ trans['feed_title'] | safe }}</h3>
-        <form action="/predict_feed" method="POST">
-            <div class="form-group">
-                <label>{{ trans['species'] }}</label>
-                <select name="species">
-                    {% for spec in species_list %}
-                    <option value="{{ spec.id }}">{{ spec.display }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['age'] }} ({{ trans['days'] }})</label>
-                <input type="number" name="age" placeholder="e.g. 60" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['avg_temp'] }} (°C)</label>
-                <input type="number" step="0.1" name="temp" placeholder="e.g. 27" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['feed_type'] }}</label>
-                <select name="feed_type">
-                    <option value="Pellet">{{ trans['pellet'] }}</option>
-                    <option value="Floating">{{ trans['floating'] }}</option>
-                    <option value="Sinking">{{ trans['sinking'] }}</option>
-                </select>
-            </div>
-            <button class="btn">{{ trans['btn_calc'] }}</button>
-        </form>
-    </div>
+    <!-- 🖱️ HUB GRID NAVIGATION -->
+    <div class="hub-feature-grid">
+        <!-- Row 1 -->
+        <a href="/community" class="feature-card f-community">
+            <div class="f-icon">🤝</div>
+            <h3 class="f-title">{{ trans['community_title'] }}</h3>
+            <p class="f-desc">{{ trans['community_desc'] }}</p>
+        </a>
 
-    <!-- Stocking Advisor -->
-    <div class="card">
-        <h3>{{ trans['stock_title'] | safe }}</h3>
-        <form action="/predict_stocking" method="POST">
-            <div class="form-group">
-                <label>{{ trans['species'] }}</label>
-                <select name="species">
-                    {% for spec in species_list %}
-                    <option value="{{ spec.id }}">{{ spec.display }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['pond_area'] }} (Hectares)</label>
-                <input type="number" step="0.01" name="area" placeholder="e.g. 1.2" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['soil_type'] }}</label>
-                <select name="soil">
-                    <option value="Clay">{{ trans['clay'] }}</option>
-                    <option value="Loamy">{{ trans['loamy'] }}</option>
-                    <option value="Sandy">{{ trans['sandy'] }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['water_source'] }}</label>
-                <select name="water">
-                    <option value="Canal">{{ trans['canal'] }}</option>
-                    <option value="River">{{ trans['river'] }}</option>
-                    <option value="Borewell">{{ trans['borewell'] }}</option>
-                </select>
-            </div>
-            <input type="hidden" name="season" value="Monsoon">
-            <button class="btn">{{ trans['btn_stock'] }}</button>
-        </form>
-    </div>
+        <a href="/community/insights" class="feature-card f-analytics">
+            <div class="f-icon">📊</div>
+            <h3 class="f-title">{{ trans['community_insights_title'] }}</h3>
+            <p class="f-desc">{{ trans['community_insights_desc'] }}</p>
+        </a>
 
-    <!-- Seed Checker -->
-    <div class="card">
-        <h3>{{ trans['seed_title'] | safe }}</h3>
-        <form action="/predict_seed" method="POST">
-            <div class="form-group">
-                <label>{{ trans['supplier_country'] }}</label>
-                <select name="country">
-                    <option value="India">{{ trans['country_india'] }}</option>
-                    <option value="Vietnam">{{ trans['country_vietnam'] }}</option>
-                    <option value="Thailand">{{ trans['country_thailand'] }}</option>
-                    <option value="Indonesia">Indonesia</option>
-                    <option value="Bangladesh">{{ trans['country_bangladesh'] }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['species'] }}</label>
-                <select name="species">
-                    {% for spec in species_list %}
-                    <option value="{{ spec.id }}">{{ spec.display }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['dist'] }} (KM)</label>
-                <input type="number" name="distance" placeholder="e.g. 50" required>
-            </div>
-            <button class="btn">{{ trans['btn_seed'] }}</button>
-        </form>
-    </div>
+        <a href="/early-warning" class="feature-card f-warning">
+            <div class="f-icon">📡</div>
+            <h3 class="f-title">{{ trans['early_warning_title'] }}</h3>
+            <p class="f-desc">{{ trans['early_warning_desc'] }}</p>
+        </a>
 
-    <!-- Yield Prediction -->
-    <div class="card">
-        <h3>{{ trans['yield_title'] | safe }}</h3>
-        <form action="/predict_yield" method="POST">
-            <div class="form-group">
-                <label>{{ trans['species'] }}</label>
-                <select name="species">
-                    {% for spec in species_list %}
-                    <option value="{{ spec.id }}">{{ spec.display }}</option>
-                    {% endfor %}
-                </select>
+        <a href="/farmer/feed" class="feature-card f-verifier">
+            <div class="f-icon">📦</div>
+            <h3 class="f-title">{{ trans['feed_verifier_title'] }}</h3>
+            <p class="f-desc">{{ trans['feed_verifier_desc'] }}</p>
+            <div class="f-badge verified">{{ trans['verified_pass'] }}</div>
+        </a>
+
+        <a href="/sustainability-tracker" class="feature-card f-ecohub">
+            <div class="f-icon">🌍</div>
+            <h3 class="f-title">{{ trans['eco_hub_title'] }}</h3>
+            <p class="f-desc">{{ trans['eco_hub_desc'] }}</p>
+        </a>
+
+        <a href="/insurance-claims" class="feature-card f-insurance">
+            <div class="f-icon">🛡️</div>
+            <h3 class="f-title">{{ trans['insurance_center_title'] }}</h3>
+            <p class="f-desc">{{ trans['insurance_center_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/disease" class="feature-card f-disease">
+            <div class="f-icon">🧪</div>
+            <h3 class="f-title">{{ trans['disease_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['feat_disease_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/feed" class="feature-card f-feed">
+            <div class="f-icon">🍽️</div>
+            <h3 class="f-title">{{ trans['feed_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['feed_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/stocking" class="feature-card f-stocking">
+            <div class="f-icon">🏠</div>
+            <h3 class="f-title">{{ trans['stock_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['stock_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/seed" class="feature-card f-seed">
+            <div class="f-icon">💎</div>
+            <h3 class="f-title">{{ trans['seed_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['seed_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/yield" class="feature-card f-yield">
+            <div class="f-icon">📈</div>
+            <h3 class="f-title">{{ trans['yield_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['feat_yield_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/seasonal" class="feature-card f-seasonal">
+            <div class="f-icon">🌤️</div>
+            <h3 class="f-title">{{ trans['seasonal_title'] | safe }}</h3>
+            <p class="f-desc">{{ trans['seasonal_desc'] }}</p>
+        </a>
+
+        <!-- Row 2 -->
+        <a href="/harvest" class="feature-card f-harvest">
+            <div class="f-icon">⚖️</div>
+            <h3 class="f-title">{{ trans['harvest_title'] }}</h3>
+            <p class="f-desc">{{ trans['harvest_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/vision" class="feature-card f-vision">
+            <div class="f-icon">📸</div>
+            <h3 class="f-title">{{ trans['vision_title'] }}</h3>
+            <p class="f-desc">{{ trans['vision_desc'] }}</p>
+        </a>
+
+        <a href="/farmer/sustainability" class="feature-card f-sustrak">
+            <div class="f-icon">🌱</div>
+            <h3 class="f-title">{{ trans['eco_tracker_title'] }}</h3>
+            <p class="f-desc">{{ trans['eco_tracker_desc'] }}</p>
+        </a>
+
+        <a href="/logistics" class="feature-card f-logistics">
+            <div class="f-icon">🚛</div>
+            <h3 class="f-title">{{ trans['nav_logistics'] }}</h3>
+            <p class="f-desc">{{ trans['logistics_desc'] }}</p>
+        </a>
+
+        <div class="feature-card f-aquacare">
+            <div class="f-icon">🛡️</div>
+            <h3 class="f-title">{{ trans['aquacare_title'] }}</h3>
+            <p class="f-desc">{{ trans['aquacare_desc'] }}</p>
+            <div class="f-buttons">
+                <a href="/precautions" class="f-btn gold">📖 {{ trans['advisor'] }}</a>
+                <a href="/farmer/logbook" class="f-btn outline">🧾 {{ trans['logbook'] }}</a>
             </div>
-            <div class="form-group">
-                <label>{{ trans['pond_area'] }} (Hectares)</label>
-                <input type="number" step="0.01" name="area" placeholder="e.g. 1.2" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['total_feed'] }} (kg)</label>
-                <input type="number" name="feed" placeholder="e.g. 1200" required>
-            </div>
-            <div class="form-group">
-                <label>{{ trans['culture_dur'] }} ({{ trans['days'] }})</label>
-                <input type="number" name="days" placeholder="e.g. 120" required>
-            </div>
-            <button class="btn">{{ trans['btn_yield'] }}</button>
-        </form>
+        </div>
     </div>
 </div>
+
+<style>
+    :root {
+        --hub-bg: #030712;
+        --hub-card-bg: rgba(10, 16, 40, 0.7);
+        --hub-cyan: #00d2ff;
+        --hub-green: #00ff88;
+        --hub-rose: #ff4d7d;
+        --hub-amber: #ffbd2e;
+        --hub-violet: #7b61ff;
+    }
+
+    .farmer-hub-container {
+        padding: 2rem 4rem;
+        max-width: 1800px;
+        margin: 0 auto;
+    }
+
+    .admin-override-banner {
+        background: linear-gradient(90deg, var(--hub-rose), var(--hub-violet));
+        color: #fff;
+        padding: 0.8rem;
+        text-align: center;
+        font-weight: 950;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        font-size: 0.9rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px rgba(255, 77, 125, 0.3);
+    }
+
+    .hub-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .hub-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.8rem;
+        padding: 8px 20px;
+        background: rgba(0, 210, 255, 0.1);
+        border: 1px solid var(--hub-cyan);
+        border-radius: 30px;
+        margin-bottom: 1.5rem;
+    }
+
+    .status-text {
+        font-size: 0.85rem;
+        font-weight: 900;
+        color: var(--hub-cyan);
+        letter-spacing: 2px;
+    }
+
+    .hub-title {
+        font-size: clamp(3rem, 6vw, 5rem);
+        font-weight: 950;
+        letter-spacing: -2px;
+        line-height: 1;
+        margin-bottom: 0.5rem;
+    }
+
+    .hub-title .highlight {
+        color: var(--hub-cyan);
+        text-shadow: 0 0 30px rgba(0, 210, 255, 0.4);
+    }
+
+    .hub-subtitle {
+        color: var(--text-muted);
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    /* Dashboard Styling */
+    .dashboard-core {
+        background: rgba(15, 23, 42, 0.4);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 2rem;
+        padding: 2rem;
+        margin-bottom: 4rem;
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 1fr 1.2fr;
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .dashboard-widget {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .widget-label {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        font-weight: 900;
+        letter-spacing: 2px;
+        margin-bottom: 1.5rem;
+        text-transform: uppercase;
+    }
+
+    .widget-value-container {
+        display: flex;
+        align-items: baseline;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .widget-value {
+        font-size: 4rem;
+        font-weight: 950;
+        color: var(--hub-green);
+        line-height: 1;
+    }
+
+    .widget-sub-label {
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 700;
+    }
+
+    .progress-container {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .health-bar {
+        background: var(--hub-green);
+        box-shadow: 0 0 10px var(--hub-green);
+    }
+
+    .telemetry-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
+
+    .tele_label {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 800;
+        margin-bottom: 0.3rem;
+    }
+
+    .tele_value {
+        font-size: 2rem;
+        font-weight: 900;
+        color: #fff;
+    }
+
+    .tele_value.warning {
+        color: var(--hub-amber);
+    }
+
+    .risk-value {
+        font-size: 3.5rem;
+        font-weight: 950;
+        margin-bottom: 1rem;
+        letter-spacing: -1px;
+    }
+
+    .risk-value.secure { color: var(--hub-green); }
+    .risk-value.warning { color: var(--hub-amber); }
+    .risk-value.critical { color: var(--hub-rose); }
+
+    .risk-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    #live-risk-desc {
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    .protocol-btn {
+        background: var(--hub-rose);
+        color: #fff;
+        padding: 5px 12px;
+        border-radius: 8px;
+        font-size: 0.7rem;
+        font-weight: 900;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .risk-progress-container {
+        height: 12px;
+        background: rgba(255,255,255,0.05);
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .risk-progress-bar {
+        height: 100%;
+        width: 85%;
+        background: linear-gradient(90deg, var(--hub-green), var(--hub-rose));
+        box-shadow: 0 0 15px rgba(255, 77, 125, 0.4);
+    }
+
+    .ai-advisory-strip {
+        background: rgba(0, 0, 0, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 1rem;
+        padding: 1.2rem 2rem;
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+    }
+
+    .ai-tag {
+        font-family: 'Courier New', monospace;
+        color: var(--hub-cyan);
+        font-weight: 900;
+        font-size: 1.1rem;
+        white-space: nowrap;
+    }
+
+    .ai-message {
+        color: #fff;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    /* Grid Layout */
+    .hub-feature-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .feature-card {
+        background: var(--hub-card-bg);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: flex-start;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        background: rgba(15, 23, 42, 0.8);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .f-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1.2rem;
+    }
+
+    .f-title {
+        font-size: 1.4rem;
+        font-weight: 800;
+        color: #fff;
+        margin-bottom: 0.5rem;
+        text-align: left;
+        background: none;
+        -webkit-text-fill-color: initial;
+    }
+
+    .f-desc {
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.4;
+        font-weight: 500;
+    }
+
+    .f-badge {
+        margin-top: 1rem;
+        font-size: 0.75rem;
+        font-weight: 900;
+        padding: 6px 12px;
+        border-radius: 8px;
+        letter-spacing: 0.5px;
+    }
+
+    .f-badge.verified {
+        background: rgba(0, 255, 136, 0.1);
+        color: var(--hub-green);
+        border: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .f-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+        width: 100%;
+        margin-top: auto;
+        padding-top: 1.5rem;
+    }
+
+    .f-btn {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        text-align: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .f-btn.gold {
+        background: var(--hub-amber);
+        color: #000;
+    }
+
+    .f-btn.outline {
+        background: rgba(255,255,255,0.05);
+        color: #fff;
+        border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Card Specific Borders */
+    .f-community { border-left: 4px solid var(--hub-amber); }
+    .f-analytics { border-left: 4px solid var(--hub-cyan); }
+    .f-warning { border-left: 4px solid var(--hub-cyan); }
+    .f-verifier { border-left: 4px solid var(--hub-green); }
+    .f-ecohub { border-left: 4px solid var(--hub-rose); }
+    .f-insurance { border-left: 4px solid var(--hub-cyan); }
+    .f-disease { border-left: 4px solid var(--hub-green); }
+    .f-feed { border-left: 4px solid var(--hub-violet); }
+    .f-stocking { border-left: 4px solid var(--hub-amber); }
+    .f-seed { border-left: 4px solid var(--hub-cyan); }
+    .f-yield { border-left: 4px solid var(--hub-rose); }
+    .f-seasonal { border-left: 4px solid var(--hub-amber); }
+    .f-harvest { border-left: 4px solid var(--hub-rose); }
+    .f-vision { border-left: 4px solid var(--hub-cyan); }
+    .f-sustrak { border-left: 4px solid var(--hub-green); }
+    .f-logistics { border-left: 4px solid var(--hub-cyan); }
+    .f-aquacare { border-left: 4px solid var(--hub-cyan); }
+
+    @media (max-width: 1100px) {
+        .dashboard-grid { grid-template-columns: 1fr; }
+        .farmer-hub-container { padding: 1.5rem; }
+    }
+</style>
+
+<script>
+    async function updateFarmerDashboard() {
+        try {
+            if (!navigator.onLine || !window.ALLOW_LIVE_DATA) return;
+
+            const res = await fetch('/api/realtime');
+            const data = await res.json();
+
+            // Stock Health
+            const healthVal = document.getElementById('live-health');
+            const healthBar = document.getElementById('live-health-bar');
+            if (healthVal) healthVal.innerText = data.health_index;
+            if (healthBar) healthBar.style.width = data.health_index + '%';
+
+            // Telemetry
+            document.getElementById('live-do').innerText = data.do + ' mg/L';
+            document.getElementById('live-ammonia').innerText = data.ammonia + ' mg/L';
+            document.getElementById('live-temp').innerText = data.temp + '°C';
+            document.getElementById('live-ph').innerText = data.ph;
+
+            // Risk Logic
+            const riskText = document.getElementById('live-risk');
+            const riskDesc = document.getElementById('live-risk-desc');
+            const advisor = document.getElementById('live-advice');
+            const riskBar = document.getElementById('live-risk-bar');
+
+            if (data.oxygen_crash_prob > 10 || data.do < 4.5) {
+                riskText.innerText = "CRITICAL";
+                riskText.className = "risk-value critical";
+                riskDesc.innerText = "Oxygen level dropping - CRASH RISK!";
+                advisor.innerText = "URGENT: Deploy all " + data.aerators + " aerators immediately and check power usage (" + data.power_usage + " kWh)";
+                riskBar.style.width = "95%";
+            } else if (data.ammonia > 0.18) {
+                riskText.innerText = "WARNING";
+                riskText.className = "risk-value warning";
+                riskDesc.innerText = "High Ammonia levels detected";
+                advisor.innerText = "Recommendation: Reduce feed by 20% and increase bottom aeration.";
+                riskBar.style.width = "65%";
+            } else {
+                riskText.innerText = "SECURE";
+                riskText.className = "risk-value secure";
+                riskDesc.innerText = "Conditions are optimal for growth";
+                advisor.innerText = "Next feeding window in " + data.next_feed + " minutes. Harvest readiness in " + data.harvest_days + " days.";
+                riskBar.style.width = "30%";
+            }
+
+        } catch (e) {
+            console.error("Dashboard Sync Error:", e);
+        }
+    }
+
+    // Initialize & Refresh
+    updateFarmerDashboard();
+    setInterval(updateFarmerDashboard, 3000);
+</script>
 {% endblock %}
