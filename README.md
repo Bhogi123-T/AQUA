@@ -122,16 +122,24 @@ AQUA serves every stakeholder in the aquaculture supply chain with dedicated das
 
 ```
 AQUA/
-├── app.py                      # Main Flask application — routes & API endpoints
+├── app.py                      # Main Flask application — entry point & blueprint registration
 ├── requirements.txt            # Python dependencies
 ├── vercel.json                 # Deployment configuration
 ├── .env.example                # Environment variables template
 │
+├── core/                       # Shared utilities and configurations
+│   ├── auth_utils.py           # Authentication and route protection
+│   ├── db.py                   # Shared database state
+│   ├── ecosystem_config.py     # Constants and ecosystem data
+│   └── translations.py         # Multi-language support configuration
+│
+├── routes/                     # Modular Flask Blueprints
+│   ├── __init__.py             # Route registration utilities
+│   ├── farmer.py               # Farmer hub endpoints
+│   └── business.py             # Business/Market endpoints
+│
 ├── ml_core/
 │   └── models/                 # Pre-trained .pkl ML models (ADER, APDC, ASER, AMPRO)
-│
-├── core/
-│   └── translations.py         # Multi-language support configuration
 │
 ├── data/
 │   └── patches/                # Local JSON databases (users, community, trade data)
