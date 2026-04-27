@@ -131,12 +131,13 @@
                 <div
                     style="display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 800;">
                     <span>CONFIDENCE</span>
-                    <span>94.8%</span>
+                    <span>{{ accuracy|default(94.8) }}%</span>
                 </div>
                 <div style="height: 4px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden;">
-                    <div
-                        style="width: 94.8%; height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary);">
-                    </div>
+                    <div id="acc-prog-bar" data-w="{{ accuracy|default(94.8) }}%" style="height: 100%; background: var(--primary); box-shadow: 0 0 10px var(--primary);"></div>
+                    <script>
+                        document.getElementById('acc-prog-bar').style.width = document.getElementById('acc-prog-bar').getAttribute('data-w');
+                    </script>
                 </div>
             </div>
             <p
@@ -149,10 +150,12 @@
         <!-- Right: Precautions / Details / Tips -->
         {% if precautions %}
         <div class="result-details">
+
+            {% if precautions %}
             <div
                 style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1.5rem;">
                 <h3 style="color: var(--primary); margin: 0; font-size: 1.5rem; font-weight: 900;">
-                    🛡️ {{ trans['aquacare_title'] }}
+                    🛡️ {{ trans.get('aquacare_title', 'Actionable Tips') if trans else 'Actionable Tips' }}
                 </h3>
                 <span
                     style="font-size: 0.6rem; color: var(--text-muted); font-weight: 800; padding: 4px 10px; border: 1px solid var(--glass-border); border-radius: 10px;">ACTIONABLE</span>
@@ -169,9 +172,24 @@
                 </div>
                 {% endfor %}
             </div>
+            {% endif %}
         </div>
         {% endif %}
     </div>
+
+    {% if chart_data %}
+    <!-- Bottom: Yield Projection Graph -->
+    <div style="width: 100%; margin-top: 3rem;">
+        <h3 style="color: var(--primary); margin: 0 0 1.5rem; font-size: 1.8rem; font-weight: 900; text-align: center;">
+            📈 Yield Projection Progression
+        </h3>
+        <div style="background: rgba(255,255,255,0.02); padding: 2rem; border-radius: 2rem; border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+            <div style="position: relative; height: 350px; width: 100%;">
+                <canvas id="yieldChart"></canvas>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <div style="margin-top: 4rem; display: flex; gap: 1.5rem; width: 100%; justify-content: center; flex-wrap: wrap;">
         <a href="javascript:history.back()" class="app-btn-large"
@@ -204,5 +222,109 @@
         }
     }
 </style>
+
+{% if chart_data %}
+<script id="yield-labels-data" type="application/json">{{ chart_labels | tojson | safe }}</script>
+<script id="yield-pts-data" type="application/json">{{ chart_data | tojson | safe }}</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var canvas = document.getElementById('yieldChart');
+        if(!canvas) return;
+        
+        // Define canvas dimensions explicitly based on parent CSS
+        canvas.width = canvas.parentElement.clientWidth || 600;
+        canvas.height = canvas.parentElement.clientHeight || 350;
+        
+        const ctx = canvas.getContext('2d');
+        const labels = JSON.parse(document.getElementById('yield-labels-data').textContent);
+        const dataPts = JSON.parse(document.getElementById('yield-pts-data').textContent);
+        
+        const padding = {top: 40, right: 30, bottom: 40, left: 50};
+        const innerW = canvas.width - padding.left - padding.right;
+        const innerH = canvas.height - padding.top - padding.bottom;
+        
+        // Get max value to scale chart appropriately
+        const maxData = Math.max(...dataPts) * 1.25; 
+        
+        // --- 1. Draw Grid Lines and Y-Axis ---
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+        ctx.font = '600 12px "Outfit", system-ui, sans-serif';
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        
+        const ySteps = 4;
+        for(let i=0; i<=ySteps; i++) {
+            const stepVal = maxData * (i/ySteps);
+            const yOffset = padding.top + innerH - (innerH * (i/ySteps));
+            
+            // Grid line
+            ctx.beginPath();
+            ctx.moveTo(padding.left, yOffset);
+            ctx.lineTo(canvas.width - padding.right, yOffset);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // Y-Axis number
+            ctx.fillText(stepVal.toFixed(1), padding.left - 10, yOffset);
+        }
+        
+        // --- 2. Calculate Plot Coordinates ---
+        const points = dataPts.map((val, i) => {
+            return {
+                x: padding.left + (innerW / (labels.length - 1)) * i,
+                y: padding.top + innerH - ((val / maxData) * innerH)
+            };
+        });
+        
+        // --- 3. Draw X-Axis Labels ---
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        points.forEach((p, i) => {
+            ctx.fillText(labels[i], p.x, canvas.height - padding.bottom + 15);
+        });
+        
+        // --- 4. Draw Gradient Fill Area ---
+        const grad = ctx.createLinearGradient(0, padding.top, 0, canvas.height - padding.bottom);
+        grad.addColorStop(0, 'rgba(0, 210, 255, 0.3)');
+        grad.addColorStop(1, 'rgba(0, 210, 255, 0.0)');
+        
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, padding.top + innerH);
+        points.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.lineTo(points[points.length-1].x, padding.top + innerH);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        
+        // --- 5. Draw Progression Line ---
+        ctx.beginPath();
+        ctx.moveTo(points[0].x, points[0].y);
+        points.forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.strokeStyle = '#00d2ff';
+        ctx.lineWidth = 3.5;
+        ctx.lineJoin = 'round';
+        ctx.stroke();
+        
+        // --- 6. Draw Highlight Nodes (Points) ---
+        points.forEach((p, i) => {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 6, 0, Math.PI * 2);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            
+            ctx.strokeStyle = '#00d2ff';
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            
+            // Hover Tooltip style Text above points
+            if (i === points.length - 1) {
+                 ctx.fillStyle = '#00ff88';
+                 ctx.font = '900 14px "Outfit", sans-serif';
+                 ctx.fillText(dataPts[i] + ' MT', p.x, p.y - 25);
+            }
+        });
+    });
+</script>
+{% endif %}
 
 {% endblock %}

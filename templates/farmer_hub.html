@@ -21,6 +21,28 @@
         <p class="hub-subtitle">{{ trans['farmer_hub_subtitle'] }}</p>
     </header>
 
+    <!-- 🎯 ONBOARDING CHECKLIST -->
+    <div class="onboarding-widget" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0, 255, 136, 0.05)); border: 1px solid var(--primary); border-radius: 1.5rem; padding: 2rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; gap: 2rem;">
+        <div>
+            <h2 style="color: white; font-family: 'Outfit', sans-serif; font-size: 1.5rem; margin-bottom: 0.5rem;">🎉 My First Smart Pond</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem; max-width: 500px;">Complete this quick checklist to ensure your pond is protected and optimized from day one.</p>
+        </div>
+        <div style="display: flex; gap: 1.5rem;">
+            <a href="/smart-matcher" style="display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.3); padding: 1rem 1.5rem; border-radius: 1rem; text-decoration: none; border: 1px solid rgba(255,255,255,0.1); transition: all 0.3s;" onmouseover="this.style.borderColor='var(--primary)'; this.style.transform='translateY(-3px)';" onmouseout="this.style.borderColor='rgba(255,255,255,0.1)'; this.style.transform='translateY(0)';">
+                <span style="font-size: 2rem; margin-bottom: 0.5rem;">🌱</span>
+                <span style="color: white; font-weight: bold; font-size: 0.9rem;">1. AI Crop Matcher</span>
+            </a>
+            <div style="display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.3); padding: 1rem 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); opacity: 0.5;">
+                <span style="font-size: 2rem; margin-bottom: 0.5rem;">🌡️</span>
+                <span style="color: white; font-weight: bold; font-size: 0.9rem;">2. Link IoT Sensors</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; background: rgba(0,0,0,0.3); padding: 1rem 1.5rem; border-radius: 1rem; border: 1px solid rgba(255,255,255,0.1); opacity: 0.5;">
+                <span style="font-size: 2rem; margin-bottom: 0.5rem;">👨‍⚕️</span>
+                <span style="color: white; font-weight: bold; font-size: 0.9rem;">3. Find Local Tech</span>
+            </div>
+        </div>
+    </div>
+
     <!-- 📡 COMMAND REAL-TIME DASHBOARD -->
     <div class="dashboard-core">
         <div class="dashboard-grid">

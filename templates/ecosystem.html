@@ -42,7 +42,7 @@
         <div class="viz-hub" style="background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 3rem; padding: 3rem; backdrop-filter: blur(20px); box-shadow: 0 40px 100px -20px rgba(0,0,0,0.5); position: relative; min-height: 700px; display: flex; align-items: center; justify-content: center; overflow: hidden;">
             
             <!-- 🪐 CENTRAL HUB GRAPH (SVG) -->
-            <svg id="network-graph" viewBox="0 0 1000 800" style="width: 100%; height: 100%; position: absolute; top:0; left:0; pointer-events:all;">
+            <svg id="network-graph" viewBox="0 0 1200 900" style="width: 100%; height: 100%; position: absolute; top:0; left:0; pointer-events:all;">
                 <defs>
                     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
                         <feGaussianBlur stdDeviation="5" result="blur" />
@@ -167,14 +167,14 @@
     // 🧬 NETWORK ENGINE
     const nodes = Object.entries(ROLES).map(([id, info], i) => {
         const angle = (i / Object.keys(ROLES).length) * Math.PI * 2;
-        const radius = 300;
+        const radius = 360;
         return {
             id,
             name: info.name,
             icon: info.icon,
             category: info.category,
-            x: 500 + Math.cos(angle) * radius,
-            y: 400 + Math.sin(angle) * radius,
+            x: 600 + Math.cos(angle) * radius,
+            y: 450 + Math.sin(angle) * radius,
             isUser: id === USER_ROLE
         };
     });
@@ -217,27 +217,27 @@
             
             // Outer Glow
             const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-            circle.setAttribute('r', node.isUser ? '55' : '45');
+            circle.setAttribute('r', node.isUser ? '45' : '35');
             circle.setAttribute('fill', node.isUser ? 'rgba(0, 210, 255, 0.2)' : 'rgba(15, 23, 42, 0.8)');
             circle.setAttribute('stroke', node.isUser ? 'var(--primary)' : 'rgba(255, 255, 255, 0.1)');
-            circle.setAttribute('stroke-width', '3');
+            circle.setAttribute('stroke-width', '2');
             circle.style.cursor = 'pointer';
             
             // Emoji
             const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
             text.setAttribute('y', '8');
             text.setAttribute('text-anchor', 'middle');
-            text.setAttribute('font-size', '35');
+            text.setAttribute('font-size', '28');
             text.textContent = node.icon;
             text.style.pointerEvents = 'none';
 
             // Label
             const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-            label.setAttribute('y', '70');
+            label.setAttribute('y', '55');
             label.setAttribute('text-anchor', 'middle');
             label.setAttribute('fill', '#fff');
             label.setAttribute('font-weight', '900');
-            label.setAttribute('font-size', '14');
+            label.setAttribute('font-size', '12');
             label.textContent = node.name.toUpperCase();
             label.style.pointerEvents = 'none';
 
@@ -436,18 +436,16 @@
     }
 
     .network-node {
-        transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    .network-node:hover {
-        transform: scale(1.1) translate(var(--tw-translate-x), var(--tw-translate-y));
+        cursor: pointer;
     }
     .network-node circle {
         transition: all 0.3s ease;
     }
     .network-node:hover circle {
         fill: rgba(0, 210, 255, 0.15);
-        stroke-width: 5;
+        stroke-width: 4;
         stroke: var(--primary);
+        r: 45;
     }
     
     .user-node circle {

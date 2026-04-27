@@ -1,0 +1,376 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .matcher-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--primary);
+        border-radius: 2rem;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(0, 210, 255, 0.05);
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .matcher-header {
+        margin-bottom: 3rem;
+    }
+
+    .matcher-header h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 1rem;
+        text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    .matcher-header p {
+        color: var(--text-muted);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .quiz-step {
+        display: none;
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .quiz-step.active {
+        display: block;
+    }
+
+    .question-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        color: white;
+    }
+
+    .options-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .option-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 2px solid var(--glass-border);
+        border-radius: 1.5rem;
+        padding: 2rem 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .option-card:hover {
+        background: rgba(0, 210, 255, 0.05);
+        border-color: var(--primary);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.15);
+    }
+
+    .option-card.selected {
+        background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(0, 255, 136, 0.1));
+        border-color: var(--primary);
+        box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    .option-icon {
+        font-size: 3rem;
+        margin-bottom: 0.5rem;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    .option-title {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: white;
+    }
+
+    .option-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    .progress-bar-container {
+        height: 6px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        margin: 2rem 0;
+        overflow: hidden;
+    }
+
+    .progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--primary), var(--accent));
+        width: 0%;
+        transition: width 0.4s ease-out;
+        box-shadow: 0 0 15px var(--primary);
+    }
+
+    .btn-next {
+        background: linear-gradient(135deg, var(--primary), #00a8ff);
+        color: black;
+        border: none;
+        padding: 1rem 3rem;
+        font-size: 1.1rem;
+        font-weight: 800;
+        border-radius: 2rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .btn-next.enabled {
+        opacity: 1;
+        pointer-events: auto;
+        box-shadow: 0 10px 30px rgba(0, 210, 255, 0.4);
+    }
+
+    .btn-next.enabled:hover {
+        transform: scale(1.05);
+    }
+
+    .result-container {
+        display: none;
+        animation: scaleUp 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+
+    .result-card {
+        background: linear-gradient(145deg, rgba(0, 255, 136, 0.1), rgba(0, 210, 255, 0.05));
+        border: 2px solid var(--accent);
+        border-radius: 2rem;
+        padding: 3rem;
+        margin-top: 2rem;
+        box-shadow: 0 0 50px rgba(0, 255, 136, 0.2);
+    }
+
+    .result-match-score {
+        display: inline-block;
+        background: var(--accent);
+        color: black;
+        font-weight: 900;
+        padding: 0.5rem 1.5rem;
+        border-radius: 2rem;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 5px 15px rgba(0, 255, 136, 0.4);
+    }
+
+    .result-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        color: black;
+        text-decoration: none;
+        padding: 1rem 2rem;
+        border-radius: 2rem;
+        font-weight: 800;
+        margin-top: 2rem;
+        transition: all 0.3s;
+    }
+
+    .result-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(255, 255, 255, 0.2);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes scaleUp {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Decorative background blobs */
+    .blob-1 { position: absolute; top: -100px; left: -100px; width: 300px; height: 300px; background: rgba(0, 210, 255, 0.1); filter: blur(50px); border-radius: 50%; pointer-events: none; }
+    .blob-2 { position: absolute; bottom: -100px; right: -100px; width: 300px; height: 300px; background: rgba(0, 255, 136, 0.1); filter: blur(50px); border-radius: 50%; pointer-events: none; }
+</style>
+
+<div class="matcher-container">
+    <div class="blob-1"></div>
+    <div class="blob-2"></div>
+
+    <div class="matcher-header" id="header-section">
+        <h1>🌱 Smart Crop Matcher</h1>
+        <p>Eliminate decision fatigue. Tell us about your pond, and our AI will recommend the exact species and starter kit for a successful harvest from day one.</p>
+    </div>
+
+    <div class="progress-bar-container" id="progress-container">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+    </div>
+
+    <!-- Step 1: Salinity -->
+    <div class="quiz-step active" id="step-1">
+        <h2 class="question-title">1. What is the typical salinity of your water source?</h2>
+        <div class="options-grid">
+            <div class="option-card" onclick="selectOption(1, 'Freshwater')">
+                <span class="option-icon">💧</span>
+                <span class="option-title">Freshwater</span>
+                <span class="option-desc">0-5 ppt (Rivers, Borewells)</span>
+            </div>
+            <div class="option-card" onclick="selectOption(1, 'Brackish')">
+                <span class="option-icon">🌊</span>
+                <span class="option-title">Brackish</span>
+                <span class="option-desc">10-25 ppt (Estuaries, Creeks)</span>
+            </div>
+            <div class="option-card" onclick="selectOption(1, 'Marine')">
+                <span class="option-icon">🦈</span>
+                <span class="option-title">Marine</span>
+                <span class="option-desc">30+ ppt (Direct Sea Water)</span>
+            </div>
+        </div>
+        <button class="btn-next" id="btn-next-1" onclick="nextStep(1)">Continue ✨</button>
+    </div>
+
+    <!-- Step 2: Experience -->
+    <div class="quiz-step" id="step-2">
+        <h2 class="question-title">2. What is your aquaculture experience level?</h2>
+        <div class="options-grid">
+            <div class="option-card" onclick="selectOption(2, 'Beginner')">
+                <span class="option-icon">🌱</span>
+                <span class="option-title">Beginner</span>
+                <span class="option-desc">First time setting up a pond</span>
+            </div>
+            <div class="option-card" onclick="selectOption(2, 'Intermediate')">
+                <span class="option-icon">👨‍🌾</span>
+                <span class="option-title">Experienced</span>
+                <span class="option-desc">Farmed before, want better yields</span>
+            </div>
+            <div class="option-card" onclick="selectOption(2, 'Commercial')">
+                <span class="option-icon">🏭</span>
+                <span class="option-title">Commercial</span>
+                <span class="option-desc">Large scale high-density farming</span>
+            </div>
+        </div>
+        <button class="btn-next" id="btn-next-2" onclick="nextStep(2)">Continue ✨</button>
+    </div>
+
+    <!-- Step 3: Investment Strategy -->
+    <div class="quiz-step" id="step-3">
+        <h2 class="question-title">3. What is your primary farming goal?</h2>
+        <div class="options-grid">
+            <div class="option-card" onclick="selectOption(3, 'LowRisk')">
+                <span class="option-icon">🛡️</span>
+                <span class="option-title">Low Risk / Steady</span>
+                <span class="option-desc">Disease resistant, lower upfront cost</span>
+            </div>
+            <div class="option-card" onclick="selectOption(3, 'HighYield')">
+                <span class="option-icon">🚀</span>
+                <span class="option-title">High Yield / Export</span>
+                <span class="option-desc">Premium market prices, intensive care</span>
+            </div>
+        </div>
+        <button class="btn-next" id="btn-next-3" onclick="showResults()">Analyze with AI 🧠</button>
+    </div>
+
+    <!-- Results Section -->
+    <div class="result-container" id="result-section">
+        <h1>🎯 AI Match Found!</h1>
+        <p style="color: var(--text-muted); margin-bottom: 2rem;">Based on your water quality and experience, here is your guaranteed path to a successful harvest.</p>
+        
+        <div class="result-card">
+            <div class="result-match-score">98% PERFECT MATCH</div>
+            <div style="font-size: 5rem; margin-bottom: 1rem; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));" id="res-icon">🦐</div>
+            <h2 style="font-size: 2.5rem; margin-bottom: 0.5rem; color: white;" id="res-title">Litopenaeus Vannamei</h2>
+            <h3 style="color: var(--primary); margin-bottom: 2rem;" id="res-subtitle">High-Density Whiteleg Shrimp</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; text-align: left; background: rgba(0,0,0,0.3); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;">
+                <div>
+                    <strong style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Growth Cycle</strong>
+                    <p style="font-size: 1.1rem; font-weight: 700;">90 - 120 Days</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Target Market</strong>
+                    <p style="font-size: 1.1rem; font-weight: 700;">International Export</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Required FCR</strong>
+                    <p style="font-size: 1.1rem; font-weight: 700;">1.2 - 1.5</p>
+                </div>
+                <div>
+                    <strong style="color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase;">Risk Profile</strong>
+                    <p style="font-size: 1.1rem; font-weight: 700; color: #ffcc00;">Medium-High</p>
+                </div>
+            </div>
+
+            <p style="color: var(--text-muted); line-height: 1.6; margin-bottom: 2rem;">
+                Your brackish water environment and commercial goals make Vannamei the perfect high-profit crop. We recommend utilizing our <strong>AquaSphere Genesis Kit</strong> to monitor DO and pH to mitigate risk.
+            </p>
+
+            <a href="/dashboard" class="result-action-btn">
+                <span>Start My Smart Pond Setup</span> 🚀
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    let answers = {1: null, 2: null, 3: null};
+
+    function selectOption(step, value) {
+        answers[step] = value;
+        // Visual selection
+        const cards = document.querySelectorAll(`#step-${step} .option-card`);
+        cards.forEach(c => c.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        // Enable next button
+        document.getElementById(`btn-next-${step}`).classList.add('enabled');
+    }
+
+    function nextStep(current) {
+        document.getElementById(`step-${current}`).classList.remove('active');
+        document.getElementById(`step-${current + 1}`).classList.add('active');
+        document.getElementById('progress-fill').style.width = `${(current / 3) * 100}%`;
+    }
+
+    function showResults() {
+        document.getElementById('step-3').classList.remove('active');
+        document.getElementById('progress-container').style.display = 'none';
+        document.getElementById('header-section').style.display = 'none';
+        
+        // Simple AI logic tree
+        const isFresh = answers[1] === 'Freshwater';
+        const isLowRisk = answers[3] === 'LowRisk';
+
+        let resIcon = '🦐';
+        let resTitle = 'Litopenaeus Vannamei';
+        let resSubtitle = 'Intensive Whiteleg Shrimp';
+
+        if (isFresh && isLowRisk) {
+            resIcon = '🐟';
+            resTitle = 'Tilapia / Rohu Poly-culture';
+            resSubtitle = 'High-Resilience Freshwater Fish';
+        } else if (!isFresh && isLowRisk) {
+            resIcon = '🦀';
+            resTitle = 'Scylla Serrata (Mud Crab)';
+            resSubtitle = 'Premium Hardy Brackish Species';
+        } else if (isFresh && !isLowRisk) {
+            resIcon = '🦞';
+            resTitle = 'Macrobrachium Rosenbergii';
+            resSubtitle = 'Giant Freshwater Prawn';
+        }
+
+        document.getElementById('res-icon').textContent = resIcon;
+        document.getElementById('res-title').textContent = resTitle;
+        document.getElementById('res-subtitle').textContent = resSubtitle;
+
+        document.getElementById('result-section').style.display = 'block';
+    }
+</script>
+{% endblock %}

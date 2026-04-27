@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<style>
+    .trace-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--primary);
+        border-radius: 2rem;
+        padding: 3rem;
+        color: white;
+    }
+
+    .trace-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .trace-header h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2.5rem;
+        color: var(--primary);
+        text-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+    }
+
+    .batch-badge {
+        display: inline-block;
+        background: rgba(0, 255, 136, 0.1);
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        padding: 0.5rem 1.5rem;
+        border-radius: 2rem;
+        font-family: monospace;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+        box-shadow: 0 0 15px rgba(0, 255, 136, 0.2);
+    }
+
+    .timeline {
+        position: relative;
+        padding-left: 3rem;
+    }
+
+    .timeline::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: linear-gradient(to bottom, var(--primary), var(--accent));
+        border-radius: 4px;
+        box-shadow: 0 0 10px var(--primary);
+    }
+
+    .timeline-item {
+        position: relative;
+        margin-bottom: 3rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        transition: transform 0.3s;
+    }
+
+    .timeline-item:hover {
+        transform: translateX(10px);
+        border-color: var(--primary);
+        background: rgba(0, 210, 255, 0.05);
+    }
+
+    .timeline-dot {
+        position: absolute;
+        left: -3.8rem;
+        top: 1.5rem;
+        width: 20px;
+        height: 20px;
+        background: var(--bg-dark);
+        border: 4px solid var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 15px var(--accent);
+        z-index: 2;
+    }
+
+    .timeline-date {
+        color: var(--accent);
+        font-weight: 700;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-title {
+        font-size: 1.3rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+    }
+
+    .timeline-desc {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .cert-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: rgba(0, 210, 255, 0.1);
+        border: 1px solid var(--primary);
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.8rem;
+        margin-top: 1rem;
+        color: var(--primary);
+    }
+</style>
+
+<div class="trace-container">
+    <div class="trace-header">
+        <h1>🔗 Immutable Supply Chain Ledger</h1>
+        <p style="color: var(--text-muted);">Verified by AquaSphere Smart Contracts</p>
+        <div class="batch-badge">ID: {{ batch_id }}</div>
+    </div>
+
+    <div class="timeline">
+        <div class="timeline-item">
+            <div class="timeline-dot" style="border-color: #00d2ff;"></div>
+            <div class="timeline-date">Day 1 - Hatchery Origin</div>
+            <div class="timeline-title">SPF Seed Procurement</div>
+            <div class="timeline-desc">
+                Certified Specific Pathogen Free (SPF) Vannamei seeds purchased from <strong>Nellore Delta Hatcheries</strong>. AI visual scan confirmed 99% mobility and 0% deformities.
+            </div>
+            <div class="cert-badge">✔️ BAP Certified Hatchery</div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot" style="border-color: #00ff88;"></div>
+            <div class="timeline-date">Day 45 - Mid-Cycle Check</div>
+            <div class="timeline-title">AI Health & Water Validation</div>
+            <div class="timeline-desc">
+                Continuous IoT monitoring verified zero major drops in Dissolved Oxygen. AI predictive disease scan registered <strong>Low Risk (2%)</strong> for WSSV. No antibiotics detected in feed logs.
+            </div>
+            <div class="cert-badge">✔️ Organic Feed Verified</div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot" style="border-color: #ffaa00;"></div>
+            <div class="timeline-date">Day 110 - Harvested</div>
+            <div class="timeline-title">Smart Harvest Execution</div>
+            <div class="timeline-desc">
+                Harvested at optimal size of 30-count per Kg. Total yield recorded: 4.2 Tons. Quality instantly approved by AquaLab Tech network.
+            </div>
+            <div class="cert-badge">✔️ Premium Size Verified</div>
+        </div>
+
+        <div class="timeline-item">
+            <div class="timeline-dot" style="border-color: #ff0055;"></div>
+            <div class="timeline-date">Day 112 - Present</div>
+            <div class="timeline-title">Export & Transport</div>
+            <div class="timeline-desc">
+                Cold chain tracking maintained at -18°C by LogiAqua Services. Scheduled for export to EU markets.
+            </div>
+            <div class="cert-badge">✔️ EU Export Ready</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

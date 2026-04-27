@@ -122,59 +122,93 @@
     </div>
 </div>
 
-<script>
-    const dropZone = document.getElementById('drop-zone');
-    const fileInput = document.getElementById('file-input');
-    const imagePreview = document.getElementById('image-preview');
-    const previewContainer = document.getElementById('preview-container');
-    const analyzeBtn = document.getElementById('analyze-btn');
-    const trainModeBtn = document.getElementById('train-mode-btn');
-    const trainingConsole = document.getElementById('training-console');
-    const loadingSpinner = document.getElementById('loading-spinner');
-    const diagnosticData = document.getElementById('diagnostic-data');
-    const initialMsg = document.getElementById('initial-msg');
-    const invalidMsg = document.getElementById('invalid-msg');
-    const analysisPanel = document.getElementById('analysis-panel');
+    <!-- 🧠 TensorFlow.js & MobileNet Core -->
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@3.11.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.0/dist/mobilenet.min.js"></script>
+    
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const imagePreview = document.getElementById('image-preview');
+        const previewContainer = document.getElementById('preview-container');
+        const analyzeBtn = document.getElementById('analyze-btn');
+        const trainModeBtn = document.getElementById('train-mode-btn');
+        const trainingConsole = document.getElementById('training-console');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const diagnosticData = document.getElementById('diagnostic-data');
+        const initialMsg = document.getElementById('initial-msg');
+        const invalidMsg = document.getElementById('invalid-msg');
+        const analysisPanel = document.getElementById('analysis-panel');
 
-    dropZone.onclick = () => fileInput.click();
+        let neuralModel = null;
 
-    fileInput.onchange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (re) => {
-                imagePreview.src = re.target.result;
-                previewContainer.style.display = 'block';
-                dropZone.style.display = 'none';
-                analysisPanel.style.opacity = '1';
-                analysisPanel.style.pointerEvents = 'auto';
+        // Preload the MobileNet model in the background
+        mobilenet.load().then(model => {
+            neuralModel = model;
+            console.log("Neural Core (MobileNet) loaded successfully.");
+        });
 
-                // Set default training keyword based on filename
-                document.getElementById('train-organism').value = file.name.split('.')[0];
-            };
-            reader.readAsDataURL(file);
-        }
-    };
+        dropZone.onclick = () => fileInput.click();
 
-    analyzeBtn.onclick = async () => {
-        analyzeBtn.disabled = true;
-        initialMsg.style.display = 'none';
-        diagnosticData.style.display = 'none';
-        invalidMsg.style.display = 'none';
-        loadingSpinner.style.display = 'block';
+        fileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (re) => {
+                    imagePreview.src = re.target.result;
+                    previewContainer.style.display = 'block';
+                    dropZone.style.display = 'none';
+                    analysisPanel.style.opacity = '1';
+                    analysisPanel.style.pointerEvents = 'auto';
 
-        let steps = ['Validating Tensors...', 'CNN Forward Pass...', 'Pattern Matching...', 'Finalizing Weights...'];
-        let stepIdx = 0;
-        const stepIv = setInterval(() => {
-            if (stepIdx < steps.length) document.getElementById('loading-step').innerText = steps[stepIdx++];
-        }, 600);
+                    // Set default training keyword based on filename
+                    document.getElementById('train-organism').value = file.name.split('.')[0];
+                };
+                reader.readAsDataURL(file);
+            }
+        };
 
-        try {
-            const resp = await fetch('/api/vision/analyze', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ filename: fileInput.files[0].name })
-            });
+        analyzeBtn.onclick = async () => {
+            analyzeBtn.disabled = true;
+            initialMsg.style.display = 'none';
+            diagnosticData.style.display = 'none';
+            invalidMsg.style.display = 'none';
+            loadingSpinner.style.display = 'block';
+
+            let steps = ['Validating Tensors...', 'CNN Forward Pass...', 'Pattern Matching...', 'Finalizing Weights...'];
+            let stepIdx = 0;
+            const stepIv = setInterval(() => {
+                if (stepIdx < steps.length) document.getElementById('loading-step').innerText = steps[stepIdx++];
+            }, 600);
+
+            try {
+                let detectedType = "";
+                
+                // Real-time inference using local MobileNet Core
+                if (neuralModel && imagePreview.src) {
+                    const predictions = await neuralModel.classify(imagePreview);
+                    const topClass = predictions[0].className.toLowerCase();
+                    
+                    // Map generic animal classes to our aquatic database
+                    if (topClass.includes('fish') || topClass.includes('shark') || topClass.includes('ray') || topClass.includes('tench') || topClass.includes('sturgeon')) {
+                        detectedType = 'fish';
+                    } else if (topClass.includes('crab') || topClass.includes('lobster') || topClass.includes('crayfish') || topClass.includes('hermit')) {
+                        detectedType = 'crab';
+                    } else if (topClass.includes('shrimp') || topClass.includes('prawn') || topClass.includes('krill') || topClass.includes('isopod')) {
+                        detectedType = 'shrimp';
+                    }
+                    console.log("Local Neural Inference:", predictions, "Mapped to:", detectedType);
+                }
+
+                const resp = await fetch('/api/vision/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        filename: fileInput.files[0].name,
+                        detected_type: detectedType
+                    })
+                });
+
             const res = await resp.json();
 
             clearInterval(stepIv);
