@@ -1,0 +1,297 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="digital-twin-container" style="max-width: 1400px; margin: 0 auto; padding: 2rem; color: white;">
+    <header style="text-align: center; margin-bottom: 2rem;">
+        <div style="display: inline-flex; align-items: center; gap: 1rem; padding: 10px 25px; background: rgba(0, 210, 255, 0.1); border: 1px solid #00d2ff; border-radius: 30px; margin-bottom: 1rem; box-shadow: 0 0 20px rgba(0,210,255,0.2);">
+            <span class="live-pulse" style="background: #00ff88; width: 12px; height: 12px; border-radius: 50%; box-shadow: 0 0 10px #00ff88; animation: pulse 1.5s infinite;"></span>
+            <span style="font-size: 1rem; font-weight: 900; color: #00d2ff; letter-spacing: 2px;">AQUA DIGITAL TWIN & MICRO-WEATHER AI</span>
+        </div>
+        <h1 style="font-size: 3.5rem; font-weight: 950; letter-spacing: -2px; margin-bottom: 0.5rem; background: linear-gradient(90deg, #fff, #00d2ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            Pond-1 Live Telemetry
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem; max-width: 700px; margin: 0 auto;">
+            Real-time volumetric simulation synced with Micro-Weather predictive AI.
+        </p>
+    </header>
+
+    <!-- Top Stats Row -->
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem;">
+        <div class="app-card stat-card">
+            <div class="stat-icon">🌡️</div>
+            <div class="stat-label">Avg Water Temp</div>
+            <div class="stat-value" id="val-temp">28.4°C</div>
+        </div>
+        <div class="app-card stat-card">
+            <div class="stat-icon">🫧</div>
+            <div class="stat-label">Dissolved Oxygen</div>
+            <div class="stat-value" id="val-do" style="color:#00ff88;">4.8 ppm</div>
+        </div>
+        <div class="app-card stat-card">
+            <div class="stat-icon">🧪</div>
+            <div class="stat-label">pH Level</div>
+            <div class="stat-value" id="val-ph">7.6</div>
+        </div>
+        <div class="app-card stat-card" style="border: 1px solid #ff4444; background: rgba(255,68,68,0.05);">
+            <div class="stat-icon">⚠️</div>
+            <div class="stat-label">Weather AI Alert</div>
+            <div class="stat-value" id="val-alert" style="color:#ff4444; font-size: 1.1rem;">Scanning...</div>
+        </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2.5fr 1fr; gap: 2rem;">
+        <!-- 3D Visualization Area (2.5D CSS Simulation) -->
+        <div style="background: rgba(11, 17, 32, 0.9); border: 1px solid var(--glass-border); border-radius: 2rem; height: 600px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 0 150px rgba(0, 210, 255, 0.05);">
+            
+            <!-- Weather Overlay Effects -->
+            <div id="weather-layer" style="position: absolute; inset: 0; z-index: 5; pointer-events: none; transition: background 1s;"></div>
+            
+            <!-- 2.5D Pond Object -->
+            <div class="pond-3d-model" style="position: relative; width: 80%; height: 60%; transform: perspective(1000px) rotateX(60deg) rotateZ(-15deg); transform-style: preserve-3d; transition: transform 0.5s;">
+                <!-- Water Surface -->
+                <div class="water-surface" style="position: absolute; inset: 0; background: rgba(0, 210, 255, 0.3); border: 4px solid #00d2ff; box-shadow: 0 0 50px rgba(0,210,255,0.4), inset 0 0 30px rgba(0,210,255,0.4); border-radius: 20px; z-index: 3; overflow: hidden;">
+                    <!-- CSS Ripples -->
+                    <div class="ripple" style="left: 20%; top: 30%;"></div>
+                    <div class="ripple" style="left: 70%; top: 60%; animation-delay: 1s;"></div>
+                </div>
+                
+                <!-- Pond Depth Base -->
+                <div style="position: absolute; inset: 0; background: rgba(11, 17, 32, 0.8); border: 2px solid rgba(0,255,136,0.5); transform: translateZ(-100px); border-radius: 20px; z-index: 1;">
+                    <!-- Biomass Heatmap on Bottom -->
+                    <div style="position: absolute; bottom: 20%; right: 20%; width: 40%; height: 40%; background: radial-gradient(circle, rgba(0,255,136,0.6) 0%, transparent 70%); border-radius: 50%; filter: blur(10px); animation: biomass-shift 10s infinite alternate;"></div>
+                </div>
+                
+                <!-- Connecting Walls (Simulated Depth) -->
+                <div class="pond-wall" style="position: absolute; width: 100%; height: 100px; background: rgba(0, 210, 255, 0.1); border-left: 2px solid #00d2ff; border-right: 2px solid #00d2ff; transform: rotateX(-90deg) translateZ(50px) translateY(50px); top: 0; left: 0;"></div>
+                
+                <!-- Aerators (Interactive Elements) -->
+                <div class="aerator" style="position: absolute; top: 20%; left: 20%; transform: translateZ(10px); z-index: 4;" title="Aerator 1 (Active)">
+                    <div class="propeller spinning"></div>
+                </div>
+                <div class="aerator" style="position: absolute; bottom: 30%; right: 25%; transform: translateZ(10px); z-index: 4;" title="Aerator 2 (Active)">
+                    <div class="propeller spinning"></div>
+                </div>
+            </div>
+
+            <!-- Floating UI Labels -->
+            <div class="floating-label" style="top: 15%; left: 10%; border-color: #00ff88; color: #00ff88;">
+                <span class="dot" style="background:#00ff88;"></span> Sensors Online
+            </div>
+            <div class="floating-label" id="thermal-label" style="bottom: 25%; right: 10%; border-color: #ffa500; color: #ffa500;">
+                <span class="dot" style="background:#ffa500;"></span> Depth DO: 3.5ppm
+            </div>
+            
+            <!-- Controls Overlay -->
+            <div style="position: absolute; bottom: 20px; left: 20px; z-index: 10; display: flex; gap: 10px;">
+                <button class="shimmer-btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;" onclick="toggleAerators()">Toggle Aerators</button>
+            </div>
+        </div>
+
+        <!-- Telemetry & AI Sidebar -->
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            
+            <!-- Micro-Weather AI Card -->
+            <div class="app-card" style="border-left: 4px solid #b100ff; background: rgba(177, 0, 255, 0.05); position: relative; overflow: hidden;">
+                <div style="position:absolute; top:-10px; right:-10px; font-size:4rem; opacity:0.1;">☁️</div>
+                <h4 style="margin: 0 0 1rem; color: #b100ff; display: flex; align-items: center; gap: 8px;">
+                    <i class="fas fa-brain"></i> Micro-Weather AI
+                </h4>
+                <div id="weather-ai-content" style="min-height: 80px;">
+                    <p style="color:var(--text-muted); font-style:italic;">Initializing neural weather prediction...</p>
+                </div>
+                <button class="shimmer-btn" style="width: 100%; padding: 0.8rem; margin-top: 1rem; background: rgba(177,0,255,0.2); border-color:#b100ff; color:#fff;" onclick="fetchMicroWeather()">
+                    Run AI Prediction
+                </button>
+            </div>
+
+            <div class="app-card" style="border-left: 4px solid #00d2ff; background: rgba(0, 210, 255, 0.05);">
+                <h4 style="margin: 0 0 1rem; color: #00d2ff;">Thermal Layers (Depth)</h4>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: var(--text-muted);">Surface (0-0.5m)</span> <strong id="layer-surface">29.1°C</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <span style="color: var(--text-muted);">Mid (0.5-1.5m)</span> <strong id="layer-mid">27.5°C</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between;">
+                    <span style="color: var(--text-muted);">Bottom (>1.5m)</span> <strong id="layer-bottom" style="color: #ffa500;">24.2°C</strong>
+                </div>
+            </div>
+
+            <div class="app-card" style="border-left: 4px solid #00ff88; background: rgba(0, 255, 136, 0.05); flex-grow: 1;">
+                <h4 style="margin: 0 0 1rem; color: #00ff88;">Biomass Heatmap</h4>
+                <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Livestock currently clustered in SE sector. Expected growth rate normal.</p>
+                
+                <!-- Graphic Bar -->
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">
+                    <span>Distribution Density</span>
+                    <span>82%</span>
+                </div>
+                <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="width: 82%; height: 100%; background: linear-gradient(90deg, transparent, #00ff88);"></div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px;">
+                    <span>Feed Consumption (Last 24h)</span>
+                    <span>95%</span>
+                </div>
+                <div style="height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+                    <div style="width: 95%; height: 100%; background: linear-gradient(90deg, transparent, #00d2ff);"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* CSS for Digital Twin Interactions */
+    .stat-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--glass-border);
+        padding: 1.5rem;
+        border-radius: 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+    .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+    .stat-label { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 0.5rem; }
+    .stat-value { font-size: 1.5rem; font-weight: 800; color: white; }
+
+    .pond-3d-model:hover { transform: perspective(1000px) rotateX(50deg) rotateZ(-10deg) !important; }
+
+    /* Ripples effect */
+    .ripple {
+        position: absolute;
+        width: 100px; height: 100px;
+        background: radial-gradient(circle, transparent 30%, rgba(0,210,255,0.5) 50%, transparent 70%);
+        border-radius: 50%;
+        transform: translate(-50%, -50%) scale(0);
+        animation: ripple-anim 4s infinite linear;
+    }
+    @keyframes ripple-anim {
+        0% { transform: translate(-50%, -50%) scale(0); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(3); opacity: 0; }
+    }
+
+    /* Biomass shifting */
+    @keyframes biomass-shift {
+        0% { transform: translate(0, 0); }
+        100% { transform: translate(-50px, -20px); }
+    }
+
+    /* Aerator styling */
+    .aerator {
+        width: 40px; height: 40px;
+        background: rgba(255,255,255,0.1);
+        border: 2px solid #fff;
+        border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    .propeller {
+        width: 30px; height: 4px;
+        background: #00ff88;
+        box-shadow: 0 0 10px #00ff88;
+        border-radius: 2px;
+    }
+    .propeller.spinning { animation: spin-fast 0.2s linear infinite; }
+    @keyframes spin-fast { 100% { transform: rotate(360deg); } }
+
+    /* Floating Labels */
+    .floating-label {
+        position: absolute;
+        background: rgba(0,0,0,0.8);
+        border: 1px solid;
+        padding: 0.5rem 1rem;
+        border-radius: 2rem;
+        font-size: 0.85rem;
+        font-weight: bold;
+        display: flex; align-items: center; gap: 8px;
+        backdrop-filter: blur(5px);
+        z-index: 10;
+        animation: float 3s ease-in-out infinite alternate;
+    }
+    .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; }
+    @keyframes float {
+        0% { transform: translateY(0); }
+        100% { transform: translateY(-10px); }
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(0, 255, 136, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 136, 0); }
+    }
+</style>
+
+<script>
+    let aeratorsOn = true;
+    function toggleAerators() {
+        aeratorsOn = !aeratorsOn;
+        document.querySelectorAll('.propeller').forEach(p => {
+            if(aeratorsOn) p.classList.add('spinning');
+            else p.classList.remove('spinning');
+        });
+        document.getElementById('val-do').innerText = aeratorsOn ? "4.8 ppm" : "3.2 ppm (Dropping)";
+        document.getElementById('val-do').style.color = aeratorsOn ? "#00ff88" : "#ffa500";
+    }
+
+    async function fetchMicroWeather() {
+        const contentDiv = document.getElementById('weather-ai-content');
+        const alertDiv = document.getElementById('val-alert');
+        const weatherLayer = document.getElementById('weather-layer');
+        
+        contentDiv.innerHTML = `<p style="color:var(--text-muted);"><i class="fas fa-spinner fa-spin"></i> Analyzing satellite and local IoT data...</p>`;
+        
+        try {
+            const response = await fetch('/api/farmer/micro-weather');
+            const data = await response.json();
+            
+            if(data.status === 'success') {
+                // Update UI based on prediction
+                let color = "#b100ff";
+                let bgFx = "none";
+                let alertText = "Stable";
+                
+                if(data.micro_weather_prediction.includes("rain") || data.micro_weather_prediction.includes("drop")) {
+                    color = "#ff4444";
+                    alertText = "CRITICAL";
+                    bgFx = "linear-gradient(to bottom, rgba(255,68,68,0.2), transparent)";
+                    weatherLayer.style.background = "url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\"><line x1=\"50\" y1=\"0\" x2=\"20\" y2=\"100\" stroke=\"rgba(255,255,255,0.2)\" stroke-width=\"1\"/></svg>')";
+                } else if(data.micro_weather_prediction.includes("Optimal") || data.micro_weather_prediction.includes("green")) {
+                    color = "#00ff88";
+                    alertText = "Optimal";
+                    weatherLayer.style.background = "none";
+                } else {
+                    color = "#ffa500";
+                    alertText = "Warning";
+                    weatherLayer.style.background = "radial-gradient(circle at top, rgba(255,165,0,0.1), transparent)";
+                }
+
+                alertDiv.innerText = alertText;
+                alertDiv.style.color = color;
+                
+                contentDiv.innerHTML = `
+                    <div style="padding: 10px; background: rgba(0,0,0,0.3); border-radius: 8px; border-left: 3px solid ${color};">
+                        <p style="margin: 0 0 10px; color: #fff; font-size: 0.95rem;">${data.micro_weather_prediction}</p>
+                        <div style="font-size: 0.8rem; color: var(--text-muted); display:flex; justify-content:space-between;">
+                            <span><strong>Action:</strong> <span style="color:${color}">${data.action_required}</span></span>
+                            <span>Sources: ${data.data_sources.length}</span>
+                        </div>
+                    </div>
+                `;
+                
+                // Animate values changing
+                document.getElementById('layer-surface').innerText = (Math.random() * (30 - 28) + 28).toFixed(1) + "°C";
+                document.getElementById('val-temp').innerText = (Math.random() * (29 - 27) + 27).toFixed(1) + "°C";
+            }
+        } catch(e) {
+            contentDiv.innerHTML = `<p style="color:#ff4444;">Error syncing with Micro-Weather API.</p>`;
+        }
+    }
+
+    // Auto-fetch on load
+    document.addEventListener("DOMContentLoaded", () => {
+        setTimeout(fetchMicroWeather, 1500);
+    });
+</script>
+{% endblock %}

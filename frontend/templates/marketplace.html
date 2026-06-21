@@ -1,0 +1,32 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 1200px; margin: 0 auto; padding: 2rem; color: white;">
+    <header style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; color: #ffbd2e;">🛒 Circular Marketplace</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Direct-to-farm supplies with AI-recommended quantities based on your pond data.</p>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem;">
+        <div class="app-card" style="border: 1px solid #00ff88;">
+            <h3 style="margin: 0 0 0.5rem; color: #00ff88;">Premium Vannamei Feed</h3>
+            <p style="font-size: 1.5rem; font-weight: 900; margin: 0 0 1rem;">₹85 / kg</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">AI Recommendation: Order 2.5 Tons based on your current biomass trajectory.</p>
+            <button class="shimmer-btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">1-Click Order</button>
+        </div>
+
+        <div class="app-card" style="border: 1px solid #00d2ff;">
+            <h3 style="margin: 0 0 0.5rem; color: #00d2ff;">Aero-Boost Aerator</h3>
+            <p style="font-size: 1.5rem; font-weight: 900; margin: 0 0 1rem;">₹18,500 / unit</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">AI Recommendation: Add 1 more unit to Pond-2 to prevent night-time DO drops.</p>
+            <button class="shimmer-btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">1-Click Order</button>
+        </div>
+
+        <div class="app-card" style="border: 1px solid #ff4d7d;">
+            <h3 style="margin: 0 0 0.5rem; color: #ff4d7d;">EMS Probiotic Kit</h3>
+            <p style="font-size: 1.5rem; font-weight: 900; margin: 0 0 1rem;">₹4,200 / kit</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Proactive measure. High risk of EMS detected in your zone (Coastal Andhra).</p>
+            <button class="shimmer-btn" style="width: 100%; margin-top: 1rem; padding: 0.8rem;">1-Click Order</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

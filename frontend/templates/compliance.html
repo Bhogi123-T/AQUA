@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 2.5rem; position: relative; z-index: 1;">
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% -20%, rgba(123, 97, 255, 0.1), transparent 70%); pointer-events:none; z-index:-1;"></div>
+
+    <header style="margin-bottom: 4rem; text-align: center; animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1) both;">
+        <h1 style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 950; margin: 0; line-height:1.1; letter-spacing: -2px;">
+            <span class="emo">📜</span> International Compliance & Certification Hub
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.25rem; margin-top:1.2rem; font-weight: 700;">
+            Manage global export certifications, traceability logs, and international shipping clearance.
+        </p>
+    </header>
+
+    <!-- CERTIFICATIONS -->
+    <h2 style="font-size: 2.5rem; font-weight: 1000; margin-bottom: 2rem; text-transform: uppercase; color: #fff;">
+        <span style="color:var(--violet);">●</span> Active Certifications
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+        {% for cert in certifications %}
+        {% set border_color = 'var(--accent)' if 'Compliant' in cert.status else ('var(--amber)' if 'Pending' in cert.status else '#ff0055') %}
+        <div class="app-card" {{ 'style="border-left: 8px solid ' ~ border_color ~ '; background: rgba(255,255,255,0.02);"' | safe }}>
+            <h3 style="margin:0 0 1rem; font-size:1.6rem; color:#fff; font-weight: 900;">{{ cert.name }}</h3>
+            <p style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-muted);">
+                <strong>Status:</strong> <span {{ 'style="color: ' ~ border_color ~ '; font-weight: 900;"' | safe }}>{{ cert.status }}</span>
+            </p>
+            <p style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-muted);">
+                <strong>Expiry:</strong> {{ cert.expiry }}
+            </p>
+            <p style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-muted);">
+                <strong>Valid Region:</strong> {{ cert.region }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- TRACEABILITY LOGS -->
+    <h2 style="font-size: 2.5rem; font-weight: 1000; margin-bottom: 2rem; text-transform: uppercase; color: #fff;">
+        <span style="color:var(--primary);">●</span> Blockchain Traceability Export Log
+    </h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 1.1rem; background: rgba(0,0,0,0.2); border-radius: 15px; overflow: hidden;">
+            <thead>
+                <tr style="background: rgba(255,255,255,0.05); text-align: left; border-bottom: 1px solid var(--glass-border);">
+                    <th style="padding: 1rem; color: var(--text-muted);">Batch ID</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Origin</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Destination</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Clearance Status</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for log in traceability_logs %}
+                {% set clear_color = 'var(--accent)' if 'Cleared' in log.clearance else 'var(--amber)' %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem; font-weight: 900; color: #fff;">{{ log.batch }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ log.origin }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ log.destination }}</td>
+                    <td padding="1rem" font-weight="900" {{ 'style="padding: 1rem; font-weight: 900; color: ' ~ clear_color ~ ';"' | safe }}>
+                        {{ log.clearance }}
+                    </td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ log.timestamp }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

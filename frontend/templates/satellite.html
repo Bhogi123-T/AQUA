@@ -1,0 +1,59 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 2.5rem; position: relative; z-index: 1;">
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% -20%, rgba(0, 255, 136, 0.1), transparent 70%); pointer-events:none; z-index:-1;"></div>
+
+    <header style="margin-bottom: 4rem; text-align: center; animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1) both;">
+        <h1 style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 950; margin: 0; line-height:1.1; letter-spacing: -2px;">
+            <span class="emo">🛰️</span> Satellite Geo-Mapping
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.25rem; margin-top:1.2rem; font-weight: 700;">
+            Global remote sensing for algae bloom detection and turbidity tracking.
+        </p>
+    </header>
+
+    <!-- GEO STATS -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 4rem;">
+        <div class="app-card" style="background: rgba(255,255,255,0.02); text-align: center; border: 1px solid rgba(0, 255, 136, 0.2);">
+            <p style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; font-weight: 800; margin-bottom: 0.5rem;">Active Satellites</p>
+            <p style="font-size: 3rem; font-weight: 950; color: #fff; margin: 0;">{{ geo_stats.active_satellites }}</p>
+        </div>
+        <div class="app-card" style="background: rgba(255,255,255,0.02); text-align: center; border: 1px solid var(--glass-border);">
+            <p style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; font-weight: 800; margin-bottom: 0.5rem;">Total Area Scanned</p>
+            <p style="font-size: 2.5rem; font-weight: 950; color: var(--accent); margin: 0;">{{ geo_stats.total_area_scanned }}</p>
+        </div>
+        <div class="app-card" style="background: rgba(255,255,255,0.02); text-align: center; border: 1px solid rgba(255, 0, 85, 0.2);">
+            <p style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase; font-weight: 800; margin-bottom: 0.5rem;">Threats Detected</p>
+            <p style="font-size: 3rem; font-weight: 950; color: #ff0055; margin: 0;">{{ geo_stats.threats_detected }}</p>
+        </div>
+    </div>
+
+    <!-- SATELLITE FEEDS -->
+    <h2 style="font-size: 2.5rem; font-weight: 1000; margin-bottom: 2rem; text-transform: uppercase; color: #fff;">
+        <span style="color:var(--accent);">●</span> Live Satellite Telemetry
+    </h2>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 2rem;">
+        {% for feed in satellite_feeds %}
+        {% set status_color = 'var(--accent)' if feed.status == 'Active' else 'var(--text-muted)' %}
+        {% set risk_color = '#ff0055' if 'Critical' in feed.algae_bloom_risk else ('var(--accent)' if 'Low' in feed.algae_bloom_risk else 'var(--amber)') %}
+        <div class="app-card" {{ 'style="border-left: 8px solid ' ~ status_color ~ '; background: rgba(0,0,0,0.2);"' | safe }}>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+                <h3 style="margin:0; font-size:1.6rem; color:#fff; font-weight: 900;">{{ feed.zone }}</h3>
+                <span {{ 'style="color: ' ~ status_color ~ '; font-weight: 900; font-size: 0.9rem;"' | safe }}>● {{ feed.status }}</span>
+            </div>
+            <p style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-muted);">
+                <strong>Water Turbidity:</strong> {{ feed.water_turbidity }}
+            </p>
+            <p style="margin: 0.5rem 0; font-size: 1.1rem; color: var(--text-muted);">
+                <strong>Algae Bloom Risk:</strong> <span {{ 'style="color: ' ~ risk_color ~ '; font-weight: 900;"' | safe }}>{{ feed.algae_bloom_risk }}</span>
+            </p>
+            <p style="margin: 0.5rem 0; font-size: 0.9rem; color: var(--text-muted); opacity: 0.7;">
+                Last Sync: {{ feed.last_sync }}
+            </p>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

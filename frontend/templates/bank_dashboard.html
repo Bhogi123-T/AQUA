@@ -1,0 +1,195 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .bank-header {
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--primary);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .stat-card {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        flex: 1;
+        min-width: 150px;
+    }
+    .stat-card h3 {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .stat-card .value {
+        font-size: 2rem;
+        color: var(--primary);
+        font-weight: bold;
+    }
+    .loan-table-container {
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        overflow-x: auto;
+    }
+    .loan-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+        min-width: 800px;
+    }
+    .loan-table th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--text-muted);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .loan-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .badge-risk {
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+    .risk-low { background: rgba(0, 255, 136, 0.2); color: #00ff88; border: 1px solid #00ff88; }
+    .risk-medium { background: rgba(255, 193, 7, 0.2); color: #ffc107; border: 1px solid #ffc107; }
+    .risk-high { background: rgba(255, 77, 77, 0.2); color: #ff4d4d; border: 1px solid #ff4d4d; }
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .status-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+    .status-approved { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
+    .status-rejected { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); }
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        margin-right: 0.5rem;
+    }
+    .btn-approve { background: var(--primary); color: #000; }
+    .btn-approve:hover { box-shadow: 0 0 15px var(--primary); }
+    .btn-reject { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; }
+    .btn-reject:hover { background: rgba(255, 77, 77, 0.1); }
+</style>
+
+<div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem; min-height: 70vh;">
+    <div class="bank-header">
+        <div style="flex: 2; min-width: 300px;">
+            <h1 style="color: white; font-size: 2.5rem; margin: 0;">Bank Finance Portal <i class="fa-solid fa-building-columns" style="color: var(--primary);"></i></h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Review farmer loan applications and assess risk using AQUA AI yield predictions.</p>
+        </div>
+        <div style="display: flex; flex: 1; gap: 1rem;">
+            <div class="stat-card">
+                <h3>Pending Loans</h3>
+                <div class="value">{{ stats.pending }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Total Requested (INR)</h3>
+                <div class="value">₹{{ "{:,}".format(stats.total) }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="loan-table-container">
+        <h2 style="color: white; margin-bottom: 1.5rem; font-size: 1.5rem;">Recent Loan Applications</h2>
+        <table class="loan-table">
+            <thead>
+                <tr>
+                    <th>Loan ID</th>
+                    <th>Farmer</th>
+                    <th>Amount & Purpose</th>
+                    <th>AI Risk & Yield Prediction</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loan in loans %}
+                <tr>
+                    <td style="color: var(--text-muted);">{{ loan.id }}<br><small>{{ loan.date }}</small></td>
+                    <td><strong style="color: white;">{{ loan.farmer }}</strong></td>
+                    <td>
+                        <strong style="color: var(--primary);">₹{{ "{:,}".format(loan.amount) }}</strong><br>
+                        <small style="color: var(--text-muted);">{{ loan.purpose }}</small>
+                    </td>
+                    <td>
+                        <span class="badge-risk 
+                            {% if loan.ai_risk_score == 'Low Risk' %}risk-low
+                            {% elif loan.ai_risk_score == 'Medium Risk' %}risk-medium
+                            {% else %}risk-high{% endif %}">
+                            {{ loan.ai_risk_score }}
+                        </span>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: #00ff88;">
+                            <i class="fa-solid fa-chart-line"></i> Pred Yield: {{ loan.yield_pred }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ loan.status|lower }}">{{ loan.status }}</span>
+                    </td>
+                    <td>
+                        {% if loan.status == 'Pending' %}
+                            <button class="action-btn btn-approve" onclick="processLoan('{{ loan.id }}', 'approve')">Approve</button>
+                            <button class="action-btn btn-reject" onclick="processLoan('{{ loan.id }}', 'reject')">Reject</button>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not loans %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        No loan applications found in the system.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function processLoan(loanId, action) {
+    if (!confirm(`Are you sure you want to ${action} this loan application?`)) return;
+    
+    fetch('/bank/loan/action', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ loan_id: loanId, action: action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'success') {
+            window.location.reload();
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Failed to process loan request.");
+    });
+}
+</script>
+{% endblock %}

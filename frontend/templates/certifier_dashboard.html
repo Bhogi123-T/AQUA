@@ -1,0 +1,187 @@
+{% extends "layout.html" %}
+{% block content %}
+<style>
+    .cert-header {
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--primary);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .stat-card {
+        background: rgba(0, 0, 0, 0.4);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        text-align: center;
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        flex: 1;
+        min-width: 150px;
+    }
+    .stat-card h3 {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .stat-card .value {
+        font-size: 2rem;
+        color: var(--primary);
+        font-weight: bold;
+    }
+    .cert-table-container {
+        background: rgba(11, 17, 32, 0.7);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(0, 210, 255, 0.2);
+        border-radius: 1.5rem;
+        padding: 2rem;
+        overflow-x: auto;
+    }
+    .cert-table {
+        width: 100%;
+        border-collapse: collapse;
+        color: white;
+        min-width: 800px;
+    }
+    .cert-table th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--text-muted);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .cert-table td {
+        padding: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .badge-score {
+        padding: 0.3rem 0.8rem;
+        border-radius: 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        display: inline-block;
+        background: rgba(0, 210, 255, 0.1);
+        color: var(--primary);
+        border: 1px solid rgba(0, 210, 255, 0.3);
+    }
+    .status-badge {
+        padding: 0.4rem 1rem;
+        border-radius: 2rem;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+    .status-pending { background: rgba(255, 193, 7, 0.1); color: #ffc107; border: 1px solid rgba(255, 193, 7, 0.3); }
+    .status-approved { background: rgba(0, 255, 136, 0.1); color: #00ff88; border: 1px solid rgba(0, 255, 136, 0.3); }
+    .status-rejected { background: rgba(255, 77, 77, 0.1); color: #ff4d4d; border: 1px solid rgba(255, 77, 77, 0.3); }
+    .action-btn {
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 0.5rem;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+        margin-right: 0.5rem;
+    }
+    .btn-approve { background: var(--primary); color: #000; }
+    .btn-approve:hover { box-shadow: 0 0 15px var(--primary); }
+    .btn-reject { background: transparent; border: 1px solid #ff4d4d; color: #ff4d4d; }
+    .btn-reject:hover { background: rgba(255, 77, 77, 0.1); }
+</style>
+
+<div class="container" style="max-width: 1200px; margin: 2rem auto; padding: 0 1rem; min-height: 70vh;">
+    <div class="cert-header">
+        <div style="flex: 2; min-width: 300px;">
+            <h1 style="color: white; font-size: 2.5rem; margin: 0;">AQUA Certification Board <i class="fa-solid fa-award" style="color: var(--primary);"></i></h1>
+            <p style="color: var(--text-muted); margin-top: 0.5rem;">Review farm histories, test reports, and issue quality certificates.</p>
+        </div>
+        <div style="display: flex; flex: 1; gap: 1rem;">
+            <div class="stat-card">
+                <h3>Pending Requests</h3>
+                <div class="value">{{ stats.pending }}</div>
+            </div>
+            <div class="stat-card">
+                <h3>Certified Farms</h3>
+                <div class="value" style="color: #00ff88;">{{ stats.approved }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cert-table-container">
+        <h2 style="color: white; margin-bottom: 1.5rem; font-size: 1.5rem;">Certification Applications</h2>
+        <table class="cert-table">
+            <thead>
+                <tr>
+                    <th>Req ID</th>
+                    <th>Farm Name</th>
+                    <th>Certificate Type</th>
+                    <th>AI Health & Lab Status</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cert in certs %}
+                <tr>
+                    <td style="color: var(--text-muted);">{{ cert.id }}<br><small>{{ cert.date }}</small></td>
+                    <td><strong style="color: white;">{{ cert.farm }}</strong></td>
+                    <td><strong style="color: var(--primary);">{{ cert.type }}</strong></td>
+                    <td>
+                        <span class="badge-score">{{ cert.disease_score }}</span>
+                        <div style="margin-top: 0.5rem; font-size: 0.85rem; color: {% if 'Fail' in cert.lab_status %}#ff4d4d{% else %}#00ff88{% endif %};">
+                            <i class="fa-solid fa-flask"></i> {{ cert.lab_status }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="status-badge status-{{ cert.status|lower }}">{{ cert.status }}</span>
+                    </td>
+                    <td>
+                        {% if cert.status == 'Pending' %}
+                            <button class="action-btn btn-approve" onclick="processCert('{{ cert.id }}', 'approve')">Issue Cert</button>
+                            <button class="action-btn btn-reject" onclick="processCert('{{ cert.id }}', 'reject')">Deny</button>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-size: 0.9rem;">Processed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if not certs %}
+                <tr>
+                    <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-muted);">
+                        No certification requests pending.
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function processCert(certId, action) {
+    if (!confirm(`Are you sure you want to ${action === 'approve' ? 'issue' : 'deny'} this certificate?`)) return;
+    
+    fetch('/certifier/action', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cert_id: certId, action: action })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === 'success') {
+            window.location.reload();
+        } else {
+            alert("Error: " + data.message);
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Failed to process certification request.");
+    });
+}
+</script>
+{% endblock %}

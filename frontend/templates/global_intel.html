@@ -1,0 +1,76 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div style="padding: 2.5rem; position: relative; z-index: 1;">
+    <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:radial-gradient(circle at 50% -20%, rgba(0, 210, 255, 0.1), transparent 70%); pointer-events:none; z-index:-1;"></div>
+
+    <header style="margin-bottom: 4rem; text-align: center; animation: slideInLeft 1s cubic-bezier(0.23, 1, 0.32, 1) both;">
+        <h1 style="font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 950; margin: 0; line-height:1.1; letter-spacing: -2px;">
+            <span class="emo">🌍</span> Global Intelligence Matrix
+        </h1>
+        <p style="color: var(--text-muted); font-size: 1.25rem; margin-top:1.2rem; font-weight: 700;">
+            Real-time Marine Weather, Ocean Currents, and International Market Arbitrage.
+        </p>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 2.5rem; margin-bottom: 4.5rem;">
+        
+        <!-- MARINE INTELLIGENCE -->
+        <div class="app-card" style="border-top: 5px solid var(--primary); background: linear-gradient(145deg, rgba(0, 210, 255, 0.05), transparent);">
+            <h3 style="margin:0 0 2rem; font-size:2.2rem; color:#fff; font-weight: 950;">🌊 Marine Intelligence</h3>
+            <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.2rem; color: var(--text-muted); line-height: 1.6;">
+                <li style="margin-bottom: 1rem;"><strong>Ocean Currents:</strong> {{ marine_data.ocean_currents }}</li>
+                <li style="margin-bottom: 1rem;"><strong>Global Weather:</strong> {{ marine_data.global_weather }}</li>
+                <li><strong>Marine pH Shifts:</strong> {{ marine_data.marine_ph_shifts }}</li>
+            </ul>
+        </div>
+
+        <!-- GLOBAL CURRENCY -->
+        <div class="app-card" style="border-top: 5px solid var(--violet); background: linear-gradient(145deg, rgba(123, 97, 255, 0.05), transparent);">
+            <h3 style="margin:0 0 2rem; font-size:2.2rem; color:#fff; font-weight: 950;">💱 Live Currency Exchange</h3>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem;">
+                {% for currency, rate in currency_rates.items() %}
+                <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: 12px; text-align: center; border: 1px solid rgba(255,255,255,0.1);">
+                    <p style="margin:0; font-size: 1.2rem; font-weight: 900; color: #fff;">{{ currency }}</p>
+                    <p style="margin:0; font-size: 1rem; color: var(--accent);">₹{{ rate }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ARBITRAGE MATRIX -->
+    <h2 style="font-size: 3rem; font-weight: 1000; margin-bottom: 2rem; text-transform: uppercase; color: #fff;">
+        <span style="color:var(--accent);">●</span> Global Market Arbitrage
+    </h2>
+    <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 2rem; font-size: 1.2rem; background: rgba(0,0,0,0.2); border-radius: 15px; overflow: hidden;">
+            <thead>
+                <tr style="background: rgba(255,255,255,0.05); text-align: left; border-bottom: 1px solid var(--glass-border);">
+                    <th style="padding: 1rem; color: var(--text-muted);">Species</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Local Price</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Global Price</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Demand</th>
+                    <th style="padding: 1rem; color: var(--text-muted);">Trend</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in arbitrage_data %}
+                {% set trend_color = 'var(--accent)' if 'UP' in item.trend else ('#ff0055' if 'DOWN' in item.trend else 'var(--amber)') %}
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem; font-weight: 900; color: #fff;">{{ item.species }}</td>
+                    <td style="padding: 1rem; color: var(--text-muted);">{{ item.local_price }}</td>
+                    <td style="padding: 1rem; font-weight: 900; color: var(--primary);">{{ item.global_price }}</td>
+                    <td style="padding: 1rem; color: #fff;">{{ item.demand }}</td>
+                    <td {{ 'style="padding: 1rem; font-weight: 900; color: ' ~ trend_color ~ ';"' | safe }}>
+                        {{ item.trend }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}

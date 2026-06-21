@@ -1,0 +1,43 @@
+{% extends "layout.html" %}
+{% block content %}
+<div style="max-width: 1400px; margin: 0 auto; padding: 2rem; color: white;">
+    <header style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="font-size: 3rem; color: #00ff88;">🌐 Global Price Dashboard</h1>
+        <p style="color: var(--text-muted); font-size: 1.2rem;">Live aquaculture markets across Chennai, Bangkok, Hanoi, and Rotterdam.</p>
+    </header>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+        <!-- Chennai -->
+        <div class="app-card" style="border-top: 4px solid #ffbd2e;">
+            <h3 style="color: #ffbd2e; margin-top: 0;">🇮🇳 Chennai Market</h3>
+            <p style="color: var(--text-muted);">Vannamei (40 Count)</p>
+            <div style="font-size: 2.5rem; font-weight: 900;">₹380 <span style="font-size: 1rem; color: #00ff88;">▲ +₹10</span></div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Demand: High (Export Booking Active)</p>
+        </div>
+
+        <!-- Bangkok -->
+        <div class="app-card" style="border-top: 4px solid #00d2ff;">
+            <h3 style="color: #00d2ff; margin-top: 0;">🇹🇭 Bangkok Hub</h3>
+            <p style="color: var(--text-muted);">Vannamei (40 Count)</p>
+            <div style="font-size: 2.5rem; font-weight: 900;">฿165 <span style="font-size: 1rem; color: #00ff88;">▲ +฿2</span></div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Demand: Stable</p>
+        </div>
+
+        <!-- Hanoi -->
+        <div class="app-card" style="border-top: 4px solid #ff4d7d;">
+            <h3 style="color: #ff4d7d; margin-top: 0;">🇻🇳 Hanoi Trade</h3>
+            <p style="color: var(--text-muted);">Black Tiger Shrimp</p>
+            <div style="font-size: 2.5rem; font-weight: 900;">₫210k <span style="font-size: 1rem; color: #ff4d7d;">▼ -₫5k</span></div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Demand: Low (Weather Disruptions)</p>
+        </div>
+
+        <!-- Rotterdam -->
+        <div class="app-card" style="border-top: 4px solid #7b61ff;">
+            <h3 style="color: #7b61ff; margin-top: 0;">🇳🇱 Rotterdam Port</h3>
+            <p style="color: var(--text-muted);">Premium Frozen Imports</p>
+            <div style="font-size: 2.5rem; font-weight: 900;">€5.80 <span style="font-size: 1rem; color: #00ff88;">▲ +€0.10</span></div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem;">Demand: Very High (Requires ESG Badge)</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

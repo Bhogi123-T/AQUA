@@ -1,0 +1,453 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="landing-page" style="position: relative; overflow-x: hidden; background: #060b18;">
+    <!-- 🌊 DEEP SEA REVOLUTION HERO -->
+    <section class="hero-section"
+        style="position: relative; text-align: center; background: radial-gradient(circle at 50% 120%, rgba(0, 210, 255, 0.15) 0%, transparent 70%);">
+
+        <!-- 🫧 LIVING WATER LAYER -->
+        <div class="water-world-overlay"
+            style="position: absolute; inset: 0; z-index: -1; opacity: 0.5; pointer-events: none;">
+            <div class="bubble-stream"></div>
+            <div
+                style="position: absolute; top: 0; left: 15%; width: 2px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(0, 210, 255, 0.2), transparent); filter: blur(2px);">
+            </div>
+            <div
+                style="position: absolute; top: 0; right: 25%; width: 1px; height: 100%; background: linear-gradient(to bottom, transparent, rgba(0, 255, 136, 0.15), transparent); filter: blur(1px);">
+            </div>
+        </div>
+
+        <div class="hero-content" style="max-width: 1200px; margin: 0 auto; padding: 0 2rem;">
+            <div style="margin-bottom: 3rem; animation: fadeUp 0.8s ease-out;">
+                <span class="live-pulse-badge"
+                    style="background: rgba(0, 210, 255, 0.1); color: var(--primary); border: 1px dashed rgba(0, 210, 255, 0.4); padding: 0.8rem 2rem; border-radius: 5rem; font-weight: 800; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;">
+                    <span class="live-pulse" style="background: var(--primary);"></span> AQUACULTURE 4.0 EVOLUTION
+                </span>
+            </div>
+
+            <h1 class="glow-text" style="font-size: 5rem; font-weight: 950; line-height: 1.1;">
+                {{ trans['hero_title_eco']|safe }}
+            </h1>
+
+            <p class="hero-description"
+                style="font-size: 1.8rem; margin-top: 2rem; font-weight: 700; opacity: 0.9; line-height: 1.6;">
+                {{ trans['hero_subtitle']|safe }}
+                <br>
+                {{ trans['prob_statement']|safe }}
+            </p>
+
+            <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap;">
+                {% if not session.get('user') %}
+                <a href="/login/google" class="app-btn-large active-btn"
+                    style="width: auto; padding: 2rem 5rem; border-radius: 5rem; text-decoration: none; font-size: 1.5rem; font-weight: 1000; box-shadow: 0 10px 40px rgba(0, 210, 255, 0.4); display: flex; align-items: center; gap: 1.2rem;">
+                    <svg viewBox="0 0 24 24" width="30" height="30"
+                        style="background: white; border-radius: 4px; padding: 2px;">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    {{ trans['btn_start']|safe }}
+                </a>
+                <a href="/login" class="app-btn-large"
+                    style="width: auto; padding: 2rem 5rem; border-radius: 5rem; background: rgba(255,255,255,0.03); text-decoration: none; border: 1.5px solid var(--glass-border); font-size: 1.4rem; font-weight: 900; backdrop-filter: blur(15px);">
+                    {{ trans['btn_learn']|safe }}
+                </a>
+                {% else %}
+                <a href="/portal" class="app-btn-large active-btn"
+                    style="width: auto; padding: 1.8rem 5rem; border-radius: 5rem; text-decoration: none; font-size: 1.1rem; box-shadow: 0 10px 40px rgba(0, 210, 255, 0.3);">
+                    Go to Portal →
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- 🌐 REAL-TIME AQUA TICKER -->
+    <section id="landing-ticker"
+        style="padding: 2.5rem 0; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); backdrop-filter: blur(10px);">
+        <div
+            style="max-width: 1400px; margin: 0 auto; display: flex; align-items: center; white-space: nowrap; overflow: hidden; gap: 4rem;">
+            <div style="color: var(--primary); font-weight: 900; font-size: 0.85rem; letter-spacing: 3px;">GLOBAL AQUA
+                FEED</div>
+            <div style="display: flex; gap: 4rem; animation: ticker 45s linear infinite;">
+                <span style="color: var(--text-muted);">🦐 <strong style="color: white;">Vannamei Index:</strong>
+                    ₹428/kg <span style="color: var(--accent)">+3.1% ↑</span></span>
+                <span style="color: var(--text-muted);">🐟 <strong style="color: white;">Global Tilapia:</strong>
+                    $1.88/kg <span style="color: var(--primary)">+0.9% ↑</span></span>
+                <span style="color: var(--text-muted);">🛰️ <strong style="color: white;">Biomass Insight:</strong> High
+                    growth rate detected in South Delta</span>
+                <span style="color: var(--text-muted);">🏥 <strong style="color: white;">Health Status:</strong> 99.2%
+                    Healthy Harvest Probability</span>
+                <span style="color: var(--text-muted);">🌍 <strong style="color: white;">Active Nodes:</strong> 12,482
+                    Farms</span>
+                <!-- Loop -->
+                <span style="color: var(--text-muted);">🦐 <strong style="color: white;">Vannamei Index:</strong>
+                    ₹428/kg <span style="color: var(--accent)">+3.1% ↑</span></span>
+                <span style="color: var(--text-muted);">🐟 <strong style="color: white;">Global Tilapia:</strong>
+                    $1.88/kg <span style="color: var(--primary)">+0.9% ↑</span></span>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🫧 AQUA CAPABILITIES -->
+    <section style="padding: 10rem 0; max-width: 1400px; margin: 0 auto; padding: 10rem 2rem;">
+        <div style="text-align: center; margin-bottom: 8rem;">
+            <h2
+                style="font-size: clamp(2.5rem, 6vw, 4rem); margin-bottom: 2rem; font-weight: 900; letter-spacing: -1px;">
+                Intelligent Waters. <br>
+                <span class="glow-text">Predictive Growth.</span>
+            </h2>
+            <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto; font-size: 1.3rem;">
+                Every drop of water is a data point. AquaSphere analyzes millions of streams to ensure your farm
+                outperforms every cycle.
+            </p>
+        </div>
+
+        <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 4rem;">
+            <!-- Farmer Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(0,210,255,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(0,210,255,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px var(--primary));">👨‍🌾
+                </div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Farmer OS</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Precision feeding, disease risk AI, and real-time bio-telemetry. Scale your production with
+                    autonomous intelligence.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">{{ trans.feat_disease | safe }}</span>
+                    <span class="feature-pill">{{ trans.feat_yield | safe }}</span>
+                </div>
+            </div>
+
+            <!-- Business Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(0,255,136,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(0,255,136,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px var(--accent));">💼</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Trade Matrix</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Global trade synchronization, logistics tracking, and verified settlements. Connect the world to
+                    your harvest.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">{{ trans.nav_market | safe }}</span>
+                    <span class="feature-pill">Export Ready</span>
+                </div>
+            </div>
+
+            <!-- AquaVision AI Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(255,107,53,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(255,107,53,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #ff6b35);">👁️</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">AquaVision AI</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Instant species classification and disease detection using advanced neural networks. Simply upload a photo for a full health report.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">Disease Detection</span>
+                    <span class="feature-pill">Species ID</span>
+                </div>
+            </div>
+
+            <!-- Satellite Geo-Mapping Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(123,97,255,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(123,97,255,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #7b61ff);">🛰️</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Satellite Telemetry</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Real-time biomass tracking, algae bloom detection, and water quality mapping powered by low-earth orbit satellite integration.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">Geo-Mapping</span>
+                    <span class="feature-pill">Biomass</span>
+                </div>
+            </div>
+
+            <!-- Carbon Ledger Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(46,204,113,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(46,204,113,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #2ecc71);">🌱</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Carbon Ledger</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Automated ESG compliance and carbon credit tracking. Monetize your sustainable aquaculture practices directly on the platform.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">ESG Tracking</span>
+                    <span class="feature-pill">Carbon Credits</span>
+                </div>
+            </div>
+
+            <!-- FinTech Hub Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(241,196,15,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(241,196,15,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #f1c40f);">💳</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">FinTech Hub</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Multi-currency dynamic pricing, micro-loans, and automated AI insurance claims. Secure your financial future with smart contracts.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">Micro-Finance</span>
+                    <span class="feature-pill">AI Insurance</span>
+                </div>
+            </div>
+
+            <!-- Hatchery Matrix Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(255,107,255,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(255,107,255,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #ff6bff);">🧬</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Hatchery Matrix</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    Manage breeding cycles, track seed health, and optimize genetic lineage for superior yields right from the start.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">Breeding Cycles</span>
+                    <span class="feature-pill">Seed Health</span>
+                </div>
+            </div>
+
+            <!-- Logistics Control Card -->
+            <div class="app-card"
+                style="align-items: center; text-align: center; padding: 5rem 4rem; border: 1px solid rgba(52,152,219,0.1); background: linear-gradient(135deg, rgba(15,23,42,0.8), rgba(52,152,219,0.03));">
+                <div style="font-size: 4rem; margin-bottom: 3rem; filter: drop-shadow(0 0 15px #3498db);">🚚</div>
+                <h3 style="font-size: 2.2rem; margin-bottom: 1.5rem; font-weight: 850;">Logistics Control</h3>
+                <p style="font-size: 1.2rem; margin-bottom: 3rem; color: var(--text-muted); line-height: 1.6;">
+                    End-to-end supply chain visibility. Track cold chain integrity, fleet routing, and automated delivery scheduling in real-time.
+                </p>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.8rem; justify-content: center;">
+                    <span class="feature-pill">Cold Chain</span>
+                    <span class="feature-pill">Live Tracking</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 🫧 SUBMERGED ANIMATION SCRIPT -->
+    <script>
+        function initBubbles() {
+            const container = document.querySelector('.bubble-stream');
+            if (!container) return;
+            for (let i = 0; i < 25; i++) {
+                const b = document.createElement('div');
+                const s = Math.random() * 20 + 5;
+                b.style.cssText = `
+                    position: absolute;
+                    bottom: -50px;
+                    left: ${Math.random() * 100}%;
+                    width: ${s}px; height: ${s}px;
+                    background: rgba(255,255,255,${Math.random() * 0.15});
+                    border-radius: 50%;
+                    filter: blur(1px);
+                    animation: floatUp ${Math.random() * 15 + 10}s linear infinite;
+                    animation-delay: ${Math.random() * 10}s;
+                `;
+                container.appendChild(b);
+            }
+        }
+        const s = document.createElement('style');
+        s.textContent = `@keyframes floatUp { 
+            0% { transform: translateY(0) scale(1); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.1; }
+            100% { transform: translateY(-120vh) scale(2); opacity: 0; }
+        }`;
+        document.head.appendChild(s);
+        initBubbles();
+    </script>
+    <!-- 🌌 ECOSYSTEM VISUALIZER -->
+    <section style="padding: 10rem 0; background: #0f172a; position: relative; overflow: hidden; border-top: 1px solid var(--glass-border);">
+        <div style="text-align: center; margin-bottom: 5rem; position: relative; z-index: 10;">
+            <h2 style="font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; color: #fff; letter-spacing: -1px;">Global Industry <span style="color: var(--primary);">Ecosystem</span></h2>
+            <p style="color: var(--text-muted); font-size: 1.3rem; max-width: 700px; margin: 0 auto;">Hover over the nodes to see how all stakeholders are connected through our high-trust intelligence network.</p>
+        </div>
+        
+        <div class="viz-hub" style="max-width: 1200px; margin: 0 auto; height: 800px; position: relative;">
+            <svg id="network-graph" viewBox="0 0 1200 900" style="width: 100%; height: 100%; pointer-events:all; filter: drop-shadow(0 0 30px rgba(0,210,255,0.1));">
+                <defs>
+                    <linearGradient id="line-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stop-color="rgba(0, 210, 255, 0.2)" />
+                        <stop offset="50%" stop-color="rgba(0, 210, 255, 0.8)" />
+                        <stop offset="100%" stop-color="rgba(0, 210, 255, 0.2)" />
+                    </linearGradient>
+                </defs>
+                <g id="connections-group"></g>
+                <g id="nodes-group"></g>
+            </svg>
+        </div>
+    </section>
+
+    <script type="application/json" id="roles_data">{{ roles_json|safe }}</script>
+    <script type="application/json" id="connections_data">{{ connections_json|safe }}</script>
+    <script>
+        const ROLES = JSON.parse(document.getElementById('roles_data').textContent);
+        const CONNECTIONS = JSON.parse(document.getElementById('connections_data').textContent);
+        const USER_ROLE = "{{ user_role }}";
+        
+        // 🧬 NETWORK ENGINE
+        const nodes = Object.entries(ROLES).map(([id, info], i) => {
+            const angle = (i / Object.keys(ROLES).length) * Math.PI * 2;
+            const radius = 360;
+            return {
+                id,
+                name: info.name,
+                icon: info.icon,
+                x: 600 + Math.cos(angle) * radius,
+                y: 450 + Math.sin(angle) * radius,
+                isUser: id === USER_ROLE
+            };
+        });
+
+        const links = [];
+        Object.entries(CONNECTIONS).forEach(([from, targets]) => {
+            targets.forEach(to => links.push({ from, to }));
+        });
+
+        function initGraph() {
+            const connGroup = document.getElementById('connections-group');
+            const nodesGroup = document.getElementById('nodes-group');
+            
+            links.forEach(link => {
+                const fromNode = nodes.find(n => n.id === link.from);
+                const toNode = nodes.find(n => n.id === link.to);
+                if (!fromNode || !toNode) return;
+
+                const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                line.setAttribute('x1', fromNode.x);
+                line.setAttribute('y1', fromNode.y);
+                line.setAttribute('x2', toNode.x);
+                line.setAttribute('y2', toNode.y);
+                line.setAttribute('stroke', 'rgba(0, 210, 255, 0.1)');
+                line.setAttribute('stroke-width', '2');
+                line.setAttribute('id', `link-${link.from}-${link.to}`);
+                line.classList.add('network-link');
+                connGroup.appendChild(line);
+            });
+
+            nodes.forEach(node => {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+                g.classList.add('network-node');
+                if (node.isUser) g.classList.add('user-node');
+                
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('r', node.isUser ? '45' : '35');
+                circle.setAttribute('fill', node.isUser ? 'rgba(0, 210, 255, 0.2)' : 'rgba(15, 23, 42, 0.8)');
+                circle.setAttribute('stroke', node.isUser ? 'var(--primary)' : 'rgba(255, 255, 255, 0.1)');
+                circle.setAttribute('stroke-width', '2');
+                
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('y', '8');
+                text.setAttribute('text-anchor', 'middle');
+                text.setAttribute('font-size', '28');
+                text.textContent = node.icon;
+
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                label.setAttribute('y', '55');
+                label.setAttribute('text-anchor', 'middle');
+                label.setAttribute('fill', '#fff');
+                label.setAttribute('font-weight', '900');
+                label.setAttribute('font-size', '12');
+                label.textContent = node.name.toUpperCase();
+
+                g.appendChild(circle);
+                g.appendChild(text);
+                g.appendChild(label);
+                
+                g.onmouseenter = () => highlightRole(node.id);
+                nodesGroup.appendChild(g);
+            });
+            
+            // Auto-highlight center node initially
+            setTimeout(() => highlightRole(USER_ROLE), 1000);
+        }
+
+        function highlightRole(roleId) {
+            document.querySelectorAll('.network-link').forEach(l => {
+                l.setAttribute('stroke', 'rgba(0, 210, 255, 0.1)');
+                l.setAttribute('stroke-width', '2');
+                l.classList.remove('active-link');
+            });
+            const activeLinks = links.filter(l => l.from === roleId || l.to === roleId);
+            activeLinks.forEach(link => {
+                const el = document.getElementById(`link-${link.from}-${link.to}`);
+                if (el) {
+                    el.setAttribute('stroke', 'var(--primary)');
+                    el.setAttribute('stroke-width', '4');
+                    el.classList.add('active-link');
+                }
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", initGraph);
+    </script>
+    <style>
+        .network-link { transition: all 0.5s ease; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawLine 2s forwards ease-out; }
+        @keyframes drawLine { to { stroke-dashoffset: 0; } }
+        .active-link { filter: drop-shadow(0 0 8px var(--primary)); opacity: 1 !important; stroke-dasharray: 10, 5; animation: flowDash 20s linear infinite !important; }
+        @keyframes flowDash { to { stroke-dashoffset: -1000; } }
+        .network-node { cursor: pointer; }
+        .network-node circle { transition: all 0.3s ease; }
+        .network-node:hover circle { fill: rgba(0, 210, 255, 0.15); stroke-width: 4; stroke: var(--primary); r: 45; }
+        .user-node circle { stroke: var(--accent); fill: rgba(0, 255, 136, 0.1); filter: drop-shadow(0 0 15px var(--accent)); animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 5px var(--accent)); } 50% { transform: scale(1.05); filter: drop-shadow(0 0 20px var(--accent)); } }
+    </style>
+</div>
+
+<!-- 🏆 TRUST SECTION -->
+<section style="padding: 10rem 0; background: radial-gradient(circle at bottom, rgba(0, 210, 255, 0.05), transparent);">
+    <div style="text-align: center; max-width: 900px; margin: 0 auto; padding: 0 2rem;">
+        <h2 style="font-size: 3rem; margin-bottom: 4rem;">Global Infrastructure</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 3rem;">
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: var(--primary);">240K</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; letter-spacing: 2px;">Kms Monitored</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: var(--accent);">₹85Cr</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; letter-spacing: 2px;">Trade Volume</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #ff6b35;">1.2M</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; letter-spacing: 2px;">AI Predictions</div>
+            </div>
+            <div>
+                <div style="font-size: 3rem; font-weight: 900; color: #7b61ff;">15+</div>
+                <div style="color: var(--text-muted); font-size: 0.95rem; letter-spacing: 2px;">Trade Countries</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 🚀 JOIN CTA -->
+<section style="padding: 10rem 2rem; text-align: center;">
+    <div class="app-card"
+        style="max-width: 1000px; margin: 0 auto; background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(0, 255, 136, 0.05)); border: 1px solid var(--primary);">
+        <h2 style="margin-bottom: 1rem; color: white;">Ready to Scale?</h2>
+        <p style="margin-bottom: 3rem; color: var(--text-muted);">Join the thousands of farmers and traders
+            digitizing their future.</p>
+        <a href="/signup" class="app-btn-large active-btn"
+            style="width: auto; padding: 1.5rem 6rem; border-radius: 5rem; text-decoration: none;">Join the
+            Ecosystem Now</a>
+    </div>
+</section>
+
+
+</div>
+
+<style>
+    .feature-pill {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid var(--glass-border);
+        padding: 5px 15px;
+        border-radius: 2rem;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--text-muted);
+    }
+</style>
+{% endblock %}

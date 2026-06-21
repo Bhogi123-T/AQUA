@@ -1,0 +1,31 @@
+{
+    "leads": [
+        {
+            "id": "CONN-9672",
+            "from": "admin",
+            "to": "hatchery",
+            "msg": "Connection Request: seed from Bhogeswara rao Thirumalasetti",
+            "status": "pending"
+        },
+        {
+            "id": "CONN-7810",
+            "from": "admin",
+            "to": "farmer",
+            "msg": "Connection Request: hatchery from Bhogeswara rao Thirumalasetti",
+            "status": "pending"
+        }
+    ],
+    "reports": [],
+    "hatcheries": {},
+    "seed_batches": [],
+    "farms": {},
+    "ponds": [],
+    "inventory": [],
+    "shipments": [],
+    "jobs": [],
+    "finance": {
+        "loans": [],
+        "insurance": []
+    },
+    "transactions": []
+}
